@@ -45,3 +45,7 @@ pnpm-debug.log*
 
 # Test
 coverage/
+
+# Clon accidental del repo remoto dentro del propio repo (lo deja
+# `gh repo create` sin --source=.). No es un submodulo.
+/clausum/
