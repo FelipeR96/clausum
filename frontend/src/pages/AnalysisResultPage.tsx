@@ -71,7 +71,7 @@ export function AnalysisResultPage() {
       setLoading(false);
       setError(null);
       setNotFound(false);
-      navigate(location.pathname, { replace: true, state: null });
+      void navigate(location.pathname, { replace: true, state: null });
     }
 
     let cancelled = false;

@@ -63,7 +63,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const handleSignOut = async () => {
     await signOut();
     onNavigate?.();
-    navigate('/login');
+    void navigate('/login');
   };
 
   const linkClass = (item: NavItem) => {

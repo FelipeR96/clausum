@@ -236,7 +236,7 @@ export function ContractActionDialog({ intent, onClose, onUploadSuccess }: Contr
         onClose();
         onUploadSuccess?.();
         if (!location.pathname.startsWith('/panel/contratos')) {
-          navigate('/panel/contratos');
+          void navigate('/panel/contratos');
         }
         return;
       }
@@ -260,7 +260,7 @@ export function ContractActionDialog({ intent, onClose, onUploadSuccess }: Contr
         },
       });
       onClose();
-      navigate(contractAnalysisPath(contractId), { state: { analysisPayload: result } });
+      void navigate(contractAnalysisPath(contractId), { state: { analysisPayload: result } });
     } catch (err) {
       if (isQuotaError(err)) {
         setQuotaError(true);

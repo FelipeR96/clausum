@@ -327,7 +327,6 @@ export async function executeAnalyzeContract(
 
     if (quotaReserved) {
       await releaseAnalysisUsage(userId);
-      quotaReserved = false;
     }
     await analysisRef.update({
       status: 'error',

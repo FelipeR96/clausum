@@ -55,7 +55,7 @@ export function SettingsProfileTab() {
     if (!user) return;
     let cancelled = false;
 
-    (async () => {
+    void (async () => {
       const extra = loadProfileExtra(user.uid);
       setJobTitle(extra.jobTitle ?? '');
       setOrganization(extra.organization ?? '');

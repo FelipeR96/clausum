@@ -165,7 +165,7 @@ export function ContractAiActionPicker({ mode }: ContractAiActionPickerProps) {
       const result = await runAnalysis(row.id, country, {
         onProgress: setAnalysisProgress,
       });
-      navigate(contractAnalysisPath(row.id), {
+      void navigate(contractAnalysisPath(row.id), {
         state: { analysisPayload: result },
       });
     } catch (err) {

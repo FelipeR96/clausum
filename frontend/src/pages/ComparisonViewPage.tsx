@@ -98,7 +98,7 @@ export function ComparisonViewPage() {
     setQuotaError(false);
     try {
       const result = await runComparison(contractIdA, contractIdB, country);
-      navigate(`/panel/comparar/${result.comparisonId}`, { replace: true });
+      void navigate(`/panel/comparar/${result.comparisonId}`, { replace: true });
     } catch (err) {
       if (isQuotaError(err)) {
         setQuotaError(true);
@@ -124,7 +124,7 @@ export function ComparisonViewPage() {
     setError(null);
     try {
       await setComparisonReview(comparisonId, 'discarded');
-      navigate('/panel/comparar');
+      void navigate('/panel/comparar');
     } catch (err) {
       setError(
         getUserFacingErrorMessage(err, { action: 'descartar la revisión' })
@@ -144,7 +144,7 @@ export function ComparisonViewPage() {
       setData((current) =>
         current ? { ...current, reviewStatus: 'approved' } : current
       );
-      navigate(contractAnalysisPath(data.contractId), {
+      void navigate(contractAnalysisPath(data.contractId), {
         state: { reviewApproved: true },
       });
     } catch (err) {

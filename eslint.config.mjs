@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -98,6 +99,12 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooksRules,
+      // Regla nueva de react-hooks v7: avisa de setState sincrono dentro de
+      // un efecto, que provoca renders en cascada. Son 12 sitios de codigo
+      // anterior a la regla y arreglarlos bien es un refactor, no un
+      // cambio mecanico. Queda como aviso para no bloquear el CI; ver
+      // F3-07 en docs/roadmap.md para liquidarlo.
+      'react-hooks/set-state-in-effect': 'warn',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
@@ -109,13 +116,32 @@ export default tseslint.config(
 
   // ─── Scripts de Node (CJS y ESM sueltos) ───────────────────
   {
-    files: ['**/*.cjs', '**/*.mjs', '**/scripts/**/*.js', 'eslint.config.mjs'],
+    files: ['**/*.cjs', '**/*.mjs', '**/*.js', 'eslint.config.mjs'],
     languageOptions: {
-      globals: { process: 'readonly', console: 'readonly', __dirname: 'readonly' },
+      globals: globals.node,
     },
     rules: {
       'no-console': 'off',
       '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+
+  // Los .cjs son CommonJS: sin esto, `require`, `module` y `exports` salen
+  // como no definidos.
+  {
+    files: ['**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+    },
+  },
+
+  // El logger ES la capa que escribe a stdout, que es como Cloud Logging
+  // recoge los logs estructurados. Prohibirle console seria prohibirle
+  // hacer su trabajo.
+  {
+    files: ['backend/functions/src/utils/logger.ts'],
+    rules: {
+      'no-console': 'off',
     },
   },
 

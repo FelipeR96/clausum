@@ -21,13 +21,14 @@
     "test:api": "pnpm --filter @clausum/functions test:api",
     "firebase:login": "firebase login",
     "firebase:use": "firebase use --config backend/firebase/firebase.json",
-    "lint": "eslint . --max-warnings 0",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,cjs,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,cjs,json,md}\"",
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint:strict": "eslint . --max-warnings 0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -40,6 +41,7 @@
     "eslint-plugin-react-refresh": "^0.5.7",
     "firebase": "^11.1.0",
     "firebase-tools": "^13.29.1",
+    "globals": "^17.13.0",
     "prettier": "^3.4.2",
     "typescript-eslint": "^8.71.2",
     "vitest": "^2.1.8"

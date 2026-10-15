@@ -68,7 +68,7 @@ export function MarketingHeader() {
   const handleSignOut = async () => {
     await signOut();
     setMenuOpen(false);
-    navigate('/login');
+    void navigate('/login');
   };
 
   return (

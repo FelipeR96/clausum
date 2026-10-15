@@ -18,7 +18,7 @@ Actualizado: 2026-10-15.
 |---|---|
 | F0-01 Git | ✅ Repo local con 4 commits · ⏳ falta `git remote add` + push |
 | F0-02 README | ✅ |
-| F0-03 ESLint + Prettier | ✅ Configurado · ⏳ falta `pnpm install` y primera pasada |
+| F0-03 ESLint + Prettier | ✅ Configurado y primera pasada hecha: 66 errores arreglados |
 | F0-04 CI | ✅ Workflow escrito · ⏳ se activa al subir a GitHub |
 | F0-05 Build limpio | ✅ `pnpm build` y `pnpm typecheck` en verde en los tres paquetes |
 | F1-01 Proyecto Firebase prod | ⏳ requiere la consola de Firebase |
@@ -38,6 +38,7 @@ Actualizado: 2026-10-15.
 | F3-04 Inconsistencias | ✅ |
 | F3-05 Accesibilidad | ⏳ |
 | F3-06 Partir el bundle | ⏳ nuevo, detectado en el build |
+| F3-07 Avisos de lint a cero | ⏳ ~26 avisos, no bloquean el CI |
 | Fase 4 Corpus legal | ⏳ trabajo de contenido |
 | Fase 5 Legal y lanzamiento | ⏳ |
 
@@ -825,6 +826,54 @@ Cuatro cosas pequeñas que hoy no rompen pero son trampas:
 - **Residuos en la raíz**: `firestore-debug.log` y `tsconfig.tsbuildinfo`
   están en el working tree aunque el `.gitignore` los cubre. Limpiar antes del
   primer commit.
+
+### F3-07 — Liquidar los avisos de lint y pasar a estricto
+
+La primera pasada de ESLint sobre el código existente dejó 80 hallazgos. Los
+66 errores están arreglados; quedan **~26 avisos** que no bloquean el CI
+todavía. El objetivo es dejarlos a cero y cambiar el script del CI de
+`pnpm lint` a `pnpm lint:strict` (`--max-warnings 0`), para que la cuenta no
+vuelva a crecer.
+
+Por orden de valor:
+
+**1. `react-hooks/set-state-in-effect` — 12 sitios.** Es la regla nueva de
+react-hooks v7: avisa de `setState` sincrónico dentro de un efecto, que
+provoca renders en cascada. No es un fallo de correctitud, pero varios de
+estos casos no necesitan efecto en absoluto y el arreglo mejora el código:
+
+| Archivo | Patrón | Arreglo probable |
+|---|---|---|
+| `LoginCard.tsx:32` | leer `localStorage` en un efecto | `useState(() => …)` como inicializador |
+| `CookieConsentBanner.tsx:11` | igual | inicializador perezoso |
+| `useBillingRegion.ts:19` | sincronizar prop a estado | derivar en vez de copiar |
+| `AnalysisResultPage.tsx:50`, `RiskAlertsPage.tsx:85` | `setLoading(false)` cuando falta el id | calcular durante el render |
+| `ContractActionDialog.tsx:94,115` | resetear al cerrar | `key` en el componente para remontarlo |
+| `AppSidebar.tsx:51` | copiar `user` a estado | leer de `user` directamente |
+| `NotificationsBell.tsx:46`, `ContractAiActionPicker.tsx:139`, `ContractsHistoryPage.tsx:185`, `ComparisonViewPage.tsx:87` | cargar datos al montar | correcto como patrón; la regla se queja del `setState` dentro del `.then` |
+
+Los cuatro últimos son carga de datos al montar, que es uso legítimo de un
+efecto; ahí lo razonable es `eslint-disable-next-line` **con comentario que
+explique por qué**, no silenciar la regla entera.
+
+**2. `@typescript-eslint/require-await` — 10 avisos.** Funciones `async` sin
+`await`. En `VectorLegalSearchProvider` son los 7 métodos del stub de v2 y
+deben seguir siendo `async` para cumplir la interfaz: ahí va un
+`eslint-disable` a nivel de archivo con la razón. En `billing.routes.ts` y
+`legal.routes.ts` son tres handlers que no esperan nada; se les puede quitar
+el `async`.
+
+**3. `react-refresh/only-export-components` — 4 avisos.** Archivos que
+exportan un componente y además una constante o un helper, lo que rompe el
+hot reload. Mover lo que no es componente a su propio archivo.
+
+### Política de lint
+
+`pnpm lint` (el que corre el CI) **gatea errores**. `pnpm lint:strict` añade
+`--max-warnings 0` y es el objetivo al que llegar cuando se liquide lo de
+arriba. La distinción existe para que introducir linting en un repo de 500
+archivos no obligue a un refactor de 26 sitios antes de poder mergear nada;
+no para que los avisos se queden ahí para siempre.
 
 ### F3-06 — Partir el bundle del frontend
 

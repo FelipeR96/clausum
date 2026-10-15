@@ -66,7 +66,7 @@ export function LoginCard() {
     try {
       persistRememberedEmail(email, remember);
       await signIn(email, password);
-      navigate(from, { replace: true });
+      void navigate(from, { replace: true });
     } catch (err) {
       setError(getUserFacingErrorMessage(err, { action: 'iniciar sesión' }));
     } finally {
@@ -80,7 +80,7 @@ export function LoginCard() {
     setInfo(null);
     try {
       await signInWithGoogle();
-      navigate(from, { replace: true });
+      void navigate(from, { replace: true });
     } catch (err) {
       setError(getUserFacingErrorMessage(err, { action: 'iniciar sesión con Google' }));
     } finally {
@@ -93,7 +93,7 @@ export function LoginCard() {
     setError(null);
     try {
       await signInDemo();
-      navigate(from, { replace: true });
+      void navigate(from, { replace: true });
     } catch (err) {
       setError(getUserFacingErrorMessage(err, { action: 'iniciar sesión demo' }));
     } finally {

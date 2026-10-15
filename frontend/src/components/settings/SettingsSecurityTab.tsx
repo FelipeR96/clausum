@@ -43,7 +43,7 @@ export function SettingsSecurityTab() {
 
   const onSignOut = async () => {
     await signOut();
-    navigate('/login');
+    void navigate('/login');
   };
 
   return (

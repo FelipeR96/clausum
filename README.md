@@ -147,7 +147,8 @@ Todos se corren desde la raíz del repo.
 |---|---|
 | `pnpm build` | shared → web → functions, en ese orden |
 | `pnpm build:web` / `pnpm build:functions` | Build de un solo paquete |
-| `pnpm lint` / `pnpm lint:fix` | ESLint sobre todo el monorepo |
+| `pnpm lint` / `pnpm lint:fix` | ESLint sobre todo el monorepo (gatea errores) |
+| `pnpm lint:strict` | Igual pero `--max-warnings 0` (objetivo; ver F3-07) |
 | `pnpm format` | Prettier sobre todo el monorepo |
 | `pnpm typecheck` | `tsc --noEmit` en los tres paquetes |
 | `pnpm test` | Suite de pruebas |

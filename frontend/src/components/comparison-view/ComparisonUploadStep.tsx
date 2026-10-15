@@ -200,7 +200,7 @@ export function ComparisonUploadStep({
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const [contractList, me] = await Promise.all([
           listContracts(),

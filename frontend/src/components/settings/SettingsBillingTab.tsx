@@ -9,6 +9,7 @@ import {
   type BillingRegion,
 } from '@clausum/shared';
 import { fetchMe, setDevPlan, type MeResponse } from '@/services/user.service';
+import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
 import { invalidateSubscriptionCache } from '@/hooks/useSubscriptionSummary';
 import { WompiSubscribeButton } from '@/components/billing/WompiSubscribeButton';
 import { WompiCheckoutButton } from '@/components/billing/WompiCheckoutButton';
@@ -32,6 +33,7 @@ function formatPeriodEnd(iso?: string): string | null {
 export function SettingsBillingTab() {
   const [me, setMe] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [renewInterval, setRenewInterval] = useState<BillingInterval>('monthly');
   const [devActivating, setDevActivating] = useState(false);
   const [devError, setDevError] = useState<string | null>(null);
@@ -51,7 +53,15 @@ export function SettingsBillingTab() {
 
   useEffect(() => {
     fetchMe()
-      .then(setMe)
+      .then((data) => {
+        setMe(data);
+        setLoadError(null);
+      })
+      .catch((err: unknown) => {
+        setLoadError(
+          getUserFacingErrorMessage(err, { action: 'cargar tu suscripción' })
+        );
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -80,7 +90,15 @@ export function SettingsBillingTab() {
   const reloadMe = () => {
     setLoading(true);
     fetchMe()
-      .then(setMe)
+      .then((data) => {
+        setMe(data);
+        setLoadError(null);
+      })
+      .catch((err: unknown) => {
+        setLoadError(
+          getUserFacingErrorMessage(err, { action: 'cargar tu suscripción' })
+        );
+      })
       .finally(() => setLoading(false));
   };
 
@@ -162,6 +180,12 @@ export function SettingsBillingTab() {
             Entendido
           </button>
         </div>
+      )}
+
+      {loadError && (
+        <p className="mb-4 text-sm text-red-700" role="alert">
+          {loadError}
+        </p>
       )}
 
       {loading ? (

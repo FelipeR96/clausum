@@ -103,7 +103,7 @@ export function ContractsHistoryPage() {
         const result = await runAnalysis(contractId, country, {
           onProgress: setAnalysisProgress,
         });
-        navigate(contractAnalysisPath(contractId), {
+        void navigate(contractAnalysisPath(contractId), {
           state: { analysisPayload: result },
         });
       } catch (err) {
@@ -126,7 +126,7 @@ export function ContractsHistoryPage() {
   const handleRiskProfileContract = useCallback(
     async (contractId: string) => {
       if (!isPro) {
-        navigate(contractRiskProfilePath(contractId));
+        void navigate(contractRiskProfilePath(contractId));
         return;
       }
 
@@ -143,7 +143,7 @@ export function ContractsHistoryPage() {
           const country = rows.find((r) => r.id === contractId)?.country ?? 'CO';
           await runRiskDetection(contractId, country);
         }
-        navigate(contractRiskProfilePath(contractId));
+        void navigate(contractRiskProfilePath(contractId));
       } catch (err) {
         if (isQuotaError(err)) {
           setQuotaError(getQuotaErrorMessage(err));

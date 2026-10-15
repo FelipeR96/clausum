@@ -86,7 +86,7 @@ export function SignupWizard() {
         );
       }
 
-      navigate(from, { replace: true });
+      void navigate(from, { replace: true });
     } catch (err) {
       setError(getUserFacingErrorMessage(err, { action: 'crear tu cuenta' }));
     } finally {
@@ -99,7 +99,7 @@ export function SignupWizard() {
     setError(null);
     try {
       await signInWithGoogle();
-      navigate(from, { replace: true });
+      void navigate(from, { replace: true });
     } catch (err) {
       setError(getUserFacingErrorMessage(err, { action: 'iniciar sesión con Google' }));
     } finally {
