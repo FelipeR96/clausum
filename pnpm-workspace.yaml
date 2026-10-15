@@ -8,3 +8,13 @@ allowBuilds:
   esbuild: true
   protobufjs: true
   tesseract.js: true
+
+# Red de seguridad. @eslint/eslintrc@3.3.7 (latest) declara js-yaml ^4.3.2 y
+# esa version no existe: la linea v4 de js-yaml termina en 4.3.0. eslint 10 ya
+# no depende de eslintrc, asi que esto no deberia activarse nunca; esta por si
+# algun plugin lo arrastra de forma transitiva.
+#
+# Comprobar si ya sobra:  pnpm why @eslint/eslintrc
+# Si no aparece nada, borra este bloque.
+overrides:
+  '@eslint/eslintrc': '3.3.1'

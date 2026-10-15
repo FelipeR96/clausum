@@ -75,35 +75,70 @@ Después, las pruebas (necesitan Java para el emulador de Firestore):
 pnpm exec firebase emulators:exec --only firestore,storage,auth --config backend/firebase/firebase.json --project clausum-test "pnpm test"
 ```
 
-### Override de `@eslint/eslintrc` — temporal
+### ESLint 10 y el override de `@eslint/eslintrc`
 
-`package.json` fija `@eslint/eslintrc` a `3.3.1` vía `pnpm.overrides`.
-
-**Motivo.** `@eslint/eslintrc@3.3.7` (que es `latest`, y la que arrastra
-cualquier `eslint@^9`) declara `js-yaml@^4.3.2`, y la línea v4 de js-yaml
-se detiene en 4.3.0 — el tag `v4-legacy` apunta ahí. Lo más probable es que
-4.3.1/4.3.2 se publicaran y se retiraran después, dejando a `eslintrc@3.3.7`
-instalable solo durante esa ventana. `pnpm install` falla con
+`@eslint/eslintrc@3.3.7` (que es `latest`) declara `js-yaml@^4.3.2`, y la
+línea v4 de js-yaml se detiene en 4.3.0 — el tag `v4-legacy` apunta ahí. Lo
+más probable es que 4.3.1/4.3.2 se publicaran y se retiraran después.
+Cualquier `eslint@9` arrastra esa versión y `pnpm install` falla con
 `ERR_PNPM_NO_MATCHING_VERSION`.
 
-No se tocó `js-yaml` directamente a propósito: forzar un rango a violarse es
-más invasivo que fijar el paquete que lo declara mal. `3.3.1` pide
-`js-yaml@^4.1.0` y el resto de sus rangos son satisfacibles. Y `eslintrc`
-solo sirve para compatibilidad con la configuración antigua `.eslintrc`,
-que este repo no usa (está en flat config), así que el pin no afecta al
-linting real.
+**Solución de raíz:** el repo usa `eslint@^10`, que ya **no depende** de
+`@eslint/eslintrc` en runtime (solo lo tiene como devDependency propia). De
+paso, `eslint@9` está marcado como deprecated: 9.39.5 es el tag
+`maintenance`, no `latest`.
 
-**Cuándo quitarlo.** Cuando salga un `@eslint/eslintrc` con un rango de
-js-yaml satisfacible (o cuando js-yaml republique la 4.3.2). Para
-comprobarlo:
+Versiones alineadas y verificadas contra el registro (todas aceptan eslint
+10 como peer):
+
+| Paquete | Versión | Peer de eslint |
+|---|---|---|
+| `eslint` | ^10.12.0 | — |
+| `@eslint/js` | ^10.0.1 | — |
+| `typescript-eslint` | ^8.71.2 | `^8.57 \|\| ^9 \|\| ^10` |
+| `eslint-plugin-react-hooks` | ^7.1.1 | hasta `^10` |
+| `eslint-plugin-react-refresh` | ^0.5.7 | `^9 \|\| ^10` |
+| `eslint-config-prettier` | ^10.1.8 | `>=7` |
+
+Dos detalles que cambian con las mayores nuevas y que ya están aplicados en
+`eslint.config.mjs`:
+
+- `eslint-config-prettier` v10 expone el flat config en el subpath
+  `eslint-config-prettier/flat`; el export raíz sigue siendo el objeto
+  estilo `.eslintrc`.
+- `eslint-plugin-react-hooks` ha movido su configuración recomendada entre
+  mayores (`configs.recommended` en unas, `configs['recommended-latest']` en
+  otras). La config la toma de donde exista en lugar de fijar una forma, así
+  que sobrevive a la próxima mudanza.
+
+**El override**, en `pnpm-workspace.yaml` (pnpm 10+ ya **no lee**
+`pnpm.overrides` de `package.json` — avisa con
+*"The pnpm field in package.json is no longer read by pnpm"*), fija
+`@eslint/eslintrc` a `3.3.1`, que pide `js-yaml@^4.1.0`. Con eslint 10 no
+debería activarse nunca; está por si algún plugin lo arrastra de forma
+transitiva. Para saber si ya sobra:
 
 ```powershell
-npm view @eslint/eslintrc@latest dependencies
-npm view js-yaml dist-tags
+pnpm why @eslint/eslintrc
 ```
 
-Si el rango de js-yaml ya se puede resolver, borra la clave `pnpm.overrides`
-de `package.json` y corre `pnpm install`.
+Si no aparece nada, borra el bloque `overrides` de `pnpm-workspace.yaml`.
+
+### Node local vs. Node del runtime
+
+`pnpm install` avisa: `Unsupported engine: wanted {"node":"20"} (current
+v24.5.0)`. No es un error, pero conviene no ignorarlo: **Cloud Functions
+corre Node 20**, así que desarrollar en 24 puede ocultar incompatibilidades
+que solo aparecen al desplegar (y al contrario, hacer que algo falle en
+local y funcione en producción). Lo más limpio es fijar la versión del
+proyecto con `nvm-windows` o Volta:
+
+```powershell
+volta pin node@20
+```
+
+Si prefieres seguir en 24, al menos corre `pnpm build:functions` antes de
+cada despliegue y confía en el CI, que sí usa Node 20.
 
 ### Subir a GitHub
 

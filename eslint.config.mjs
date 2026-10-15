@@ -2,7 +2,19 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import prettier from 'eslint-config-prettier';
+// En v10 el flat config vive en el subpath /flat; el export raiz sigue
+// siendo el objeto estilo .eslintrc.
+import prettier from 'eslint-config-prettier/flat';
+
+// `eslint-plugin-react-hooks` ha movido de sitio su configuracion
+// recomendada entre versiones mayores (configs.recommended en unas,
+// configs['recommended-latest'] en otras). Las reglas son las mismas en
+// todas, asi que se toma de donde exista en vez de fijar una forma.
+const reactHooksRules =
+  reactHooks.configs?.['recommended-latest']?.rules ??
+  reactHooks.configs?.flat?.rules ??
+  reactHooks.configs?.recommended?.rules ??
+  {};
 
 export default tseslint.config(
   // ─── Ignorados ─────────────────────────────────────────────
@@ -85,7 +97,7 @@ export default tseslint.config(
       },
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      ...reactHooksRules,
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
