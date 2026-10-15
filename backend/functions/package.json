@@ -17,7 +17,8 @@
     "import:laws": "node scripts/import-laws.cjs",
     "build:co-corpus": "node scripts/build-co-corpus.cjs",
     "import:co-corpus": "node scripts/import-co-corpus.cjs",
-    "test:api": "node scripts/test-api-flow.cjs"
+    "test:api": "node scripts/test-api-flow.cjs",
+    "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
     "@clausum/shared": "workspace:*",

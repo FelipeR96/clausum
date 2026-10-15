@@ -1,0 +1,9 @@
+node_modules
+dist
+lib
+*.tsbuildinfo
+emulator-data
+pnpm-lock.yaml
+frontend/public
+shared/dist
+backend/functions/data/co-mvp-corpus.json

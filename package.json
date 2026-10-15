@@ -20,11 +20,27 @@
     "build:co-corpus": "pnpm --filter @clausum/functions build:co-corpus",
     "test:api": "pnpm --filter @clausum/functions test:api",
     "firebase:login": "firebase login",
-    "firebase:use": "firebase use --config backend/firebase/firebase.json"
+    "firebase:use": "firebase use --config backend/firebase/firebase.json",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,cjs,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,cjs,json,md}\"",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@firebase/rules-unit-testing": "^4.0.1",
     "concurrently": "^9.1.2",
-    "firebase-tools": "^13.29.1"
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "firebase-tools": "^13.29.1",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.19.0",
+    "vitest": "^2.1.8"
   },
   "engines": {
     "node": ">=20"
