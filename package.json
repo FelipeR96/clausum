@@ -2,6 +2,7 @@
   "name": "clausum",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "pnpm@11.9.0",
   "description": "SaaS de análisis de contratos con IA",
   "scripts": {
     "dev": "pnpm --filter @clausum/web dev",
