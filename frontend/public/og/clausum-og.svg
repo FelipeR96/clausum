@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Clausum — Análisis de contratos con IA">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4fbfa"/>
+      <stop offset="100%" stop-color="#dff5f1"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="80" y="80" width="1040" height="470" rx="32" fill="#ffffff" stroke="#006A60" stroke-width="4"/>
+  <circle cx="180" cy="180" r="48" fill="#006A60"/>
+  <text x="250" y="195" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#0b1c30">Clausum</text>
+  <text x="180" y="290" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#0b1c30">Análisis de contratos con IA</text>
+  <text x="180" y="360" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#45464d">Analizar · Comparar · Detectar riesgos</text>
+  <text x="180" y="430" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#006A60">Contexto jurídico colombiano</text>
+</svg>

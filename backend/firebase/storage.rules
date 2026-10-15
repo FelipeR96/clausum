@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // PDF o Word (.doc, .docx), máx 10 MB
+    function isValidContractFile() {
+      return request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType in [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+    }
+
+    // Ruta: users/{userId}/contracts/{contractId}.pdf | .doc | .docx
+    match /users/{userId}/contracts/{fileName} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidContractFile();
+      allow delete: if isOwner(userId);
+    }
+
+    // Exportaciones PDF generadas por el backend (solo lectura para el dueño)
+    match /users/{userId}/exports/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if false;
+    }
+
+    function isValidAvatarImage() {
+      return request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType in [
+          'image/jpeg',
+          'image/png',
+          'image/webp'
+        ];
+    }
+
+    match /users/{userId}/profile/{fileName} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidAvatarImage();
+      allow delete: if isOwner(userId);
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

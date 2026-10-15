@@ -1,0 +1,44 @@
+{
+  "name": "@clausum/functions",
+  "version": "0.1.0",
+  "private": true,
+  "main": "lib/index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "build": "pnpm --filter @clausum/shared build && tsc",
+    "build:watch": "tsc --watch",
+    "serve": "pnpm build && firebase emulators:start --only functions --config ../firebase/firebase.json",
+    "shell": "pnpm build && firebase functions:shell --config ../firebase/firebase.json",
+    "logs": "firebase functions:log --config ../firebase/firebase.json",
+    "seed": "node scripts/seed-firestore.cjs",
+    "seed:legal-catalog": "node scripts/seed-legal-catalog.cjs",
+    "import:laws": "node scripts/import-laws.cjs",
+    "build:co-corpus": "node scripts/build-co-corpus.cjs",
+    "import:co-corpus": "node scripts/import-co-corpus.cjs",
+    "test:api": "node scripts/test-api-flow.cjs"
+  },
+  "dependencies": {
+    "@clausum/shared": "workspace:*",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "firebase-admin": "^13.0.2",
+    "firebase-functions": "^6.3.0",
+    "mammoth": "^1.9.0",
+    "pdf-img-convert": "^1.2.1",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.19.1",
+    "tesseract.js": "^5.1.1",
+    "word-extractor": "^1.0.4",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "@types/pdf-parse": "^1.1.4",
+    "@types/pdfkit": "^0.17.6",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "clausum",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SaaS de análisis de contratos con IA",
+  "scripts": {
+    "dev": "pnpm --filter @clausum/web dev",
+    "dev:emulators": "pnpm --filter @clausum/functions build && node scripts/start-emulators.mjs",
+    "dev:all": "concurrently -n web,emu -c blue,green \"node scripts/wait-for-functions-emulator.mjs && pnpm dev\" \"pnpm dev:emulators\"",
+    "build": "pnpm --filter @clausum/shared build && pnpm --filter @clausum/web build && pnpm --filter @clausum/functions build",
+    "build:web": "pnpm --filter @clausum/web build",
+    "build:functions": "pnpm --filter @clausum/functions build",
+    "deploy": "pnpm build && firebase deploy --config backend/firebase/firebase.json",
+    "deploy:hosting": "pnpm build:web && firebase deploy --only hosting --config backend/firebase/firebase.json",
+    "deploy:functions": "pnpm build:functions && firebase deploy --only functions --config backend/firebase/firebase.json",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage --config backend/firebase/firebase.json",
+    "seed:firestore": "pnpm --filter @clausum/functions seed",
+    "seed:legal-catalog": "pnpm --filter @clausum/functions seed:legal-catalog",
+    "import:co-corpus": "pnpm --filter @clausum/functions import:co-corpus",
+    "build:co-corpus": "pnpm --filter @clausum/functions build:co-corpus",
+    "test:api": "pnpm --filter @clausum/functions test:api",
+    "firebase:login": "firebase login",
+    "firebase:use": "firebase use --config backend/firebase/firebase.json"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "firebase-tools": "^13.29.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

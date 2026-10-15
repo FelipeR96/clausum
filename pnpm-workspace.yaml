@@ -1,0 +1,10 @@
+packages:
+  - 'frontend'
+  - 'backend/functions'
+  - 'shared'
+allowBuilds:
+  '@firebase/util': true
+  canvas: false
+  esbuild: true
+  protobufjs: true
+  tesseract.js: true

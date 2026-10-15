@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "clausum-dev",
+    "dev": "clausum-dev",
+    "prod": "clausum-dev"
+  }
+}

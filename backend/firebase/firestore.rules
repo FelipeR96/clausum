@@ -1,0 +1,217 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helpers ───────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isResourceOwner() {
+      return isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    function isRequestOwner() {
+      return isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    function userProtectedFields() {
+      return [
+        'subscriptionId',
+        'subscriptionStatus',
+        'planId',
+      ];
+    }
+
+    function hasValidUserCreate() {
+      return request.resource.data.keys().hasOnly([
+          'email',
+          'displayName',
+          'photoURL',
+          'planId',
+          'locale',
+          'billingRegion',
+          'onboardingCompleted',
+          'landingSource',
+          'createdAt',
+          'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll(['email', 'planId', 'createdAt'])
+        && request.resource.data.email is string
+        && request.resource.data.planId == 'free';
+    }
+
+    function userUpdateSafe() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return !changed.hasAny(userProtectedFields())
+        && changed.hasOnly([
+          'displayName',
+          'photoURL',
+          'locale',
+          'billingRegion',
+          'onboardingCompleted',
+          'landingSource',
+          'updatedAt',
+          'deletedAt'
+        ]);
+    }
+
+    function hasValidContractCreate() {
+      return request.resource.data.keys().hasAll([
+          'userId', 'title', 'fileName', 'storagePath', 'status', 'createdAt'
+        ])
+        && request.resource.data.status in [
+          'draft', 'uploaded'
+        ]
+        && request.resource.data.storagePath.matches(
+          '^users/' + request.auth.uid + '/contracts/[^/]+\\.(pdf|docx)$'
+        );
+    }
+
+    function contractClientUpdateSafe() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return changed.hasOnly([
+          'title',
+          'tags',
+          'folderId',
+          'country',
+          'contractTypeId',
+          'deletedAt',
+          'updatedAt'
+        ]);
+    }
+
+    function validUserSettings() {
+      return request.resource.data.keys().hasOnly([
+          'emailNotifications',
+          'riskThreshold',
+          'defaultAnalysisMode',
+          'theme',
+          'updatedAt'
+        ])
+        && (!('emailNotifications' in request.resource.data)
+          || request.resource.data.emailNotifications is bool)
+        && (!('riskThreshold' in request.resource.data)
+          || request.resource.data.riskThreshold in ['low', 'medium', 'high'])
+        && (!('defaultAnalysisMode' in request.resource.data)
+          || request.resource.data.defaultAnalysisMode in ['analyze', 'compare', 'risks'])
+        && (!('theme' in request.resource.data)
+          || request.resource.data.theme in ['light', 'dark', 'system']);
+    }
+
+    function alertReadUpdateSafe() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return changed.hasOnly(['read', 'readAt'])
+        && request.resource.data.read is bool;
+    }
+
+    // ─── Planes (catálogo público) ─────────────────────────────
+    match /plans/{planId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ─── Configuración global ───────────────────────────────────
+    match /config/{docId} {
+      allow read: if isAuthenticated() && docId in ['app', 'features', 'limits'];
+      allow write: if false;
+    }
+
+    // ─── Usuarios ──────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && hasValidUserCreate();
+      allow update: if isOwner(userId) && userUpdateSafe();
+      allow delete: if false;
+
+      match /usage/{periodId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+
+      match /settings/{settingsId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validUserSettings();
+        allow delete: if false;
+      }
+
+      match /history/{historyId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+    }
+
+    // ─── Suscripciones ─────────────────────────────────────────
+    match /subscriptions/{subscriptionId} {
+      allow read: if isResourceOwner();
+      allow write: if false;
+    }
+
+    // ─── Contratos ─────────────────────────────────────────────
+    match /contracts/{contractId} {
+      allow read: if isResourceOwner();
+      allow create: if isRequestOwner() && hasValidContractCreate();
+      allow update: if isResourceOwner()
+        && isRequestOwner()
+        && contractClientUpdateSafe();
+      allow delete: if isResourceOwner();
+    }
+
+    // ─── Análisis IA ───────────────────────────────────────────
+    match /analyses/{analysisId} {
+      allow read: if isResourceOwner();
+      allow write: if false;
+    }
+
+    // ─── Comparaciones ─────────────────────────────────────────
+    match /comparisons/{comparisonId} {
+      allow read: if isResourceOwner();
+      allow write: if false;
+    }
+
+    // ─── Alertas ───────────────────────────────────────────────
+    match /alerts/{alertId} {
+      allow read: if isResourceOwner();
+      allow create: if false;
+      allow update: if isResourceOwner() && alertReadUpdateSafe();
+      allow delete: if isResourceOwner();
+    }
+
+    // ─── Pagos ─────────────────────────────────────────────────
+    match /payments/{paymentId} {
+      allow read: if isResourceOwner();
+      allow write: if false;
+    }
+
+    // ─── Logs de sistema ───────────────────────────────────────
+    match /system_logs/{logId} {
+      allow read, write: if false;
+    }
+
+    // ─── Base jurídica (solo lectura; escritura vía Admin/scripts) ─
+    match /laws/{lawId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    match /contract_types/{typeId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    match /legal_topics/{topicId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // Denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,141 @@
+/**
+ * Normas transversales aplicables a contratos civiles y comerciales (excepto laboral).
+ */
+const S = require('./sources');
+const { article } = require('./helpers');
+
+const T = [
+  'prestacion_servicios',
+  'arrendamiento',
+  'compraventa',
+  'confidencialidad',
+  'licencia_software',
+  'franquicia',
+  'suministro',
+  'distribucion',
+  'mandato',
+];
+
+module.exports = [
+  article({
+    id: 'cc_1601_trans',
+    codeName: 'Código Civil (Colombia)',
+    normType: 'codigo',
+    article: '1601',
+    title: 'Fuerza mayor — caso fortuito',
+    content:
+      'No hay lugar a la indemnización de perjuicios cuando el deudor no pudo cumplir la obligación por fuerza mayor o caso fortuito, salvo que la ley o la convención en sentido contrario lo impongan.',
+    summary: 'La fuerza mayor exime de indemnizar, salvo pacto en contrario.',
+    category: 'incumplimiento',
+    topics: ['incumplimiento', 'responsabilidad'],
+    keywords: ['fuerza mayor', 'caso fortuito', 'eximente', 'incumplimiento'],
+    contractTypeIds: T,
+    officialSource: S.CODIGO_CIVIL,
+  }),
+  article({
+    id: 'cc_1617_trans',
+    codeName: 'Código Civil (Colombia)',
+    normType: 'codigo',
+    article: '1617',
+    title: 'Nulidad del contrato',
+    content:
+      'La nulidad absoluta del contrato produce la insubsistencia de todas las obligaciones y la restitución de lo recibido. La nulidad relativa puede ser anulada por quien tiene interés en ello, salvo confirmación del acto viciado.',
+    category: 'obligaciones',
+    topics: ['incumplimiento', 'terminacion'],
+    keywords: ['nulidad', 'anulación', 'restitución', 'vicio del consentimiento'],
+    contractTypeIds: T,
+    riskLevel: 'high',
+    officialSource: S.CODIGO_CIVIL,
+  }),
+  article({
+    id: 'cc_1546_trans',
+    codeName: 'Código Civil (Colombia)',
+    normType: 'codigo',
+    article: '1546',
+    title: 'Resarcimiento de perjuicios por incumplimiento',
+    content:
+      'El deudor responde de los perjuicios causados por su culpa o negligencia, y aún por el hecho de sus dependientes o empleados en el servicio de las cosas que debe cuidar, salvo fuerza mayor o caso fortuito debidamente probados.',
+    summary: 'El incumplimiento culposo obliga a resarcir perjuicios.',
+    category: 'incumplimiento',
+    topics: ['incumplimiento', 'responsabilidad', 'multas'],
+    keywords: ['perjuicios', 'indemnización', 'culpa', 'incumplimiento'],
+    contractTypeIds: T,
+    riskLevel: 'high',
+    officialSource: S.CODIGO_CIVIL,
+  }),
+  article({
+    id: 'ley1480_16_trans',
+    codeName: 'Ley 1480 de 2011 (Estatuto del Consumidor)',
+    normType: 'ley',
+    article: '16',
+    title: 'Derecho a información clara y veraz',
+    content:
+      'El consumidor tiene derecho a recibir información veraz, clara, suficiente, oportuna, verificable, comprensible, precisa y congruente sobre los bienes y servicios ofrecidos, con el fin de tomar decisiones adecuadas.',
+    category: 'consumo',
+    topics: ['incumplimiento'],
+    keywords: ['consumidor', 'información', 'transparencia', 'publicidad engañosa'],
+    contractTypeIds: T,
+    riskLevel: 'high',
+    officialSource: S.LEY_1480,
+  }),
+  article({
+    id: 'ley1480_38_trans',
+    codeName: 'Ley 1480 de 2011 (Estatuto del Consumidor)',
+    normType: 'ley',
+    article: '38',
+    title: 'Cláusulas abusivas — nulidad',
+    content:
+      'Son nulas las cláusulas que establezcan limitaciones absolutas de responsabilidad del proveedor por vicios ocultos o defectos de calidad, que impongan renuncia general a derechos del consumidor, que permitan al proveedor modificar unilateralmente el contrato sin consentimiento, o que impongan penalidades desproporcionadas al consumidor.',
+    summary: 'Cláusulas que limitan derechos del consumidor o son desproporcionadas son nulas.',
+    category: 'consumo',
+    topics: ['multas', 'incumplimiento'],
+    keywords: ['cláusula abusiva', 'consumidor', 'nulidad', 'desproporcionada'],
+    contractTypeIds: T,
+    riskLevel: 'high',
+    officialSource: S.LEY_1480,
+  }),
+  article({
+    id: 'ley1563_62_trans',
+    codeName: 'Ley 1563 de 2012 (Arbitraje)',
+    normType: 'ley',
+    article: '62',
+    title: 'Compromiso arbitral',
+    content:
+      'El compromiso arbitral es el acuerdo de voluntades de las partes para someter a arbitraje la totalidad o alguna de las controversias que hayan surgido o puedan surgir entre ellas respecto de una determinada relación jurídica contractual o no contractual. Debe constar por escrito.',
+    summary: 'El arbitraje requiere acuerdo escrito de las partes sobre controversias determinadas.',
+    category: 'arbitraje',
+    topics: ['jurisdiccion', 'arbitraje'],
+    keywords: ['arbitraje', 'compromiso arbitral', 'escrito', 'controversias'],
+    contractTypeIds: T,
+    officialSource: S.LEY_1563_2012,
+  }),
+  article({
+    id: 'ley1581_1_trans',
+    codeName: 'Ley 1581 de 2012 (Protección de datos)',
+    normType: 'ley',
+    article: '1',
+    title: 'Objeto — protección de datos personales',
+    content:
+      'La presente ley tiene por objeto desarrollar el derecho constitucional que tienen todas las personas a conocer, actualizar y rectificar las informaciones que se hayan recogido sobre ellas en bases de datos o archivos, y los demás derechos, libertades y garantías constitucionales a que se refiere el artículo 15 de la Constitución Política.',
+    category: 'proteccion_datos',
+    topics: ['proteccion_datos', 'confidencialidad'],
+    keywords: ['datos personales', 'habeas data', 'privacidad', 'tratamiento'],
+    contractTypeIds: T,
+    officialSource: S.LEY_1581,
+  }),
+  article({
+    id: 'ley1581_9_trans',
+    codeName: 'Ley 1581 de 2012 (Protección de datos)',
+    normType: 'ley',
+    article: '9',
+    title: 'Deber de informar al titular',
+    content:
+      'El responsable del tratamiento deberá informar al titular de la existencia de la política de tratamiento de datos y de los derechos que le asisten, así como de la finalidad de la recolección y los canales para ejercer sus derechos.',
+    category: 'proteccion_datos',
+    topics: ['proteccion_datos'],
+    keywords: ['aviso de privacidad', 'política de datos', 'titular', 'información'],
+    contractTypeIds: T,
+    riskLevel: 'high',
+    officialSource: S.LEY_1581,
+  }),
+];

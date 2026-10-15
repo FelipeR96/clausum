@@ -1,0 +1,3964 @@
+[
+  {
+    "id": "ley820_1",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "1",
+    "title": "Objeto",
+    "content": "La presente ley tiene como objeto fijar los criterios que deben servir de base para regular los contratos de arrendamiento de los inmuebles urbanos destinados a vivienda, en desarrollo de los derechos de los colombianos a una vivienda digna y a la propiedad con función social.",
+    "summary": "La presente ley tiene como objeto fijar los criterios que deben servir de base para regular los contratos de arrendamiento de los inmuebles urbanos destinados a vivienda, en desarrollo de los derechos de los colombianos a una vivienda digna y a la propiedad con función social.",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "objeto",
+      "vivienda urbana",
+      "arrendamiento"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "low",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_2",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "2",
+    "title": "Definición del contrato de arrendamiento de vivienda urbana",
+    "content": "El contrato de arrendamiento de vivienda urbana es aquel por el cual dos partes se obligan recíprocamente, la una a conceder el goce de un inmueble urbano destinado a vivienda, total o parcialmente, y la otra a pagar por este goce un precio determinado.",
+    "summary": "El contrato de arrendamiento de vivienda urbana es aquel por el cual dos partes se obligan recíprocamente, la una a conceder el goce de un inmueble urbano destinado a vivienda, total o parcialmente, y la otra a pagar por este goce un precio determinado.",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "definición",
+      "canon",
+      "goce",
+      "inmueble"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_5",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "5",
+    "title": "Término del contrato",
+    "content": "El término del contrato de arrendamiento será el que acuerden las partes. A falta de estipulación expresa, se entenderá por el término de un (1) año.",
+    "summary": "La duración es la pactada; si no hay plazo expreso, se presume un año.",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion",
+      "renovacion"
+    ],
+    "keywords": [
+      "duración",
+      "plazo",
+      "término",
+      "un año"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_6",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "6",
+    "title": "Prórroga",
+    "content": "El contrato de arrendamiento de vivienda urbana se entenderá prorrogado en iguales condiciones y por el mismo término inicial, siempre que cada una de las partes haya cumplido con las obligaciones a su cargo y, que el arrendatario, se avenga a los reajustes de la renta autorizados en esta ley.",
+    "summary": "El contrato de arrendamiento de vivienda urbana se entenderá prorrogado en iguales condiciones y por el mismo término inicial, siempre que cada una de las partes haya cumplido con las obligaciones a su cargo y, que el arrendatario, se avenga a los reajustes de la renta autorizado",
+    "category": "arrendamiento",
+    "topics": [
+      "renovacion",
+      "terminacion"
+    ],
+    "keywords": [
+      "prórroga",
+      "renovación",
+      "tácita",
+      "reajuste"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_8",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "8",
+    "title": "Obligaciones del arrendador",
+    "content": "Son obligaciones del arrendador: 1) Entregar el inmueble en buen estado de servicio, seguridad y sanidad. 2) Mantener servicios, cosas y usos conexos en buen estado. 3) Si el contrato es escrito, suministrar copia con firmas originales en diez (10) días. 4) En propiedad horizontal, entregar copia de la parte normativa del reglamento. 5) Las demás del Capítulo II, Título XXVI, Libro 4 del Código Civil.",
+    "summary": "Son obligaciones del arrendador: 1) Entregar el inmueble en buen estado de servicio, seguridad y sanidad. 2) Mantener servicios, cosas y usos conexos en buen estado. 3) Si el contrato es escrito, suministrar copia con firmas originales en diez (10) días. 4) En propiedad horizonta",
+    "category": "arrendamiento",
+    "topics": [
+      "responsabilidad",
+      "garantias"
+    ],
+    "keywords": [
+      "arrendador",
+      "entrega",
+      "reparaciones",
+      "reglamento"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_9",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "9",
+    "title": "Obligaciones del arrendatario",
+    "content": "Son obligaciones del arrendatario: 1) Pagar el precio en el plazo estipulado. 2) Cuidar el inmueble y reparar daños imputables a mal uso o culpa. 3) Pagar servicios, usos conexos y expensas comunes según el contrato. 4) Cumplir reglamentos de propiedad horizontal. 5) Las demás del Capítulo III, Título XXVI, Libro 4 del Código Civil.",
+    "summary": "Son obligaciones del arrendatario: 1) Pagar el precio en el plazo estipulado. 2) Cuidar el inmueble y reparar daños imputables a mal uso o culpa. 3) Pagar servicios, usos conexos y expensas comunes según el contrato. 4) Cumplir reglamentos de propiedad horizontal. 5) Las demás de",
+    "category": "arrendamiento",
+    "topics": [
+      "incumplimiento",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "arrendatario",
+      "pago",
+      "cuidado",
+      "servicios públicos"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_16",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "16",
+    "title": "Prohibición de depósitos y cauciones reales",
+    "content": "En los contratos de arrendamiento para vivienda urbana no se podrán exigir depósitos en dinero efectivo u otra clase de cauciones reales, para garantizar el cumplimiento de las obligaciones que conforme a dichos contratos haya asumido el arrendatario. Tales garantías tampoco podrán estipularse indirectamente ni por interpuesta persona o pactarse en documentos distintos del contrato de arrendamiento.",
+    "summary": "Prohíbe exigir depósitos o cauciones reales al arrendatario en vivienda urbana.",
+    "category": "arrendamiento",
+    "topics": [
+      "garantias",
+      "multas"
+    ],
+    "keywords": [
+      "depósito",
+      "garantía",
+      "caución",
+      "prohibición"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_17",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "17",
+    "title": "Subarriendo y cesión",
+    "content": "El arrendatario no tiene la facultad de ceder el arriendo ni de subarrendar, a menos que medie autorización expresa del arrendador. En caso de contravención, el arrendador podrá dar por terminado el contrato y exigir la entrega del inmueble o celebrar un nuevo contrato con los usuarios reales.",
+    "summary": "El arrendatario no tiene la facultad de ceder el arriendo ni de subarrendar, a menos que medie autorización expresa del arrendador. En caso de contravención, el arrendador podrá dar por terminado el contrato y exigir la entrega del inmueble o celebrar un nuevo contrato con los us",
+    "category": "arrendamiento",
+    "topics": [
+      "cesion_derechos",
+      "terminacion"
+    ],
+    "keywords": [
+      "subarriendo",
+      "cesión",
+      "autorización",
+      "prohibición"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_18",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "18",
+    "title": "Renta de arrendamiento — tope legal",
+    "content": "El precio mensual del arrendamiento será fijado por las partes en moneda legal pero no podrá exceder el uno por ciento (1%) del valor comercial del inmueble o de la parte de él que se dé en arriendo. La estimación comercial no podrá exceder el equivalente a dos (2) veces el avalúo catastral vigente.",
+    "summary": "El canon mensual no puede superar el 1% del valor comercial del inmueble.",
+    "category": "arrendamiento",
+    "topics": [
+      "multas"
+    ],
+    "keywords": [
+      "canon",
+      "renta",
+      "tope",
+      "valor comercial",
+      "1%"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_20",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "20",
+    "title": "Reajuste del canon de arrendamiento",
+    "content": "Cada doce (12) meses de ejecución del contrato bajo un mismo precio, el arrendador podrá incrementar el canon hasta en una proporción que no sea superior al ciento por ciento (100%) del incremento del índice de precios al consumidor del año calendario inmediatamente anterior, siempre que el nuevo canon no exceda lo previsto en el artículo 18. El arrendador deberá informar el incremento y la fecha mediante servicio postal autorizado o notificación pactada en el contrato.",
+    "summary": "Cada doce (12) meses de ejecución del contrato bajo un mismo precio, el arrendador podrá incrementar el canon hasta en una proporción que no sea superior al ciento por ciento (100%) del incremento del índice de precios al consumidor del año calendario inmediatamente anterior, sie",
+    "category": "arrendamiento",
+    "topics": [
+      "renovacion",
+      "multas"
+    ],
+    "keywords": [
+      "reajuste",
+      "IPC",
+      "incremento",
+      "canon anual"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_22",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "22",
+    "title": "Terminación por parte del arrendador",
+    "content": "Causales de terminación unilateral del arrendador: mora en rentas o servicios; subarriendo o cesión sin autorización; conductas que afecten vecinos o actos delictivos; mejoras no autorizadas o destrucción del inmueble; violación del reglamento de propiedad horizontal; terminación en prórroga con preaviso de 3 meses e indemnización de 3 meses; terminación al vencimiento con preaviso de 3 meses por ocupación propia, demolición, compraventa u otras causales legales.",
+    "summary": "Causales de terminación unilateral del arrendador: mora en rentas o servicios; subarriendo o cesión sin autorización; conductas que afecten vecinos o actos delictivos; mejoras no autorizadas o destrucción del inmueble; violación del reglamento de propiedad horizontal; terminación",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "terminación",
+      "desahucio",
+      "preaviso",
+      "indemnización",
+      "mora"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_24",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "24",
+    "title": "Terminación por parte del arrendatario",
+    "content": "Causales de terminación unilateral del arrendatario: suspensión de servicios por acción del arrendador; conductas que afecten el disfrute del inmueble; desconocimiento de derechos legales o contractuales; terminación en prórroga con preaviso de 3 meses e indemnización de 3 meses; terminación al vencimiento con preaviso de 3 meses sin indemnización si solo invoca su voluntad.",
+    "summary": "Causales de terminación unilateral del arrendatario: suspensión de servicios por acción del arrendador; conductas que afecten el disfrute del inmueble; desconocimiento de derechos legales o contractuales; terminación en prórroga con preaviso de 3 meses e indemnización de 3 meses;",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "terminación anticipada",
+      "preaviso",
+      "indemnización",
+      "arrendatario"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_3",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "3",
+    "title": "Ámbito de aplicación",
+    "content": "Las disposiciones de esta ley se aplican a los contratos de arrendamiento de inmuebles urbanos destinados a vivienda. No se aplican a arrendamientos de inmuebles destinados a actividades comerciales, industriales, oficinas, hoteles, apartahoteles, ni a los regulados por normas especiales.",
+    "summary": "La Ley 820 aplica a vivienda urbana; arriendos comerciales se rigen principalmente por el Código Civil.",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "ámbito",
+      "vivienda",
+      "comercial",
+      "exclusión"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_10",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "10",
+    "title": "Derecho de preferencia del arrendatario",
+    "content": "Si el arrendador decide vender el inmueble arrendado, deberá notificar por escrito al arrendatario, quien tendrá derecho de preferencia para adquirirlo en igualdad de condiciones con terceros, dentro del término legal.",
+    "summary": "Si el arrendador decide vender el inmueble arrendado, deberá notificar por escrito al arrendatario, quien tendrá derecho de preferencia para adquirirlo en igualdad de condiciones con terceros, dentro del término legal.",
+    "category": "arrendamiento",
+    "topics": [
+      "cesion_derechos"
+    ],
+    "keywords": [
+      "preferencia",
+      "venta",
+      "notificación",
+      "arrendatario"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_12",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "12",
+    "title": "Reparaciones locativas",
+    "content": "Las reparaciones locativas serán de cargo del arrendatario. Se entiende por reparaciones locativas aquellas que exige el cuidado de la cosa arrendada y que, por regla general, corresponden al usuario, como pintura, estucado, vidrios rotos y similares.",
+    "summary": "Las reparaciones locativas serán de cargo del arrendatario. Se entiende por reparaciones locativas aquellas que exige el cuidado de la cosa arrendada y que, por regla general, corresponden al usuario, como pintura, estucado, vidrios rotos y similares.",
+    "category": "arrendamiento",
+    "topics": [
+      "responsabilidad",
+      "garantias"
+    ],
+    "keywords": [
+      "reparaciones locativas",
+      "mantenimiento",
+      "arrendatario",
+      "pintura"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_13",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "13",
+    "title": "Servicios públicos domiciliarios",
+    "content": "Salvo pacto expreso en contrario, el arrendatario deberá pagar los servicios públicos domiciliarios y las expensas comunes que correspondan al uso del inmueble arrendado.",
+    "summary": "Salvo pacto expreso en contrario, el arrendatario deberá pagar los servicios públicos domiciliarios y las expensas comunes que correspondan al uso del inmueble arrendado.",
+    "category": "arrendamiento",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "servicios públicos",
+      "expensas",
+      "pago",
+      "arrendatario"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_15",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "15",
+    "title": "Prohibición de cambiar cerraduras",
+    "content": "El arrendatario no podrá cambiar las cerraduras ni las llaves del inmueble arrendado sin autorización expresa del arrendador.",
+    "summary": "El arrendatario no podrá cambiar las cerraduras ni las llaves del inmueble arrendado sin autorización expresa del arrendador.",
+    "category": "arrendamiento",
+    "topics": [
+      "incumplimiento",
+      "terminacion"
+    ],
+    "keywords": [
+      "cerraduras",
+      "llaves",
+      "autorización",
+      "prohibición"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_19",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "19",
+    "title": "Intereses por mora en el pago",
+    "content": "En caso de mora en el pago de la renta o de los servicios a cargo del arrendatario, solo podrán causarse intereses en la forma y tasa que autorice la ley, sin que puedan pactarse intereses superiores a los máximos legales.",
+    "summary": "Los intereses moratorios en arrendamiento están limitados por la ley.",
+    "category": "arrendamiento",
+    "topics": [
+      "multas",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "mora",
+      "intereses",
+      "canon",
+      "tasa máxima"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_21",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "21",
+    "title": "Entrega tardía del inmueble",
+    "content": "Si el arrendador no entrega el inmueble en la fecha pactada, el arrendatario podrá exigir la entrega o pedir la rescisión del contrato con indemnización de perjuicios, conforme a las reglas del Código Civil.",
+    "summary": "Si el arrendador no entrega el inmueble en la fecha pactada, el arrendatario podrá exigir la entrega o pedir la rescisión del contrato con indemnización de perjuicios, conforme a las reglas del Código Civil.",
+    "category": "arrendamiento",
+    "topics": [
+      "incumplimiento",
+      "terminacion"
+    ],
+    "keywords": [
+      "entrega",
+      "mora del arrendador",
+      "rescisión",
+      "indemnización"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "ley820_23",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "23",
+    "title": "Terminación por mora del arrendatario",
+    "content": "El arrendador podrá dar por terminado el contrato cuando el arrendatario incurra en mora superior a un (1) mes en el pago del canon de arrendamiento o de los servicios públicos domiciliarios a su cargo, previo requerimiento si la ley lo exige.",
+    "summary": "La mora superior a un mes en canon o servicios es causal de terminación.",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "mora",
+      "un mes",
+      "terminación",
+      "canon impago"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=8738",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1973",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1973",
+    "title": "Contrato de arrendamiento",
+    "content": "Por el contrato de arrendamiento el arrendador se obliga a conceder al arrendatario el goce de una cosa por cierto tiempo a cambio de un precio determinado.",
+    "summary": "Por el contrato de arrendamiento el arrendador se obliga a conceder al arrendatario el goce de una cosa por cierto tiempo a cambio de un precio determinado.",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "arrendamiento",
+      "goce",
+      "precio",
+      "definición"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1987",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1987",
+    "title": "Destinación del inmueble arrendado",
+    "content": "El arrendatario no podrá emplear la cosa arrendada en un objeto distinto de aquel para que ha sido arrendada, sin el consentimiento del arrendador.",
+    "summary": "El arrendatario no podrá emplear la cosa arrendada en un objeto distinto de aquel para que ha sido arrendada, sin el consentimiento del arrendador.",
+    "category": "arrendamiento",
+    "topics": [
+      "incumplimiento",
+      "terminacion"
+    ],
+    "keywords": [
+      "destinación",
+      "uso",
+      "prohibición",
+      "consentimiento"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1993",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1993",
+    "title": "Reparaciones indispensables no locativas",
+    "content": "Las reparaciones indispensables no locativas serán de cargo del arrendador. Si no las hiciere, el arrendatario podrá hacerlas y descontar su importe de la renta, o pedir la rescisión del contrato.",
+    "summary": "Las reparaciones indispensables no locativas serán de cargo del arrendador. Si no las hiciere, el arrendatario podrá hacerlas y descontar su importe de la renta, o pedir la rescisión del contrato.",
+    "category": "arrendamiento",
+    "topics": [
+      "responsabilidad",
+      "garantias"
+    ],
+    "keywords": [
+      "reparaciones",
+      "arrendador",
+      "descuento",
+      "rescisión"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2003",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2003",
+    "title": "Restitución del inmueble al terminar el arriendo",
+    "content": "Terminado el arriendo, el arrendatario está obligado a restituir la cosa arrendada en el estado en que la recibió, salvo el deterioro proveniente del uso legítimo.",
+    "summary": "Terminado el arriendo, el arrendatario está obligado a restituir la cosa arrendada en el estado en que la recibió, salvo el deterioro proveniente del uso legítimo.",
+    "category": "arrendamiento",
+    "topics": [
+      "terminacion",
+      "garantias"
+    ],
+    "keywords": [
+      "restitución",
+      "entrega",
+      "estado del inmueble",
+      "deterioro"
+    ],
+    "contractTypeIds": [
+      "arrendamiento"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_22",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "22",
+    "title": "Contrato de trabajo",
+    "content": "El contrato de trabajo es aquel por el cual una persona natural se obliga a prestar un servicio personal a otra persona natural o jurídica, bajo la continuada dependencia o subordinación de la segunda y mediante remuneración.",
+    "summary": "El contrato de trabajo es aquel por el cual una persona natural se obliga a prestar un servicio personal a otra persona natural o jurídica, bajo la continuada dependencia o subordinación de la segunda y mediante remuneración.",
+    "category": "laboral",
+    "topics": [
+      "terminacion",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "contrato de trabajo",
+      "subordinación",
+      "dependencia",
+      "remuneración"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_23",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "23",
+    "title": "Formas del contrato de trabajo",
+    "content": "El contrato de trabajo puede celebrarse por tiempo determinado, por el tiempo que dure la realización de una obra o labor determinada, por un período de prueba, o por tiempo indefinido.",
+    "summary": "El contrato de trabajo puede celebrarse por tiempo determinado, por el tiempo que dure la realización de una obra o labor determinada, por un período de prueba, o por tiempo indefinido.",
+    "category": "laboral",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "término fijo",
+      "obra o labor",
+      "indefinido",
+      "periodo de prueba"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_46",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "46",
+    "title": "Salario — definición",
+    "content": "Se entiende por salario toda retribución en dinero o en especie, susceptible de valoración en dinero, que recibe el trabajador del empleador como contraprestación directa del servicio, sea cual fuere la forma o denominación que se adopte.",
+    "summary": "Se entiende por salario toda retribución en dinero o en especie, susceptible de valoración en dinero, que recibe el trabajador del empleador como contraprestación directa del servicio, sea cual fuere la forma o denominación que se adopte.",
+    "category": "laboral",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "salario",
+      "remuneración",
+      "prestaciones",
+      "contraprestación"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_47",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "47",
+    "title": "Salario mínimo",
+    "content": "El salario no podrá ser inferior al mínimo legal vigente. El salario mínimo es irrenunciable y las convenciones en contrario no producirán efectos.",
+    "summary": "El salario no podrá ser inferior al mínimo legal vigente. El salario mínimo es irrenunciable y las convenciones en contrario no producirán efectos.",
+    "category": "laboral",
+    "topics": [
+      "incumplimiento",
+      "multas"
+    ],
+    "keywords": [
+      "salario mínimo",
+      "irrenunciable",
+      "ilegal"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_58",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "58",
+    "title": "Jornada ordinaria de trabajo",
+    "content": "La jornada ordinaria de trabajo es la pactada por las partes, pero no podrá exceder de la máxima legal. La jornada máxima legal es de cuarenta y ocho (48) horas semanales, en día y noche, distribuidas en la forma prevista en la ley.",
+    "summary": "La jornada ordinaria de trabajo es la pactada por las partes, pero no podrá exceder de la máxima legal. La jornada máxima legal es de cuarenta y ocho (48) horas semanales, en día y noche, distribuidas en la forma prevista en la ley.",
+    "category": "laboral",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "jornada",
+      "horas extras",
+      "48 horas",
+      "límite legal"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_77",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "77",
+    "title": "Período de prueba",
+    "content": "El contrato de trabajo puede estipularse por un período de prueba, que en ningún caso podrá exceder de dos (2) meses. En los contratos de trabajo a término fijo inferior a un año, el período de prueba no podrá exceder de un quinto del término inicial, sin sobrepasar dos (2) meses.",
+    "summary": "El contrato de trabajo puede estipularse por un período de prueba, que en ningún caso podrá exceder de dos (2) meses. En los contratos de trabajo a término fijo inferior a un año, el período de prueba no podrá exceder de un quinto del término inicial, sin sobrepasar dos (2) meses",
+    "category": "laboral",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "periodo de prueba",
+      "dos meses",
+      "terminación sin justa causa"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_78",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "78",
+    "title": "Terminación en período de prueba",
+    "content": "Durante el período de prueba cualquiera de las partes puede terminar unilateralmente el contrato de trabajo, sin previo aviso y sin indemnización alguna.",
+    "summary": "Durante el período de prueba cualquiera de las partes puede terminar unilateralmente el contrato de trabajo, sin previo aviso y sin indemnización alguna.",
+    "category": "laboral",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "periodo de prueba",
+      "terminación unilateral",
+      "sin indemnización"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_61",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "61",
+    "title": "Terminación del contrato de trabajo",
+    "content": "El contrato de trabajo termina: 1) Por mutuo consentimiento. 2) Por expiración del plazo fijo pactado. 3) Por terminación de la obra o labor contratada. 4) Por liquidación o clausura definitiva de los negocios del empleador. 5) Por la suspensión de actividades por parte del empleador por más de ciento veinte (120) días. 6) Por sentencia ejecutoriada. 7) Por decisión unilateral en los casos de los artículos 62 y 64.",
+    "summary": "El contrato de trabajo termina: 1) Por mutuo consentimiento. 2) Por expiración del plazo fijo pactado. 3) Por terminación de la obra o labor contratada. 4) Por liquidación o clausura definitiva de los negocios del empleador. 5) Por la suspensión de actividades por parte del emple",
+    "category": "laboral",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "terminación",
+      "causales",
+      "mutuo acuerdo",
+      "plazo fijo"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_62",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "62",
+    "title": "Terminación unilateral por el empleador con justa causa",
+    "content": "El empleador podrá dar por terminado el contrato de trabajo en cualquier momento y sin previo aviso, mediante decisión unilateral, cuando el trabajador incurra en alguna de las faltas graves consagradas en la ley, entre ellas: engaño con certificados falsos, violencia, daño material grave, revelación de secretos, mala conducta grave, incumplimiento grave de obligaciones, entre otras causales taxativas.",
+    "summary": "El empleador podrá dar por terminado el contrato de trabajo en cualquier momento y sin previo aviso, mediante decisión unilateral, cuando el trabajador incurra en alguna de las faltas graves consagradas en la ley, entre ellas: engaño con certificados falsos, violencia, daño mater",
+    "category": "laboral",
+    "topics": [
+      "terminacion",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "justa causa",
+      "despido",
+      "faltas graves",
+      "empleador"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_64",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "64",
+    "title": "Terminación unilateral por el trabajador con justa causa",
+    "content": "El trabajador podrá dar por terminado el contrato de trabajo en cualquier momento y sin previo aviso, cuando el empleador incurra en faltas graves como: engaño, violencia, disminución del salario, incumplimiento grave de obligaciones, riesgo inminente para la salud o seguridad, entre otras causales legales.",
+    "summary": "El trabajador podrá dar por terminado el contrato de trabajo en cualquier momento y sin previo aviso, cuando el empleador incurra en faltas graves como: engaño, violencia, disminución del salario, incumplimiento grave de obligaciones, riesgo inminente para la salud o seguridad, e",
+    "category": "laboral",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "justa causa",
+      "renuncia",
+      "trabajador",
+      "incumplimiento empleador"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_186",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "186",
+    "title": "Vacaciones",
+    "content": "Todo trabajador tiene derecho a quince (15) días hábiles consecutivos de vacaciones remuneradas por cada año de servicios o proporcionalmente por fracciones. El derecho a vacaciones no es renunciable.",
+    "summary": "Todo trabajador tiene derecho a quince (15) días hábiles consecutivos de vacaciones remuneradas por cada año de servicios o proporcionalmente por fracciones. El derecho a vacaciones no es renunciable.",
+    "category": "laboral",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "vacaciones",
+      "15 días",
+      "derecho irrenunciable"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_249",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "249",
+    "title": "Indemnización por terminación sin justa causa",
+    "content": "Cuando el empleador termine el contrato de trabajo sin justa causa comprobada, debe pagar al trabajador indemnización según la duración del vínculo y el tipo de contrato, conforme a las tablas y reglas del CST para contratos a término indefinido y fijo.",
+    "summary": "La terminación sin justa causa obliga al empleador a indemnizar al trabajador según el CST.",
+    "category": "laboral",
+    "topics": [
+      "terminacion",
+      "responsabilidad",
+      "multas"
+    ],
+    "keywords": [
+      "indemnización",
+      "despido",
+      "sin justa causa",
+      "preaviso"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_15",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "15",
+    "title": "Principio de favorabilidad",
+    "content": "En caso de conflicto o duda sobre la aplicación de normas vigentes de trabajo, prevalece la más favorable al trabajador. Las normas del CST son de orden público y su renuncia no produce efectos.",
+    "summary": "En caso de conflicto o duda sobre la aplicación de normas vigentes de trabajo, prevalece la más favorable al trabajador. Las normas del CST son de orden público y su renuncia no produce efectos.",
+    "category": "laboral",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "favorabilidad",
+      "orden público",
+      "irrenunciable",
+      "cláusulas abusivas"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_57",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "57",
+    "title": "Prohibición de pactar a favor del empleador",
+    "content": "Es nulo todo pacto, cláusula o condición que suprima o disminuya los derechos mínimos consagrados en la ley laboral a favor del trabajador.",
+    "summary": "Es nulo todo pacto, cláusula o condición que suprima o disminuya los derechos mínimos consagrados en la ley laboral a favor del trabajador.",
+    "category": "laboral",
+    "topics": [
+      "incumplimiento",
+      "multas"
+    ],
+    "keywords": [
+      "nulidad",
+      "cláusula abusiva",
+      "derechos mínimos"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cst_81",
+    "country": "CO",
+    "codeName": "Código Sustantivo del Trabajo",
+    "normType": "codigo",
+    "article": "81",
+    "title": "Estabilidad reforzada — fueros",
+    "content": "No podrá darse por terminado unilateralmente el contrato de trabajo a trabajadores amparados por fuero de estabilidad reforzada (embarazo, lactancia, fuero sindical, entre otros), salvo autorización de la autoridad competente o justa causa debidamente comprobada.",
+    "summary": "No podrá darse por terminado unilateralmente el contrato de trabajo a trabajadores amparados por fuero de estabilidad reforzada (embarazo, lactancia, fuero sindical, entre otros), salvo autorización de la autoridad competente o justa causa debidamente comprobada.",
+    "category": "laboral",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "fuero",
+      "estabilidad",
+      "embarazo",
+      "sindical",
+      "autorización"
+    ],
+    "contractTypeIds": [
+      "laboral"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1583",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1494",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1494",
+    "title": "Fuentes de las obligaciones",
+    "content": "Todo contrato legalmente celebrado es ley para los contratantes, y no puede ser invalidado sino por su consentimiento mutuo o por causas legales.",
+    "summary": "Todo contrato legalmente celebrado es ley para los contratantes, y no puede ser invalidado sino por su consentimiento mutuo o por causas legales.",
+    "category": "obligaciones",
+    "topics": [
+      "incumplimiento",
+      "terminacion"
+    ],
+    "keywords": [
+      "contrato",
+      "ley entre partes",
+      "obligaciones",
+      "consentimiento"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1602",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1602",
+    "title": "Contrato",
+    "content": "Contrato o convención es un acto por el cual una parte se obliga para con otra a dar, hacer o no hacer alguna cosa. Cada parte es acreedora de lo que la otra se obliga; y recíprocamente obligada a dar, hacer o no hacer lo que promete.",
+    "summary": "Contrato o convención es un acto por el cual una parte se obliga para con otra a dar, hacer o no hacer alguna cosa. Cada parte es acreedora de lo que la otra se obliga; y recíprocamente obligada a dar, hacer o no hacer lo que promete.",
+    "category": "obligaciones",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "contrato",
+      "dar",
+      "hacer",
+      "no hacer",
+      "obligación"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1603",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1603",
+    "title": "Consentimiento",
+    "content": "Para que haya contrato se requiere el consentimiento de las partes. El consentimiento no se presume; debe ser expreso o tácito, libre de vicios y dado por personas capaces.",
+    "summary": "Para que haya contrato se requiere el consentimiento de las partes. El consentimiento no se presume; debe ser expreso o tácito, libre de vicios y dado por personas capaces.",
+    "category": "obligaciones",
+    "topics": [],
+    "keywords": [
+      "consentimiento",
+      "capacidad",
+      "vicios",
+      "nulidad"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1613",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1613",
+    "title": "Objeto lícito",
+    "content": "El objeto del contrato debe ser lícito. Es ilícito el objeto cuando se opone a las leyes imperativas, a la moral o a las buenas costumbres.",
+    "summary": "El objeto del contrato debe ser lícito. Es ilícito el objeto cuando se opone a las leyes imperativas, a la moral o a las buenas costumbres.",
+    "category": "obligaciones",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "objeto lícito",
+      "nulidad",
+      "ilegalidad"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1617",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1617",
+    "title": "Causa lícita",
+    "content": "La causa del contrato debe ser lícita. No hay causa lícita en las convenciones sobre objetos o hechos ilícitos, ni en las que se contraigan sin otro motivo que el de engañar a terceros.",
+    "summary": "La causa del contrato debe ser lícita. No hay causa lícita en las convenciones sobre objetos o hechos ilícitos, ni en las que se contraigan sin otro motivo que el de engañar a terceros.",
+    "category": "obligaciones",
+    "topics": [],
+    "keywords": [
+      "causa",
+      "ilicitud",
+      "nulidad"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1523",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1523",
+    "title": "Mora del deudor",
+    "content": "El deudor en mora responde por la imposibilidad de la prestación, a menos que pruebe que ésta se debió a caso fortuito o fuerza mayor sin culpa suya.",
+    "summary": "El deudor en mora responde por la imposibilidad de la prestación, a menos que pruebe que ésta se debió a caso fortuito o fuerza mayor sin culpa suya.",
+    "category": "obligaciones",
+    "topics": [
+      "incumplimiento",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "mora",
+      "incumplimiento",
+      "fuerza mayor",
+      "caso fortuito"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1524",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1524",
+    "title": "Cláusula penal",
+    "content": "La cláusula penal es aquella en que una persona, para asegurar el cumplimiento de una obligación, se sujeta a una pena en caso de no ejecutar lo prometido o de retardar su ejecución.",
+    "summary": "La cláusula penal es aquella en que una persona, para asegurar el cumplimiento de una obligación, se sujeta a una pena en caso de no ejecutar lo prometido o de retardar su ejecución.",
+    "category": "obligaciones",
+    "topics": [
+      "multas",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "cláusula penal",
+      "multa",
+      "sanción",
+      "incumplimiento"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1546",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1546",
+    "title": "Resolución por incumplimiento",
+    "content": "En los contratos bilaterales, la parte que cumplió puede pedir la resolución del contrato o el cumplimiento, con indemnización de perjuicios en ambos casos, cuando la otra parte no cumpliere lo pactado.",
+    "summary": "En los contratos bilaterales, la parte que cumplió puede pedir la resolución del contrato o el cumplimiento, con indemnización de perjuicios en ambos casos, cuando la otra parte no cumpliere lo pactado.",
+    "category": "obligaciones",
+    "topics": [
+      "incumplimiento",
+      "terminacion",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "resolución",
+      "cumplimiento",
+      "indemnización",
+      "incumplimiento"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2069",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2069",
+    "title": "Prestación de servicios",
+    "content": "Por el contrato de prestación de servicios el contratista se obliga, sin subordinación, a prestar a otra persona un servicio por cierto tiempo o para la ejecución de cierta labor, a cambio de un precio determinado o proporcional.",
+    "summary": "Define el contrato civil de prestación de servicios sin subordinación laboral.",
+    "category": "prestacion_servicios",
+    "topics": [
+      "terminacion",
+      "cesion_derechos"
+    ],
+    "keywords": [
+      "prestación de servicios",
+      "contratista",
+      "sin subordinación",
+      "honorarios"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2070",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2070",
+    "title": "Obligaciones del contratista",
+    "content": "El contratista debe ejecutar personalmente la labor o servicio, salvo autorización del contratante para delegarla. Debe emplear el cuidado de un buen padre de familia y responder por culpa leve.",
+    "summary": "El contratista debe ejecutar personalmente la labor o servicio, salvo autorización del contratante para delegarla. Debe emplear el cuidado de un buen padre de familia y responder por culpa leve.",
+    "category": "prestacion_servicios",
+    "topics": [
+      "responsabilidad",
+      "cesion_derechos"
+    ],
+    "keywords": [
+      "contratista",
+      "ejecución personal",
+      "subcontratación",
+      "culpa leve"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2071",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2071",
+    "title": "Terminación del contrato de prestación de servicios",
+    "content": "El contratante puede dar por terminado el contrato en cualquier tiempo, indemnizando al contratista en la proporción correspondiente al trabajo ejecutado y al daño que la terminación anticipada le cause.",
+    "summary": "El contratante puede dar por terminado el contrato en cualquier tiempo, indemnizando al contratista en la proporción correspondiente al trabajo ejecutado y al daño que la terminación anticipada le cause.",
+    "category": "prestacion_servicios",
+    "topics": [
+      "terminacion",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "terminación anticipada",
+      "indemnización",
+      "contratante"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2072",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2072",
+    "title": "Muerte del contratista",
+    "content": "Si el contrato es de servicios personales y muere el contratista, el contrato termina. Si es de obra o labor determinada, los herederos deben continuarla si es posible.",
+    "summary": "Si el contrato es de servicios personales y muere el contratista, el contrato termina. Si es de obra o labor determinada, los herederos deben continuarla si es posible.",
+    "category": "prestacion_servicios",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "muerte",
+      "servicios personales",
+      "herederos"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2195",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2195",
+    "title": "Responsabilidad contractual",
+    "content": "Todo daño que pueda imputarse a una persona, en virtud de dolo, culpa o negligencia, debe ser reparado por quien lo causó.",
+    "summary": "Todo daño que pueda imputarse a una persona, en virtud de dolo, culpa o negligencia, debe ser reparado por quien lo causó.",
+    "category": "obligaciones",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "responsabilidad",
+      "daños",
+      "dolo",
+      "culpa",
+      "indemnización"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1620",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1620",
+    "title": "Interpretación de los contratos",
+    "content": "Cuando la intención de los contratantes no conste de modo claro en el instrumento, se interpretará el contrato según las reglas generales de interpretación, atendiendo al sentido natural de las palabras y al objeto de la convención.",
+    "summary": "Cuando la intención de los contratantes no conste de modo claro en el instrumento, se interpretará el contrato según las reglas generales de interpretación, atendiendo al sentido natural de las palabras y al objeto de la convención.",
+    "category": "obligaciones",
+    "topics": [],
+    "keywords": [
+      "interpretación",
+      "ambigüedad",
+      "alcance",
+      "intención"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1625",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1625",
+    "title": "Contratos de adhesión",
+    "content": "En los contratos de adhesión prevalece la interpretación más favorable al adherente cuando existan cláusulas ambiguas o contradictorias.",
+    "summary": "En contratos de adhesión, las dudas se interpretan a favor del adherente.",
+    "category": "obligaciones",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "adhesión",
+      "interpretación",
+      "cláusulas ambiguas"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1858",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1858",
+    "title": "Contrato de compraventa",
+    "content": "Por el contrato de compraventa uno de los contratantes se obliga a dar una cosa y el otro a pagarla en dinero o signo que lo represente.",
+    "summary": "Por el contrato de compraventa uno de los contratantes se obliga a dar una cosa y el otro a pagarla en dinero o signo que lo represente.",
+    "category": "compraventa",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "compraventa",
+      "precio",
+      "entrega",
+      "definición"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1861",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1861",
+    "title": "Perfeccionamiento de la compraventa",
+    "content": "La compraventa se perfecciona desde que las partes se ponen de acuerdo sobre la cosa y el precio, aunque no haya entrega ni pago.",
+    "summary": "La compraventa se perfecciona desde que las partes se ponen de acuerdo sobre la cosa y el precio, aunque no haya entrega ni pago.",
+    "category": "compraventa",
+    "topics": [],
+    "keywords": [
+      "perfeccionamiento",
+      "consentimiento",
+      "precio"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1864",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1864",
+    "title": "Obligación de saneamiento",
+    "content": "El vendedor está obligado al saneamiento por evicción y por vicios redhibitorios, salvo pacto en contrario que no exonere de dolo o culpa grave.",
+    "summary": "El vendedor está obligado al saneamiento por evicción y por vicios redhibitorios, salvo pacto en contrario que no exonere de dolo o culpa grave.",
+    "category": "compraventa",
+    "topics": [
+      "garantias",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "saneamiento",
+      "evicción",
+      "vicios",
+      "garantía"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1867",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1867",
+    "title": "Vicios redhibitorios",
+    "content": "El vendedor responde de los vicios ocultos de la cosa vendida que la hagan impropia para el uso a que se destina, o que disminuyan de tal modo ese uso que, de haberlos conocido el comprador, no la habría adquirido o habría dado menos precio.",
+    "summary": "Responsabilidad por vicios ocultos que afecten el uso o el valor de lo vendido.",
+    "category": "compraventa",
+    "topics": [
+      "garantias",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "vicios ocultos",
+      "redhibición",
+      "garantía",
+      "defectos"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1870",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1870",
+    "title": "Plazo para reclamar vicios",
+    "content": "La acción redhibitoria prescribe en seis (6) meses contados desde la entrega de la cosa vendida, salvo que el vendedor haya conocido los vicios y no los haya declarado.",
+    "summary": "La acción redhibitoria prescribe en seis (6) meses contados desde la entrega de la cosa vendida, salvo que el vendedor haya conocido los vicios y no los haya declarado.",
+    "category": "compraventa",
+    "topics": [
+      "garantias"
+    ],
+    "keywords": [
+      "prescripción",
+      "6 meses",
+      "vicios",
+      "plazo"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1873",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1873",
+    "title": "Entrega de la cosa vendida",
+    "content": "El vendedor debe entregar la cosa vendida en el tiempo, lugar y forma convenidos. Si no hay estipulación, rigen las reglas generales sobre obligaciones de dar.",
+    "summary": "El vendedor debe entregar la cosa vendida en el tiempo, lugar y forma convenidos. Si no hay estipulación, rigen las reglas generales sobre obligaciones de dar.",
+    "category": "compraventa",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "entrega",
+      "plazo",
+      "lugar",
+      "obligación"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1876",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1876",
+    "title": "Pago del precio",
+    "content": "El comprador debe pagar el precio en el tiempo y lugar convenidos. A falta de convenio, el pago debe hacerse al entregarse la cosa.",
+    "summary": "El comprador debe pagar el precio en el tiempo y lugar convenidos. A falta de convenio, el pago debe hacerse al entregarse la cosa.",
+    "category": "compraventa",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "precio",
+      "pago",
+      "mora",
+      "entrega"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1880",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1880",
+    "title": "Transferencia de la propiedad",
+    "content": "La propiedad de la cosa mueble se transfiere al comprador por la tradición; en inmuebles, además se requiere el cumplimiento de las solemnidades legales.",
+    "summary": "La propiedad de la cosa mueble se transfiere al comprador por la tradición; en inmuebles, además se requiere el cumplimiento de las solemnidades legales.",
+    "category": "compraventa",
+    "topics": [],
+    "keywords": [
+      "tradición",
+      "propiedad",
+      "mueble",
+      "inmueble",
+      "transferencia"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1883",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1883",
+    "title": "Riesgo de la cosa",
+    "content": "El riesgo de la cosa vendida corre a cargo del comprador desde el perfeccionamiento del contrato, si la entrega se ha efectuado o el comprador ha sido constituido en mora de recibir.",
+    "summary": "El riesgo de la cosa vendida corre a cargo del comprador desde el perfeccionamiento del contrato, si la entrega se ha efectuado o el comprador ha sido constituido en mora de recibir.",
+    "category": "compraventa",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "riesgo",
+      "perdida",
+      "entrega",
+      "mora del comprador"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1891",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1891",
+    "title": "Resolución de la compraventa",
+    "content": "La compraventa puede resolverse por incumplimiento de las obligaciones esenciales de dar la cosa o pagar el precio, conforme a las reglas generales sobre contratos bilaterales.",
+    "summary": "La compraventa puede resolverse por incumplimiento de las obligaciones esenciales de dar la cosa o pagar el precio, conforme a las reglas generales sobre contratos bilaterales.",
+    "category": "compraventa",
+    "topics": [
+      "terminacion",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "resolución",
+      "incumplimiento",
+      "precio",
+      "entrega"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1895",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1895",
+    "title": "Pacto comisorio",
+    "content": "Las partes pueden pactar que el contrato se resuelva de pleno derecho por el incumplimiento de una obligación, sin necesidad de demanda judicial, en los términos permitidos por la ley.",
+    "summary": "Las partes pueden pactar que el contrato se resuelva de pleno derecho por el incumplimiento de una obligación, sin necesidad de demanda judicial, en los términos permitidos por la ley.",
+    "category": "compraventa",
+    "topics": [
+      "terminacion",
+      "multas"
+    ],
+    "keywords": [
+      "pacto comisorio",
+      "resolución automática",
+      "incumplimiento"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1901",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1901",
+    "title": "Compraventa mercantil — aplicación supletoria",
+    "content": "En la compraventa mercantil se aplican las normas del Código de Comercio y, en lo no previsto, las del Código Civil.",
+    "summary": "En la compraventa mercantil se aplican las normas del Código de Comercio y, en lo no previsto, las del Código Civil.",
+    "category": "compraventa",
+    "topics": [],
+    "keywords": [
+      "comercio",
+      "mercantil",
+      "supletoriedad"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "com_772",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "772",
+    "title": "Compraventa mercantil",
+    "content": "Es compraventa mercantil la que se verifica entre comerciantes, por cosas que se relacionan con el giro de sus negocios, o la que por su naturaleza o por las circunstancias de las partes debe reputarse mercantil.",
+    "summary": "Es compraventa mercantil la que se verifica entre comerciantes, por cosas que se relacionan con el giro de sus negocios, o la que por su naturaleza o por las circunstancias de las partes debe reputarse mercantil.",
+    "category": "compraventa",
+    "topics": [],
+    "keywords": [
+      "compraventa mercantil",
+      "comerciante",
+      "giro del negocio"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "com_773",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "773",
+    "title": "Obligaciones en compraventa mercantil",
+    "content": "En la compraventa mercantil el vendedor debe entregar la cosa vendida y el comprador pagar el precio en los términos convenidos; la mora en cualquiera de las obligaciones genera responsabilidad conforme al Código de Comercio.",
+    "summary": "En la compraventa mercantil el vendedor debe entregar la cosa vendida y el comprador pagar el precio en los términos convenidos; la mora en cualquiera de las obligaciones genera responsabilidad conforme al Código de Comercio.",
+    "category": "compraventa",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "entrega",
+      "pago",
+      "mora",
+      "mercantil"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1480_37",
+    "country": "CO",
+    "codeName": "Ley 1480 de 2011 (Estatuto del Consumidor)",
+    "normType": "ley",
+    "article": "37",
+    "title": "Información veraz al consumidor",
+    "content": "El proveedor deberá suministrar al consumidor información clara, veraz, suficiente, oportuna y verificable sobre los bienes y servicios ofrecidos, de manera que permita tomar decisiones adecuadas de consumo.",
+    "summary": "El proveedor deberá suministrar al consumidor información clara, veraz, suficiente, oportuna y verificable sobre los bienes y servicios ofrecidos, de manera que permita tomar decisiones adecuadas de consumo.",
+    "category": "compraventa",
+    "topics": [
+      "incumplimiento",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "consumidor",
+      "información",
+      "publicidad engañosa",
+      "proveedor"
+    ],
+    "contractTypeIds": [
+      "compraventa"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=17442",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_1",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012",
+    "normType": "ley",
+    "article": "1",
+    "title": "Objeto — protección de datos personales",
+    "content": "La presente ley tiene por objeto desarrollar el derecho constitucional que tienen todas las personas a conocer, actualizar y rectificar las informaciones que se hayan recogido sobre ellas en bases de datos o archivos, y los demás derechos, libertades y garantías constitucionales a que se refiere el artículo 15 de la Constitución Política.",
+    "summary": "La presente ley tiene por objeto desarrollar el derecho constitucional que tienen todas las personas a conocer, actualizar y rectificar las informaciones que se hayan recogido sobre ellas en bases de datos o archivos, y los demás derechos, libertades y garantías constitucionales ",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos",
+      "confidencialidad"
+    ],
+    "keywords": [
+      "datos personales",
+      "habeas data",
+      "privacidad"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_4",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012",
+    "normType": "ley",
+    "article": "4",
+    "title": "Definición de dato personal",
+    "content": "Dato personal es cualquier información vinculada o que pueda asociarse a una o varias personas naturales determinadas o determinables.",
+    "summary": "Dato personal es cualquier información vinculada o que pueda asociarse a una o varias personas naturales determinadas o determinables.",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos",
+      "confidencialidad"
+    ],
+    "keywords": [
+      "dato personal",
+      "información",
+      "identificación"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_8",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012",
+    "normType": "ley",
+    "article": "8",
+    "title": "Deber de información al titular",
+    "content": "El responsable del tratamiento deberá informar al titular de los datos la existencia de la política de tratamiento y la forma de acceder a ella, así como la finalidad del tratamiento y los derechos que le asisten.",
+    "summary": "El responsable del tratamiento deberá informar al titular de los datos la existencia de la política de tratamiento y la forma de acceder a ella, así como la finalidad del tratamiento y los derechos que le asisten.",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos"
+    ],
+    "keywords": [
+      "aviso de privacidad",
+      "titular",
+      "tratamiento",
+      "autorización"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_9",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012",
+    "normType": "ley",
+    "article": "9",
+    "title": "Autorización del titular",
+    "content": "Sin perjuicio de las excepciones previstas en la ley, se requiere autorización previa, expresa e informada del titular para el tratamiento de datos personales.",
+    "summary": "Sin perjuicio de las excepciones previstas en la ley, se requiere autorización previa, expresa e informada del titular para el tratamiento de datos personales.",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos",
+      "confidencialidad"
+    ],
+    "keywords": [
+      "autorización",
+      "consentimiento",
+      "tratamiento de datos"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_17",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012",
+    "normType": "ley",
+    "article": "17",
+    "title": "Deber de seguridad",
+    "content": "El responsable y el encargado del tratamiento deberán adoptar medidas necesarias para garantizar la seguridad de los registros y evitar su adulteración, pérdida, consulta, uso o acceso no autorizado.",
+    "summary": "El responsable y el encargado del tratamiento deberán adoptar medidas necesarias para garantizar la seguridad de los registros y evitar su adulteración, pérdida, consulta, uso o acceso no autorizado.",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "seguridad",
+      "encargado",
+      "responsable",
+      "filtración"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  },
+  {
+    "id": "ley256_1",
+    "country": "CO",
+    "codeName": "Ley 256 de 1996",
+    "normType": "ley",
+    "article": "1",
+    "title": "Competencia desleal — objeto",
+    "content": "Se entiende por competencia desleal todo acto de competencia contrario a las buenas costumbres mercantiles, a la buena fe o a los usos honestos en materia industrial o comercial.",
+    "summary": "Se entiende por competencia desleal todo acto de competencia contrario a las buenas costumbres mercantiles, a la buena fe o a los usos honestos en materia industrial o comercial.",
+    "category": "confidencialidad",
+    "topics": [
+      "confidencialidad",
+      "propiedad_intelectual"
+    ],
+    "keywords": [
+      "competencia desleal",
+      "secretos empresariales",
+      "buena fe"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=5248",
+    "status": "vigente"
+  },
+  {
+    "id": "ley256_2",
+    "country": "CO",
+    "codeName": "Ley 256 de 1996",
+    "normType": "ley",
+    "article": "2",
+    "title": "Violación de secretos",
+    "content": "Constituye acto de competencia desleal la violación o revelación de secretos de empresa, así como la apropiación o divulgación no autorizada de información confidencial de la que se haya tenido conocimiento con ocasión del contrato o de la relación comercial.",
+    "summary": "Revelar secretos empresariales obtenidos en una relación contractual puede ser competencia desleal.",
+    "category": "confidencialidad",
+    "topics": [
+      "confidencialidad"
+    ],
+    "keywords": [
+      "secreto empresarial",
+      "revelación",
+      "NDA",
+      "información confidencial"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=5248",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1602_conf",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1602",
+    "title": "Fuerza obligatoria del contrato (NDA)",
+    "content": "Contrato o convención es un acto por el cual una parte se obliga para con otra a dar, hacer o no hacer alguna cosa. Las obligaciones de no divulgar información pactadas en un NDA son exigibles conforme a las reglas generales del contrato.",
+    "summary": "Contrato o convención es un acto por el cual una parte se obliga para con otra a dar, hacer o no hacer alguna cosa. Las obligaciones de no divulgar información pactadas en un NDA son exigibles conforme a las reglas generales del contrato.",
+    "category": "confidencialidad",
+    "topics": [
+      "confidencialidad",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "no hacer",
+      "obligación de guardar secreto",
+      "exigibilidad"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1524_conf",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1524",
+    "title": "Cláusula penal por divulgación",
+    "content": "Las partes pueden pactar cláusula penal por el incumplimiento de obligaciones de confidencialidad, sujeta a las reglas generales sobre proporcionalidad y reducción judicial en caso de exceso.",
+    "summary": "Las partes pueden pactar cláusula penal por el incumplimiento de obligaciones de confidencialidad, sujeta a las reglas generales sobre proporcionalidad y reducción judicial en caso de exceso.",
+    "category": "confidencialidad",
+    "topics": [
+      "multas",
+      "confidencialidad"
+    ],
+    "keywords": [
+      "cláusula penal",
+      "multa",
+      "divulgación",
+      "sanción"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2195_conf",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2195",
+    "title": "Indemnización por daños por divulgación",
+    "content": "Todo daño imputable por culpa o dolo debe ser reparado. La divulgación indebida de información confidencial puede generar indemnización de perjuicios patrimoniales y, según el caso, medidas cautelares.",
+    "summary": "Todo daño imputable por culpa o dolo debe ser reparado. La divulgación indebida de información confidencial puede generar indemnización de perjuicios patrimoniales y, según el caso, medidas cautelares.",
+    "category": "confidencialidad",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "indemnización",
+      "daños",
+      "perjuicios",
+      "divulgación"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_18",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012",
+    "normType": "ley",
+    "article": "18",
+    "title": "Registro de bases de datos",
+    "content": "Las bases de datos sujetas a tratamiento de datos personales deben inscribirse en el Registro Nacional de Bases de Datos, salvo las excepciones legales.",
+    "summary": "Las bases de datos sujetas a tratamiento de datos personales deben inscribirse en el Registro Nacional de Bases de Datos, salvo las excepciones legales.",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos"
+    ],
+    "keywords": [
+      "RNBD",
+      "registro",
+      "base de datos"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  },
+  {
+    "id": "ley527_47",
+    "country": "CO",
+    "codeName": "Ley 527 de 1999",
+    "normType": "ley",
+    "article": "47",
+    "title": "Mensajes de datos como prueba",
+    "content": "Los mensajes de datos tendrán el mismo valor probatorio que los documentos escritos, siempre que se pueda atribuir de manera razonable su autoría y se garantice su integridad.",
+    "summary": "Los mensajes de datos tendrán el mismo valor probatorio que los documentos escritos, siempre que se pueda atribuir de manera razonable su autoría y se garantice su integridad.",
+    "category": "confidencialidad",
+    "topics": [
+      "confidencialidad"
+    ],
+    "keywords": [
+      "firma electrónica",
+      "mensaje de datos",
+      "prueba",
+      "integridad"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=6383",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1620_conf",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1620",
+    "title": "Alcance de la obligación de confidencialidad",
+    "content": "En caso de duda sobre el alcance de una cláusula de confidencialidad, se interpretará conforme a la intención de las partes y al objeto del contrato, delimitando la información protegida y el plazo de vigencia.",
+    "summary": "En caso de duda sobre el alcance de una cláusula de confidencialidad, se interpretará conforme a la intención de las partes y al objeto del contrato, delimitando la información protegida y el plazo de vigencia.",
+    "category": "confidencialidad",
+    "topics": [],
+    "keywords": [
+      "alcance",
+      "interpretación",
+      "plazo",
+      "información protegida"
+    ],
+    "contractTypeIds": [
+      "confidencialidad"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley23_1",
+    "country": "CO",
+    "codeName": "Ley 23 de 1982",
+    "normType": "ley",
+    "article": "1",
+    "title": "Derecho de autor — protección",
+    "content": "Quedan amparadas por la presente ley, las obras científicas, literarias y artísticas, cualesquiera que sean su género, forma de expresión o mérito, así como los títulos y las publicaciones de las mismas.",
+    "summary": "Quedan amparadas por la presente ley, las obras científicas, literarias y artísticas, cualesquiera que sean su género, forma de expresión o mérito, así como los títulos y las publicaciones de las mismas.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "propiedad_intelectual"
+    ],
+    "keywords": [
+      "derecho de autor",
+      "obra",
+      "protección",
+      "software"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1503",
+    "status": "vigente"
+  },
+  {
+    "id": "ley23_12",
+    "country": "CO",
+    "codeName": "Ley 23 de 1982",
+    "normType": "ley",
+    "article": "12",
+    "title": "Derechos patrimoniales del autor",
+    "content": "El autor tiene el derecho exclusivo de utilizar su obra y de disponer de ella, así como de autorizar o prohibir su reproducción, comunicación pública, transformación, distribución y cualquier otra forma de explotación.",
+    "summary": "El autor tiene el derecho exclusivo de utilizar su obra y de disponer de ella, así como de autorizar o prohibir su reproducción, comunicación pública, transformación, distribución y cualquier otra forma de explotación.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "propiedad_intelectual",
+      "cesion_derechos"
+    ],
+    "keywords": [
+      "reproducción",
+      "distribución",
+      "explotación",
+      "licencia"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1503",
+    "status": "vigente"
+  },
+  {
+    "id": "ley23_30",
+    "country": "CO",
+    "codeName": "Ley 23 de 1982",
+    "normType": "ley",
+    "article": "30",
+    "title": "Contrato de edición y licencia",
+    "content": "El contrato por el cual el autor cede temporalmente o en forma parcial sus derechos patrimoniales debe constar por escrito y precisar el alcance, territorio, duración y contraprestación de la cesión o licencia.",
+    "summary": "El contrato por el cual el autor cede temporalmente o en forma parcial sus derechos patrimoniales debe constar por escrito y precisar el alcance, territorio, duración y contraprestación de la cesión o licencia.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "cesion_derechos",
+      "terminacion"
+    ],
+    "keywords": [
+      "cesión",
+      "licencia",
+      "alcance",
+      "territorio",
+      "duración"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1503",
+    "status": "vigente"
+  },
+  {
+    "id": "dec1360_3",
+    "country": "CO",
+    "codeName": "Decreto 1360 de 1989",
+    "normType": "decreto",
+    "article": "3",
+    "title": "Software como obra literaria",
+    "content": "Los programas de computador, cualquiera que sea el modo o forma de expresión, así como la documentación preparatoria, el material de prueba y el manual de uso, quedan protegidos como obras literarias por la Ley 23 de 1982.",
+    "summary": "El software y su documentación están protegidos como obra literaria en Colombia.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "propiedad_intelectual"
+    ],
+    "keywords": [
+      "software",
+      "programa de computador",
+      "obra literaria",
+      "código fuente"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1505",
+    "status": "vigente"
+  },
+  {
+    "id": "dec1360_5",
+    "country": "CO",
+    "codeName": "Decreto 1360 de 1989",
+    "normType": "decreto",
+    "article": "5",
+    "title": "Titularidad del derecho patrimonial en software",
+    "content": "Salvo pacto en contrario, el derecho patrimonial sobre el programa de computador creado en virtud de un contrato de servicios pertenece al contratante, siempre que la creación haya sido encargada expresamente y retribuida.",
+    "summary": "Salvo pacto en contrario, el derecho patrimonial sobre el programa de computador creado en virtud de un contrato de servicios pertenece al contratante, siempre que la creación haya sido encargada expresamente y retribuida.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "cesion_derechos",
+      "propiedad_intelectual"
+    ],
+    "keywords": [
+      "titularidad",
+      "work for hire",
+      "contratante",
+      "desarrollo a medida"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1505",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1602_sw",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1602",
+    "title": "Licencia como contrato",
+    "content": "La licencia de software es un contrato por el cual el titular del derecho autoriza el uso de la obra dentro de los límites pactados (usuarios, instalaciones, territorio, duración), sin transferir la propiedad intelectual salvo cesión expresa.",
+    "summary": "La licencia de software es un contrato por el cual el titular del derecho autoriza el uso de la obra dentro de los límites pactados (usuarios, instalaciones, territorio, duración), sin transferir la propiedad intelectual salvo cesión expresa.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "licencia de uso",
+      "contrato",
+      "limitaciones"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1546_sw",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1546",
+    "title": "Resolución por incumplimiento de licencia",
+    "content": "El incumplimiento de obligaciones esenciales en un contrato de licencia (pago, uso no autorizado, sublicencia prohibida) puede dar lugar a resolución e indemnización conforme a las reglas de contratos bilaterales.",
+    "summary": "El incumplimiento de obligaciones esenciales en un contrato de licencia (pago, uso no autorizado, sublicencia prohibida) puede dar lugar a resolución e indemnización conforme a las reglas de contratos bilaterales.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "incumplimiento",
+      "terminacion"
+    ],
+    "keywords": [
+      "resolución",
+      "uso no autorizado",
+      "incumplimiento",
+      "SaaS"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley23_34",
+    "country": "CO",
+    "codeName": "Ley 23 de 1982",
+    "normType": "ley",
+    "article": "34",
+    "title": "Duración de la protección",
+    "content": "Los derechos patrimoniales de autor duran ochenta (80) años contados a partir de la muerte del autor. En obras de titularidad colectiva o legal, aplican las reglas especiales de la ley.",
+    "summary": "Los derechos patrimoniales de autor duran ochenta (80) años contados a partir de la muerte del autor. En obras de titularidad colectiva o legal, aplican las reglas especiales de la ley.",
+    "category": "propiedad_intelectual",
+    "topics": [],
+    "keywords": [
+      "duración",
+      "80 años",
+      "protección",
+      "dominio público"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1503",
+    "status": "vigente"
+  },
+  {
+    "id": "ley23_37",
+    "country": "CO",
+    "codeName": "Ley 23 de 1982",
+    "normType": "ley",
+    "article": "37",
+    "title": "Limitaciones al derecho de autor",
+    "content": "La ley establece limitaciones al derecho exclusivo del autor, entre ellas el uso privado, la copia de respaldo técnica cuando proceda, y otros supuestos taxativos que deben respetarse en contratos de licencia.",
+    "summary": "La ley establece limitaciones al derecho exclusivo del autor, entre ellas el uso privado, la copia de respaldo técnica cuando proceda, y otros supuestos taxativos que deben respetarse en contratos de licencia.",
+    "category": "propiedad_intelectual",
+    "topics": [],
+    "keywords": [
+      "limitaciones",
+      "copia de respaldo",
+      "uso privado",
+      "fair use"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1503",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1524_sw",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1524",
+    "title": "Cláusulas penales en licencias",
+    "content": "Las licencias pueden incluir cláusulas penales por uso indebido o incumplimiento de pago, sujetas a reducción judicial si resultan manifiestamente excesivas.",
+    "summary": "Las licencias pueden incluir cláusulas penales por uso indebido o incumplimiento de pago, sujetas a reducción judicial si resultan manifiestamente excesivas.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "multas"
+    ],
+    "keywords": [
+      "cláusula penal",
+      "uso indebido",
+      "multa"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_9_sw",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012",
+    "normType": "ley",
+    "article": "9",
+    "title": "Datos personales en SaaS",
+    "content": "Cuando el software procese datos personales de usuarios finales, el licenciatario y el proveedor deben definir roles de responsable y encargado del tratamiento, con autorización y medidas de seguridad conforme a la Ley 1581.",
+    "summary": "Cuando el software procese datos personales de usuarios finales, el licenciatario y el proveedor deben definir roles de responsable y encargado del tratamiento, con autorización y medidas de seguridad conforme a la Ley 1581.",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos"
+    ],
+    "keywords": [
+      "SaaS",
+      "datos personales",
+      "encargado",
+      "DPA"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2195_sw",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2195",
+    "title": "Limitación de responsabilidad",
+    "content": "Las cláusulas que limiten o exoneren responsabilidad por dolo o culpa grave son ineficaces. La limitación de responsabilidad en licencias de software debe evaluarse conforme a las reglas generales y al Código de Comercio cuando aplique.",
+    "summary": "Las cláusulas que limiten o exoneren responsabilidad por dolo o culpa grave son ineficaces. La limitación de responsabilidad en licencias de software debe evaluarse conforme a las reglas generales y al Código de Comercio cuando aplique.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "limitación de responsabilidad",
+      "culpa grave",
+      "dolo",
+      "garantía"
+    ],
+    "contractTypeIds": [
+      "licencia_software"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "com_1312",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "1312",
+    "title": "Contratos mercantiles",
+    "content": "Son contratos mercantiles los que celebren comerciantes entre sí o con particulares, cuando versen sobre actos de comercio o sobre cosas mercantiles.",
+    "summary": "Son contratos mercantiles los que celebren comerciantes entre sí o con particulares, cuando versen sobre actos de comercio o sobre cosas mercantiles.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "contrato mercantil",
+      "comerciante",
+      "acto de comercio"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1602_fr",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1602",
+    "title": "Contrato de franquicia — naturaleza contractual",
+    "content": "El contrato de franquicia es un contrato consensual por el cual el franquiciante concede al franquiciado el derecho a explotar un sistema de negocio bajo marca y know-how, a cambio de contraprestación, sujeto a las reglas generales del contrato y al Código de Comercio.",
+    "summary": "El contrato de franquicia es un contrato consensual por el cual el franquiciante concede al franquiciado el derecho a explotar un sistema de negocio bajo marca y know-how, a cambio de contraprestación, sujeto a las reglas generales del contrato y al Código de Comercio.",
+    "category": "comercio",
+    "topics": [
+      "terminacion",
+      "propiedad_intelectual"
+    ],
+    "keywords": [
+      "franquicia",
+      "know-how",
+      "marca",
+      "sistema de negocio"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley256_2_fr",
+    "country": "CO",
+    "codeName": "Ley 256 de 1996",
+    "normType": "ley",
+    "article": "2",
+    "title": "Protección del know-how en franquicia",
+    "content": "La violación o revelación no autorizada de secretos empresariales, incluido el know-how transmitido en una franquicia, constituye acto de competencia desleal.",
+    "summary": "La violación o revelación no autorizada de secretos empresariales, incluido el know-how transmitido en una franquicia, constituye acto de competencia desleal.",
+    "category": "comercio",
+    "topics": [
+      "confidencialidad",
+      "propiedad_intelectual"
+    ],
+    "keywords": [
+      "know-how",
+      "secreto empresarial",
+      "franquiciante"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=5248",
+    "status": "vigente"
+  },
+  {
+    "id": "ley527_1_fr",
+    "country": "CO",
+    "codeName": "Ley 527 de 1999",
+    "normType": "ley",
+    "article": "1",
+    "title": "Comercio electrónico en franquicias",
+    "content": "Las comunicaciones y contratos celebrados por medios electrónicos tienen plena validez jurídica, relevante para manuales de operación, pedidos y pagos en redes de franquicia.",
+    "summary": "Las comunicaciones y contratos celebrados por medios electrónicos tienen plena validez jurídica, relevante para manuales de operación, pedidos y pagos en redes de franquicia.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "comercio electrónico",
+      "mensaje de datos",
+      "contrato digital"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=6383",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1546_fr",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1546",
+    "title": "Resolución por incumplimiento en franquicia",
+    "content": "El incumplimiento grave de obligaciones esenciales (pago de regalías, estándares de calidad, uso de marca) puede dar lugar a resolución del contrato de franquicia e indemnización.",
+    "summary": "El incumplimiento grave de obligaciones esenciales (pago de regalías, estándares de calidad, uso de marca) puede dar lugar a resolución del contrato de franquicia e indemnización.",
+    "category": "comercio",
+    "topics": [
+      "incumplimiento",
+      "terminacion"
+    ],
+    "keywords": [
+      "resolución",
+      "regalías",
+      "estándares",
+      "incumplimiento"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1524_fr",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1524",
+    "title": "Cláusulas penales — regalías y multas",
+    "content": "Las cláusulas penales por incumplimiento de metas, regalías o estándares operativos deben ser proporcionales; el juez puede reducirlas si son excesivas.",
+    "summary": "Las cláusulas penales por incumplimiento de metas, regalías o estándares operativos deben ser proporcionales; el juez puede reducirlas si son excesivas.",
+    "category": "comercio",
+    "topics": [
+      "multas"
+    ],
+    "keywords": [
+      "cláusula penal",
+      "regalía",
+      "metas de venta"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1480_37_fr",
+    "country": "CO",
+    "codeName": "Ley 1480 de 2011",
+    "normType": "ley",
+    "article": "37",
+    "title": "Información al franquiciado",
+    "content": "La información entregada al franquiciado sobre el negocio, riesgos y condiciones debe ser clara, veraz y suficiente; la omisión de datos relevantes puede generar responsabilidad.",
+    "summary": "La información entregada al franquiciado sobre el negocio, riesgos y condiciones debe ser clara, veraz y suficiente; la omisión de datos relevantes puede generar responsabilidad.",
+    "category": "comercio",
+    "topics": [
+      "incumplimiento",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "información precontractual",
+      "franquiciado",
+      "publicidad engañosa"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=17442",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1620_fr",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1620",
+    "title": "Territorio y exclusividad",
+    "content": "Las cláusulas de territorio exclusivo o no exclusivo deben interpretarse conforme al texto pactado; la ambigüedad sobre zona geográfica o canales de venta se resuelve a favor del adherente en contratos de adhesión.",
+    "summary": "Las cláusulas de territorio exclusivo o no exclusivo deben interpretarse conforme al texto pactado; la ambigüedad sobre zona geográfica o canales de venta se resuelve a favor del adherente en contratos de adhesión.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "exclusividad",
+      "territorio",
+      "zona geográfica",
+      "canales"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2195_fr",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2195",
+    "title": "Responsabilidad por daños en la red",
+    "content": "El franquiciante y el franquiciado responden por daños causados por culpa en el cumplimiento de sus obligaciones contractuales, incluida la indemnización a terceros según pacto y ley.",
+    "summary": "El franquiciante y el franquiciado responden por daños causados por culpa en el cumplimiento de sus obligaciones contractuales, incluida la indemnización a terceros según pacto y ley.",
+    "category": "comercio",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "indemnización",
+      "terceros",
+      "responsabilidad civil"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "com_1026",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "1026",
+    "title": "Prescripción de acciones mercantiles",
+    "content": "Las acciones derivadas de contratos mercantiles prescriben en tres (3) años, salvo disposición especial. Aplica a reclamaciones por regalías o incumplimientos en franquicia mercantil.",
+    "summary": "Las acciones derivadas de contratos mercantiles prescriben en tres (3) años, salvo disposición especial. Aplica a reclamaciones por regalías o incumplimientos en franquicia mercantil.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "prescripción",
+      "3 años",
+      "acción mercantil"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1603_fr",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1603",
+    "title": "Consentimiento y disclosure",
+    "content": "El consentimiento del franquiciado debe ser libre de vicios. La reticencia o engaño sobre datos esenciales del negocio puede viciar el consentimiento y anular el contrato.",
+    "summary": "El consentimiento del franquiciado debe ser libre de vicios. La reticencia o engaño sobre datos esenciales del negocio puede viciar el consentimiento y anular el contrato.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "vicios del consentimiento",
+      "engaño",
+      "error",
+      "nulidad"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley23_12_fr",
+    "country": "CO",
+    "codeName": "Ley 23 de 1982",
+    "normType": "ley",
+    "article": "12",
+    "title": "Uso de marca en franquicia",
+    "content": "La licencia de marca y signos distintivos en el contrato de franquicia debe respetar los derechos del titular y delimitar uso, calidad y territorio para evitar dilución o uso no autorizado.",
+    "summary": "La licencia de marca y signos distintivos en el contrato de franquicia debe respetar los derechos del titular y delimitar uso, calidad y territorio para evitar dilución o uso no autorizado.",
+    "category": "propiedad_intelectual",
+    "topics": [
+      "propiedad_intelectual",
+      "cesion_derechos"
+    ],
+    "keywords": [
+      "marca",
+      "licencia de marca",
+      "signos distintivos"
+    ],
+    "contractTypeIds": [
+      "franquicia"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1503",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1858_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1858",
+    "title": "Suministro como compraventa",
+    "content": "El contrato de suministro de bienes se rige en lo esencial por las normas de compraventa: entrega de cosas y pago del precio, con obligaciones de saneamiento y entrega conforme a lo pactado.",
+    "summary": "El contrato de suministro de bienes se rige en lo esencial por las normas de compraventa: entrega de cosas y pago del precio, con obligaciones de saneamiento y entrega conforme a lo pactado.",
+    "category": "suministro",
+    "topics": [
+      "incumplimiento",
+      "garantias"
+    ],
+    "keywords": [
+      "suministro",
+      "compraventa",
+      "entrega",
+      "bienes"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1873_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1873",
+    "title": "Entregas periódicas",
+    "content": "En contratos de suministro continuado o periódico, el proveedor debe entregar las cantidades y en los plazos convenidos; la mora en entregas sucesivas puede acumularse para efectos de resolución.",
+    "summary": "En contratos de suministro continuado o periódico, el proveedor debe entregar las cantidades y en los plazos convenidos; la mora en entregas sucesivas puede acumularse para efectos de resolución.",
+    "category": "suministro",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "entrega periódica",
+      "plazo",
+      "pedidos",
+      "mora"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1867_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1867",
+    "title": "Vicios en bienes suministrados",
+    "content": "El proveedor responde por vicios ocultos de los bienes suministrados que los hagan impropios para el uso pactado o disminuyan sustancialmente su valor.",
+    "summary": "El proveedor responde por vicios ocultos de los bienes suministrados que los hagan impropios para el uso pactado o disminuyan sustancialmente su valor.",
+    "category": "suministro",
+    "topics": [
+      "garantias"
+    ],
+    "keywords": [
+      "vicios ocultos",
+      "calidad",
+      "defectos",
+      "garantía"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1546_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1546",
+    "title": "Resolución por falta de suministro",
+    "content": "El incumplimiento grave o reiterado en las entregas permite al comprador pedir la resolución del contrato de suministro o su cumplimiento, con indemnización.",
+    "summary": "El incumplimiento grave o reiterado en las entregas permite al comprador pedir la resolución del contrato de suministro o su cumplimiento, con indemnización.",
+    "category": "suministro",
+    "topics": [
+      "terminacion",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "resolución",
+      "falta de entrega",
+      "incumplimiento grave"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1524_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1524",
+    "title": "Penalidades por retraso en suministro",
+    "content": "Son válidas las cláusulas penales por retraso en la entrega, sujetas a reducción judicial si exceden el daño probable y no cubren dolo o culpa grave del proveedor.",
+    "summary": "Son válidas las cláusulas penales por retraso en la entrega, sujetas a reducción judicial si exceden el daño probable y no cubren dolo o culpa grave del proveedor.",
+    "category": "suministro",
+    "topics": [
+      "multas"
+    ],
+    "keywords": [
+      "penalidad",
+      "retraso",
+      "entrega tardía",
+      "cláusula penal"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "com_772_sum",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "772",
+    "title": "Suministro mercantil",
+    "content": "El suministro habitual de mercancías entre comerciantes es acto de comercio y se rige por el Código de Comercio y supletoriamente por el Código Civil.",
+    "summary": "El suministro habitual de mercancías entre comerciantes es acto de comercio y se rige por el Código de Comercio y supletoriamente por el Código Civil.",
+    "category": "suministro",
+    "topics": [],
+    "keywords": [
+      "suministro mercantil",
+      "mercancías",
+      "comerciante"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "com_773_sum",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "773",
+    "title": "Mora en obligaciones mercantiles",
+    "content": "La mora en el cumplimiento de obligaciones derivadas del suministro mercantil genera intereses y responsabilidad conforme al Código de Comercio.",
+    "summary": "La mora en el cumplimiento de obligaciones derivadas del suministro mercantil genera intereses y responsabilidad conforme al Código de Comercio.",
+    "category": "suministro",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "mora",
+      "intereses",
+      "obligación mercantil"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1523_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1523",
+    "title": "Fuerza mayor en suministro",
+    "content": "El proveedor en mora responde por la imposibilidad de entregar, salvo que pruebe caso fortuito o fuerza mayor sin culpa. Cláusulas de fuerza mayor deben ser específicas y probadas.",
+    "summary": "El proveedor en mora responde por la imposibilidad de entregar, salvo que pruebe caso fortuito o fuerza mayor sin culpa. Cláusulas de fuerza mayor deben ser específicas y probadas.",
+    "category": "suministro",
+    "topics": [
+      "incumplimiento",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "fuerza mayor",
+      "caso fortuito",
+      "imposibilidad",
+      "entrega"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1620_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1620",
+    "title": "Cantidades y especificaciones",
+    "content": "Las cantidades mínimas, máximas y especificaciones técnicas del suministro deben constar con claridad; la ambigüedad se interpreta contra el redactor del contrato cuando sea de adhesión.",
+    "summary": "Las cantidades mínimas, máximas y especificaciones técnicas del suministro deben constar con claridad; la ambigüedad se interpreta contra el redactor del contrato cuando sea de adhesión.",
+    "category": "suministro",
+    "topics": [],
+    "keywords": [
+      "cantidades",
+      "especificaciones",
+      "interpretación",
+      "SLA"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1480_37_sum",
+    "country": "CO",
+    "codeName": "Ley 1480 de 2011",
+    "normType": "ley",
+    "article": "37",
+    "title": "Información al comprador en suministro",
+    "content": "El proveedor debe entregar información veraz sobre características, origen y condiciones de los bienes suministrados cuando el comprador sea consumidor.",
+    "summary": "El proveedor debe entregar información veraz sobre características, origen y condiciones de los bienes suministrados cuando el comprador sea consumidor.",
+    "category": "suministro",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "consumidor",
+      "información",
+      "proveedor",
+      "etiquetado"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=17442",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1883_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1883",
+    "title": "Riesgo en tránsito",
+    "content": "Salvo pacto, el riesgo de pérdida de las mercancías puede transferirse al comprador con la entrega o la constitución en mora de recibir, relevante en contratos de suministro con transporte.",
+    "summary": "Salvo pacto, el riesgo de pérdida de las mercancías puede transferirse al comprador con la entrega o la constitución en mora de recibir, relevante en contratos de suministro con transporte.",
+    "category": "suministro",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "riesgo",
+      "transporte",
+      "pérdida",
+      "entrega"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1895_sum",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1895",
+    "title": "Pacto comisorio en suministro",
+    "content": "Las partes pueden pactar terminación automática por incumplimiento reiterado en entregas o pagos, en los límites legales del pacto comisorio.",
+    "summary": "Las partes pueden pactar terminación automática por incumplimiento reiterado en entregas o pagos, en los límites legales del pacto comisorio.",
+    "category": "suministro",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "pacto comisorio",
+      "terminación automática"
+    ],
+    "contractTypeIds": [
+      "suministro"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "com_1312_dist",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "1312",
+    "title": "Contrato de distribución mercantil",
+    "content": "El contrato de distribución entre comerciantes es mercantil cuando versa sobre la comercialización habitual de productos en un territorio determinado.",
+    "summary": "El contrato de distribución entre comerciantes es mercantil cuando versa sobre la comercialización habitual de productos en un territorio determinado.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "distribución",
+      "comerciante",
+      "contrato mercantil"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1602_dist",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1602",
+    "title": "Naturaleza del contrato de distribución",
+    "content": "El contrato de distribución combina obligaciones de suministro, promoción y venta en un territorio. No implica necesariamente relación laboral ni mandato, salvo que así se pacte expresamente.",
+    "summary": "El contrato de distribución combina obligaciones de suministro, promoción y venta en un territorio. No implica necesariamente relación laboral ni mandato, salvo que así se pacte expresamente.",
+    "category": "comercio",
+    "topics": [
+      "terminacion",
+      "cesion_derechos"
+    ],
+    "keywords": [
+      "distribuidor",
+      "territorio",
+      "independencia",
+      "mandato"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1620_dist",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1620",
+    "title": "Exclusividad territorial",
+    "content": "La exclusividad debe definirse con precisión en territorio, productos y canales. Cláusulas ambiguas sobre exclusividad o no exclusividad se interpretan restrictivamente según el pacto y la buena fe.",
+    "summary": "La exclusividad debe definirse con precisión en territorio, productos y canales. Cláusulas ambiguas sobre exclusividad o no exclusividad se interpretan restrictivamente según el pacto y la buena fe.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "exclusividad",
+      "territorio",
+      "canales",
+      "distribuidor"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1546_dist",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1546",
+    "title": "Terminación por incumplimiento",
+    "content": "El incumplimiento de metas de venta, stock mínimo, estándares de marca o pagos permite solicitar resolución o cumplimiento con indemnización, según gravedad y reiteración.",
+    "summary": "El incumplimiento de metas de venta, stock mínimo, estándares de marca o pagos permite solicitar resolución o cumplimiento con indemnización, según gravedad y reiteración.",
+    "category": "comercio",
+    "topics": [
+      "terminacion",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "metas de venta",
+      "resolución",
+      "incumplimiento"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley256_1_dist",
+    "country": "CO",
+    "codeName": "Ley 256 de 1996",
+    "normType": "ley",
+    "article": "1",
+    "title": "Competencia desleal en distribución",
+    "content": "Constituye competencia desleal aprovechar indebidamente ventajas contractuales, desviar clientela o violar restricciones legítimas de distribución pactadas de forma clara y proporcionada.",
+    "summary": "Constituye competencia desleal aprovechar indebidamente ventajas contractuales, desviar clientela o violar restricciones legítimas de distribución pactadas de forma clara y proporcionada.",
+    "category": "comercio",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "competencia desleal",
+      "clientela",
+      "desviación"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=5248",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1524_dist",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1524",
+    "title": "Penalidades por incumplimiento de metas",
+    "content": "Las penalidades por no alcanzar metas de venta deben ser proporcionales; cláusulas punitivas desproporcionadas pueden ser reducidas judicialmente.",
+    "summary": "Las penalidades por no alcanzar metas de venta deben ser proporcionales; cláusulas punitivas desproporcionadas pueden ser reducidas judicialmente.",
+    "category": "comercio",
+    "topics": [
+      "multas"
+    ],
+    "keywords": [
+      "metas",
+      "penalidad",
+      "ventas",
+      "cláusula penal"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2195_dist",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2195",
+    "title": "Indemnización al terminar distribución",
+    "content": "Salvo pacto expreso permitido por ley, no hay derecho automático a indemnización por clientela al terminar el contrato de distribución; cualquier compensación debe estar claramente pactada.",
+    "summary": "Salvo pacto expreso permitido por ley, no hay derecho automático a indemnización por clientela al terminar el contrato de distribución; cualquier compensación debe estar claramente pactada.",
+    "category": "comercio",
+    "topics": [
+      "terminacion",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "clientela",
+      "indemnización",
+      "terminación",
+      "stock"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "com_1026_dist",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "1026",
+    "title": "Prescripción de reclamaciones",
+    "content": "Las acciones mercantiles por incumplimiento en distribución prescriben en tres (3) años desde que la obligación se hizo exigible.",
+    "summary": "Las acciones mercantiles por incumplimiento en distribución prescriben en tres (3) años desde que la obligación se hizo exigible.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "prescripción",
+      "reclamación",
+      "3 años"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1873_dist",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1873",
+    "title": "Obligación de entrega al distribuidor",
+    "content": "El fabricante o proveedor debe entregar los productos en cantidad, calidad y plazos pactados; la falta reiterada habilita resolución y reclamación de perjuicios.",
+    "summary": "El fabricante o proveedor debe entregar los productos en cantidad, calidad y plazos pactados; la falta reiterada habilita resolución y reclamación de perjuicios.",
+    "category": "comercio",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "entrega",
+      "productos",
+      "plazo",
+      "proveedor"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1480_37_dist",
+    "country": "CO",
+    "codeName": "Ley 1480 de 2011",
+    "normType": "ley",
+    "article": "37",
+    "title": "Información al distribuidor-consumidor",
+    "content": "Cuando el distribuidor actúe frente a consumidores finales, debe cumplir deberes de información veraz sobre productos conforme al Estatuto del Consumidor.",
+    "summary": "Cuando el distribuidor actúe frente a consumidores finales, debe cumplir deberes de información veraz sobre productos conforme al Estatuto del Consumidor.",
+    "category": "comercio",
+    "topics": [],
+    "keywords": [
+      "consumidor",
+      "información",
+      "distribuidor"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=17442",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1603_dist",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1603",
+    "title": "Subdistribución",
+    "content": "La autorización para subdistribuir o sublicenciar debe constar expresamente; la cesión no autorizada del contrato puede ser causal de terminación.",
+    "summary": "La autorización para subdistribuir o sublicenciar debe constar expresamente; la cesión no autorizada del contrato puede ser causal de terminación.",
+    "category": "comercio",
+    "topics": [
+      "cesion_derechos",
+      "terminacion"
+    ],
+    "keywords": [
+      "subdistribución",
+      "cesión",
+      "autorización"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1523_dist",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1523",
+    "title": "Fuerza mayor en cadena de suministro",
+    "content": "Eventos de fuerza mayor que impidan entregas deben notificarse y probarse; no eximen automáticamente de responsabilidad si el distribuidor o proveedor pudo mitigar el daño.",
+    "summary": "Eventos de fuerza mayor que impidan entregas deben notificarse y probarse; no eximen automáticamente de responsabilidad si el distribuidor o proveedor pudo mitigar el daño.",
+    "category": "comercio",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "fuerza mayor",
+      "cadena de suministro",
+      "notificación"
+    ],
+    "contractTypeIds": [
+      "distribucion"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2117",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2117",
+    "title": "Contrato de mandato",
+    "content": "Por el contrato de mandato una persona confiere a otra su representación para la gestión de uno o más negocios, con facultad de obrar a nombre del mandante o a nombre propio.",
+    "summary": "Por el contrato de mandato una persona confiere a otra su representación para la gestión de uno o más negocios, con facultad de obrar a nombre del mandante o a nombre propio.",
+    "category": "mandato",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "mandato",
+      "representación",
+      "mandatario",
+      "mandante"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2118",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2118",
+    "title": "Mandato expreso o tácito",
+    "content": "El mandato puede ser expreso o tácito, pero las facultades para actos que excedan la administración ordinaria requieren poder especial o cláusula expresa.",
+    "summary": "El mandato puede ser expreso o tácito, pero las facultades para actos que excedan la administración ordinaria requieren poder especial o cláusula expresa.",
+    "category": "mandato",
+    "topics": [],
+    "keywords": [
+      "mandato expreso",
+      "mandato tácito",
+      "facultades"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2120",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2120",
+    "title": "Obligaciones del mandatario",
+    "content": "El mandatario debe ejecutar el mandato según las instrucciones del mandante, con la diligencia de un buen administrador, y rendir cuentas al terminar la gestión.",
+    "summary": "El mandatario debe ejecutar el mandato según las instrucciones del mandante, con la diligencia de un buen administrador, y rendir cuentas al terminar la gestión.",
+    "category": "mandato",
+    "topics": [
+      "responsabilidad",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "diligencia",
+      "instrucciones",
+      "cuentas",
+      "mandatario"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2121",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2121",
+    "title": "Responsabilidad del mandatario",
+    "content": "El mandatario responde por los perjuicios causados por su culpa o por el incumplimiento del mandato; responde de culpa leve en la gestión ajena.",
+    "summary": "El mandatario responde por los perjuicios causados por su culpa o por el incumplimiento del mandato; responde de culpa leve en la gestión ajena.",
+    "category": "mandato",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "culpa leve",
+      "indemnización",
+      "perjuicios"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2123",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2123",
+    "title": "Límites del mandato",
+    "content": "El mandatario no puede exceder los límites del mandato ni sustituir el mandato sin autorización, salvo fuerza mayor o necesidad urgente en interés del mandante.",
+    "summary": "El mandatario no puede exceder los límites del mandato ni sustituir el mandato sin autorización, salvo fuerza mayor o necesidad urgente en interés del mandante.",
+    "category": "mandato",
+    "topics": [
+      "cesion_derechos"
+    ],
+    "keywords": [
+      "límites",
+      "sustitución",
+      "facultades",
+      "exceso de poder"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2128",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2128",
+    "title": "Revocación del mandato",
+    "content": "El mandante puede revocar el mandato en cualquier tiempo, salvo cuando el mandato sea irrevocable por interés del mandatario o de terceros conforme a la ley o al contrato.",
+    "summary": "El mandante puede revocar el mandato en cualquier tiempo, salvo cuando el mandato sea irrevocable por interés del mandatario o de terceros conforme a la ley o al contrato.",
+    "category": "mandato",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "revocación",
+      "irrevocable",
+      "terminación"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2129",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2129",
+    "title": "Renuncia del mandatario",
+    "content": "El mandatario puede renunciar al mandato, pero debe avisar al mandante a tiempo de que éste pueda proveer a la gestión; si la renuncia es intempestiva y causa daño, responde por perjuicios.",
+    "summary": "El mandatario puede renunciar al mandato, pero debe avisar al mandante a tiempo de que éste pueda proveer a la gestión; si la renuncia es intempestiva y causa daño, responde por perjuicios.",
+    "category": "mandato",
+    "topics": [
+      "terminacion",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "renuncia",
+      "aviso",
+      "terminación"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2130",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2130",
+    "title": "Muerte o incapacidad",
+    "content": "El mandato termina por la muerte o incapacidad del mandante o del mandatario, salvo pacto o naturaleza del negocio que exija continuidad hasta su conclusión.",
+    "summary": "El mandato termina por la muerte o incapacidad del mandante o del mandatario, salvo pacto o naturaleza del negocio que exija continuidad hasta su conclusión.",
+    "category": "mandato",
+    "topics": [
+      "terminacion"
+    ],
+    "keywords": [
+      "muerte",
+      "incapacidad",
+      "terminación automática"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2134",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2134",
+    "title": "Poder especial",
+    "content": "Para ciertos actos (enajenar inmuebles, transigir, comprometer en árbitros, etc.) se requiere poder especial otorgado por escrito con facultades expresas.",
+    "summary": "Para ciertos actos (enajenar inmuebles, transigir, comprometer en árbitros, etc.) se requiere poder especial otorgado por escrito con facultades expresas.",
+    "category": "mandato",
+    "topics": [],
+    "keywords": [
+      "poder especial",
+      "escritura pública",
+      "facultades expresas"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2142",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2142",
+    "title": "Mandato mercantil",
+    "content": "En el mandato mercantil el mandatario responde con mayor rigor y puede tener derecho a retribución si el mandato es oneroso, conforme al Código de Comercio.",
+    "summary": "En el mandato mercantil el mandatario responde con mayor rigor y puede tener derecho a retribución si el mandato es oneroso, conforme al Código de Comercio.",
+    "category": "mandato",
+    "topics": [],
+    "keywords": [
+      "mandato mercantil",
+      "comisión",
+      "retribución"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "com_1312_man",
+    "country": "CO",
+    "codeName": "Código de Comercio (Colombia)",
+    "normType": "codigo",
+    "article": "1312",
+    "title": "Mandato comercial",
+    "content": "El mandato comercial celebrado por comerciantes en asunto de su giro es contrato mercantil y se rige por el Código de Comercio.",
+    "summary": "El mandato comercial celebrado por comerciantes en asunto de su giro es contrato mercantil y se rige por el Código de Comercio.",
+    "category": "mandato",
+    "topics": [],
+    "keywords": [
+      "mandato comercial",
+      "factor",
+      "comisionista"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4126",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_2195_man",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "2195",
+    "title": "Responsabilidad frente a terceros",
+    "content": "El mandante responde por los actos del mandatario celebrados dentro de los límites del mandato; los actos fuera de facultades no obligan al mandante salvo ratificación.",
+    "summary": "El mandante responde por los actos del mandatario celebrados dentro de los límites del mandato; los actos fuera de facultades no obligan al mandante salvo ratificación.",
+    "category": "mandato",
+    "topics": [
+      "responsabilidad"
+    ],
+    "keywords": [
+      "terceros",
+      "ratificación",
+      "ultra vires",
+      "representación"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1524_man",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1524",
+    "title": "Cláusula penal en mandato",
+    "content": "Pueden pactarse penalidades por incumplimiento de obligaciones del mandatario o del mandante, incluida la terminación anticipada sin causa.",
+    "summary": "Pueden pactarse penalidades por incumplimiento de obligaciones del mandatario o del mandante, incluida la terminación anticipada sin causa.",
+    "category": "mandato",
+    "topics": [
+      "multas"
+    ],
+    "keywords": [
+      "cláusula penal",
+      "incumplimiento",
+      "terminación"
+    ],
+    "contractTypeIds": [
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1601_trans",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1601",
+    "title": "Fuerza mayor — caso fortuito",
+    "content": "No hay lugar a la indemnización de perjuicios cuando el deudor no pudo cumplir la obligación por fuerza mayor o caso fortuito, salvo que la ley o la convención en sentido contrario lo impongan.",
+    "summary": "La fuerza mayor exime de indemnizar, salvo pacto en contrario.",
+    "category": "incumplimiento",
+    "topics": [
+      "incumplimiento",
+      "responsabilidad"
+    ],
+    "keywords": [
+      "fuerza mayor",
+      "caso fortuito",
+      "eximente",
+      "incumplimiento"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios",
+      "arrendamiento",
+      "compraventa",
+      "confidencialidad",
+      "licencia_software",
+      "franquicia",
+      "suministro",
+      "distribucion",
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1617_trans",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1617",
+    "title": "Nulidad del contrato",
+    "content": "La nulidad absoluta del contrato produce la insubsistencia de todas las obligaciones y la restitución de lo recibido. La nulidad relativa puede ser anulada por quien tiene interés en ello, salvo confirmación del acto viciado.",
+    "summary": "La nulidad absoluta del contrato produce la insubsistencia de todas las obligaciones y la restitución de lo recibido. La nulidad relativa puede ser anulada por quien tiene interés en ello, salvo confirmación del acto viciado.",
+    "category": "obligaciones",
+    "topics": [
+      "incumplimiento",
+      "terminacion"
+    ],
+    "keywords": [
+      "nulidad",
+      "anulación",
+      "restitución",
+      "vicio del consentimiento"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios",
+      "arrendamiento",
+      "compraventa",
+      "confidencialidad",
+      "licencia_software",
+      "franquicia",
+      "suministro",
+      "distribucion",
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "cc_1546_trans",
+    "country": "CO",
+    "codeName": "Código Civil (Colombia)",
+    "normType": "codigo",
+    "article": "1546",
+    "title": "Resarcimiento de perjuicios por incumplimiento",
+    "content": "El deudor responde de los perjuicios causados por su culpa o negligencia, y aún por el hecho de sus dependientes o empleados en el servicio de las cosas que debe cuidar, salvo fuerza mayor o caso fortuito debidamente probados.",
+    "summary": "El incumplimiento culposo obliga a resarcir perjuicios.",
+    "category": "incumplimiento",
+    "topics": [
+      "incumplimiento",
+      "responsabilidad",
+      "multas"
+    ],
+    "keywords": [
+      "perjuicios",
+      "indemnización",
+      "culpa",
+      "incumplimiento"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios",
+      "arrendamiento",
+      "compraventa",
+      "confidencialidad",
+      "licencia_software",
+      "franquicia",
+      "suministro",
+      "distribucion",
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=4125",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1480_16_trans",
+    "country": "CO",
+    "codeName": "Ley 1480 de 2011 (Estatuto del Consumidor)",
+    "normType": "ley",
+    "article": "16",
+    "title": "Derecho a información clara y veraz",
+    "content": "El consumidor tiene derecho a recibir información veraz, clara, suficiente, oportuna, verificable, comprensible, precisa y congruente sobre los bienes y servicios ofrecidos, con el fin de tomar decisiones adecuadas.",
+    "summary": "El consumidor tiene derecho a recibir información veraz, clara, suficiente, oportuna, verificable, comprensible, precisa y congruente sobre los bienes y servicios ofrecidos, con el fin de tomar decisiones adecuadas.",
+    "category": "consumo",
+    "topics": [
+      "incumplimiento"
+    ],
+    "keywords": [
+      "consumidor",
+      "información",
+      "transparencia",
+      "publicidad engañosa"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios",
+      "arrendamiento",
+      "compraventa",
+      "confidencialidad",
+      "licencia_software",
+      "franquicia",
+      "suministro",
+      "distribucion",
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=17442",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1480_38_trans",
+    "country": "CO",
+    "codeName": "Ley 1480 de 2011 (Estatuto del Consumidor)",
+    "normType": "ley",
+    "article": "38",
+    "title": "Cláusulas abusivas — nulidad",
+    "content": "Son nulas las cláusulas que establezcan limitaciones absolutas de responsabilidad del proveedor por vicios ocultos o defectos de calidad, que impongan renuncia general a derechos del consumidor, que permitan al proveedor modificar unilateralmente el contrato sin consentimiento, o que impongan penalidades desproporcionadas al consumidor.",
+    "summary": "Cláusulas que limitan derechos del consumidor o son desproporcionadas son nulas.",
+    "category": "consumo",
+    "topics": [
+      "multas",
+      "incumplimiento"
+    ],
+    "keywords": [
+      "cláusula abusiva",
+      "consumidor",
+      "nulidad",
+      "desproporcionada"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios",
+      "arrendamiento",
+      "compraventa",
+      "confidencialidad",
+      "licencia_software",
+      "franquicia",
+      "suministro",
+      "distribucion",
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=17442",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1563_62_trans",
+    "country": "CO",
+    "codeName": "Ley 1563 de 2012 (Arbitraje)",
+    "normType": "ley",
+    "article": "62",
+    "title": "Compromiso arbitral",
+    "content": "El compromiso arbitral es el acuerdo de voluntades de las partes para someter a arbitraje la totalidad o alguna de las controversias que hayan surgido o puedan surgir entre ellas respecto de una determinada relación jurídica contractual o no contractual. Debe constar por escrito.",
+    "summary": "El arbitraje requiere acuerdo escrito de las partes sobre controversias determinadas.",
+    "category": "arbitraje",
+    "topics": [
+      "jurisdiccion",
+      "arbitraje"
+    ],
+    "keywords": [
+      "arbitraje",
+      "compromiso arbitral",
+      "escrito",
+      "controversias"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios",
+      "arrendamiento",
+      "compraventa",
+      "confidencialidad",
+      "licencia_software",
+      "franquicia",
+      "suministro",
+      "distribucion",
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=48448",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_1_trans",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012 (Protección de datos)",
+    "normType": "ley",
+    "article": "1",
+    "title": "Objeto — protección de datos personales",
+    "content": "La presente ley tiene por objeto desarrollar el derecho constitucional que tienen todas las personas a conocer, actualizar y rectificar las informaciones que se hayan recogido sobre ellas en bases de datos o archivos, y los demás derechos, libertades y garantías constitucionales a que se refiere el artículo 15 de la Constitución Política.",
+    "summary": "La presente ley tiene por objeto desarrollar el derecho constitucional que tienen todas las personas a conocer, actualizar y rectificar las informaciones que se hayan recogido sobre ellas en bases de datos o archivos, y los demás derechos, libertades y garantías constitucionales ",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos",
+      "confidencialidad"
+    ],
+    "keywords": [
+      "datos personales",
+      "habeas data",
+      "privacidad",
+      "tratamiento"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios",
+      "arrendamiento",
+      "compraventa",
+      "confidencialidad",
+      "licencia_software",
+      "franquicia",
+      "suministro",
+      "distribucion",
+      "mandato"
+    ],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  },
+  {
+    "id": "ley1581_9_trans",
+    "country": "CO",
+    "codeName": "Ley 1581 de 2012 (Protección de datos)",
+    "normType": "ley",
+    "article": "9",
+    "title": "Deber de informar al titular",
+    "content": "El responsable del tratamiento deberá informar al titular de la existencia de la política de tratamiento de datos y de los derechos que le asisten, así como de la finalidad de la recolección y los canales para ejercer sus derechos.",
+    "summary": "El responsable del tratamiento deberá informar al titular de la existencia de la política de tratamiento de datos y de los derechos que le asisten, así como de la finalidad de la recolección y los canales para ejercer sus derechos.",
+    "category": "proteccion_datos",
+    "topics": [
+      "proteccion_datos"
+    ],
+    "keywords": [
+      "aviso de privacidad",
+      "política de datos",
+      "titular",
+      "información"
+    ],
+    "contractTypeIds": [
+      "prestacion_servicios",
+      "arrendamiento",
+      "compraventa",
+      "confidencialidad",
+      "licencia_software",
+      "franquicia",
+      "suministro",
+      "distribucion",
+      "mandato"
+    ],
+    "riskLevel": "high",
+    "officialSource": "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "status": "vigente"
+  }
+]

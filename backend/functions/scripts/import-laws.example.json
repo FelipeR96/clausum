@@ -1,0 +1,19 @@
+[
+  {
+    "id": "co_ley820_5",
+    "country": "CO",
+    "codeName": "Ley 820 de 2003",
+    "normType": "ley",
+    "article": "5",
+    "title": "Duración del contrato",
+    "content": "Texto completo del artículo…",
+    "summary": "Resumen breve del artículo",
+    "category": "arrendamiento",
+    "topics": ["terminacion", "renovacion"],
+    "keywords": ["duración", "plazo", "vivienda"],
+    "contractTypeIds": ["arrendamiento"],
+    "riskLevel": "medium",
+    "officialSource": "https://www.funcionpublica.gov.co/...",
+    "status": "vigente"
+  }
+]

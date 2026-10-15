@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+dist/
+build/
+lib/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+.secret.local
+.secret.*.local
+!.env.example
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+pubsub-debug.log
+ui-debug.log
+database-debug.log
+backend/functions/.runtimeconfig.json
+emulator-data/
+
+# Service account (NUNCA commitear)
+*serviceAccount*.json
+*-firebase-adminsdk-*.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test
+coverage/

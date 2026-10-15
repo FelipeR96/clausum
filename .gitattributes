@@ -1,0 +1,20 @@
+# Normalizar finales de línea: LF en el repo, nativo en el working tree.
+* text=auto eol=lf
+
+# Scripts de Windows conservan CRLF
+*.ps1  text eol=crlf
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# Binarios
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary
+*.ico  binary
+
+# No contar artefactos ni lockfiles en las estadísticas del lenguaje
+pnpm-lock.yaml linguist-generated=true
