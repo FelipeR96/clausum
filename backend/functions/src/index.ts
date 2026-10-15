@@ -14,6 +14,7 @@ import { contractRouter } from './routes/contract.routes';
 import { legalRouter } from './routes/legal.routes';
 import { alertsRouter } from './routes/alerts.routes';
 import { billingRouter } from './routes/billing.routes';
+import { accountRouter } from './routes/account.routes';
 import { getSubscriptionSummary } from './services/subscription.service';
 
 const app = express();
@@ -60,6 +61,7 @@ app.use('/api', billingRouter);
 app.use('/api', contractRouter);
 app.use('/api', legalRouter);
 app.use('/api', alertsRouter);
+app.use('/api', accountRouter);
 
 app.use(errorHandler);
 

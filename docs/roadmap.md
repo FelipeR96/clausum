@@ -33,7 +33,7 @@ Actualizado: 2026-10-15.
 | F2-06 Rate limiting | ⏳ parcial: ya hay `maxInstances` y techo de concurrencia en las colas |
 | F2-07 Staging | ⏳ requiere la consola de Firebase |
 | F3-01 Email transaccional | ⏳ requiere cuenta de proveedor |
-| F3-02 Borrado de cuenta | ⏳ |
+| F3-02 Borrado y exportación de cuenta | ✅ Falta declarar la retención de pagos en la política de privacidad |
 | F3-03 Perfil persistido | ⏳ |
 | F3-04 Inconsistencias | ✅ |
 | F3-05 Accesibilidad | ⏳ |

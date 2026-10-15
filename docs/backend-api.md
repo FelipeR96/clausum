@@ -19,6 +19,8 @@ Todos requieren `Authorization: Bearer <firebase-id-token>` salvo `/api/health`.
 | POST | `/api/compare` | Comparar dos contratos (RAG) — **202, asíncrono** |
 | GET | `/api/analyses/:id` | Estado y resultado de un análisis |
 | GET | `/api/comparisons/:id` | Estado y resultado de una comparación |
+| GET | `/api/account/export` | Portabilidad: todos los datos del usuario |
+| DELETE | `/api/account` | Supresión de cuenta (exige reautenticación) |
 
 ### POST `/api/analyze`
 
@@ -113,6 +115,45 @@ HTTP. Si el listener no se puede abrir, cae a polling contra
 `frontend/src/utils/wait-for-job.ts`.
 
 Si `laws/` está vacío, el análisis continúa indicando en el prompt que no hay corpus cargado.
+
+## Supresión de cuenta — `DELETE /api/account`
+
+Derecho de supresión de la Ley 1581 de 2012. **El orden de operaciones es
+lo importante**, no el código:
+
+```
+1. Cancelar la suscripción en Wompi o PayPal
+2. Borrar contratos, análisis, comparaciones, alertas, subcolecciones
+   y archivos de Storage
+3. Anonimizar `payments` (userId → hash); NO se borran
+4. Borrar el documento de usuario y, al final, el usuario de Auth
+```
+
+**Por qué la pasarela primero.** Si se borra el usuario antes, el cobro
+recurrente sigue vivo en la pasarela y la plataforma acaba cobrando a una
+cuenta que ya no existe, sin que el afectado pueda reclamarlo desde la app.
+
+**Por qué los pagos no se borran.** La normativa tributaria obliga a retener
+los soportes de facturación, y eso prevalece sobre la supresión. Se rompe el
+vínculo con la persona sustituyendo `userId` por un hash estable, de modo
+que el registro contable sobrevive sin seguir siendo un dato personal. Esta
+excepción tiene que estar declarada en la política de privacidad.
+
+**Por qué Auth al final.** Mientras el usuario exista, su token sigue siendo
+válido y un borrado a medias es recuperable. Al revés, un fallo posterior
+deja datos huérfanos que nadie puede reclamar.
+
+**Reautenticación.** Se exige que `auth_time` del token sea de hace menos de
+5 minutos: el momento del login real, no del refresco. El frontend
+reautentica (contraseña o popup de Google) y **fuerza
+`getIdToken(true)`** — sin ese refresco el token en caché sigue llevando el
+`auth_time` viejo y el servidor rechazaría con `REAUTH_REQUIRED` justo
+después de que el usuario escriba su contraseña.
+
+Si la cancelación en la pasarela o el borrado de archivos falla, el borrado
+**no se aborta** (el derecho de supresión no puede quedar bloqueado por un
+fallo de un tercero): se devuelve en `warnings` y queda en `system_logs`
+para revisión manual.
 
 ## Variables de entorno
 
