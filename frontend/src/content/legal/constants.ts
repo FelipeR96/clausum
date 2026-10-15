@@ -1,5 +1,5 @@
 /** Última actualización de los textos legales (mostrada en cada página). */
-export const LEGAL_LAST_UPDATED = '3 de julio de 2026';
+export const LEGAL_LAST_UPDATED = '15 de octubre de 2026';
 
 export const LEGAL_CONTACT_EMAIL = 'soporte@clausum.com';
 

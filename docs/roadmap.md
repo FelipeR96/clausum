@@ -33,7 +33,7 @@ Actualizado: 2026-10-15.
 | F2-06 Rate limiting | ⏳ parcial: ya hay `maxInstances` y techo de concurrencia en las colas |
 | F2-07 Staging | ⏳ requiere la consola de Firebase |
 | F3-01 Email transaccional | ⏳ requiere cuenta de proveedor |
-| F3-02 Borrado y exportación de cuenta | ✅ Falta declarar la retención de pagos en la política de privacidad |
+| F3-02 Borrado y exportación de cuenta | ✅ Retención de pagos ya declarada en la política |
 | F3-03 Perfil persistido | ⏳ |
 | F3-04 Inconsistencias | ✅ |
 | F3-05 Accesibilidad | ⏳ |
@@ -1106,6 +1106,56 @@ disclaimer de no-asesoría jurídica ya está donde debe. Pero antes de cobrar:
   dicho en la política. Si no hay garantía contractual, considerar un proveedor
   con cláusula de no-entrenamiento; para contratos confidenciales de clientes
   es un requisito, no un detalle.
+
+### F5-01b — Dos puntos de la política que necesitan decisión de abogado
+
+Se ampliaron las secciones 5 y 8 de la política de privacidad
+(`frontend/src/content/legal/privacidad.ts`) para declarar la
+transferencia internacional a DeepSeek y la retención de comprobantes
+tras un borrado de cuenta. El texto redactado describe con precisión lo
+que el sistema hace, pero **dos cosas no son redactables sin criterio
+jurídico** y ninguna debe darse por resuelta:
+
+**1. ¿Basta la autorización agrupada para la transferencia internacional?**
+
+El artículo 26 de la Ley 1581 de 2012 restringe la transferencia de datos
+personales a países que no ofrezcan niveles adecuados de protección, y la
+SIC mantiene un listado de países considerados adecuados. La excepción
+habitual es la **autorización expresa e informada del titular**.
+
+Hoy la autorización se obtiene de forma agrupada: aceptar los Términos y
+la Política al registrarse. El texto nuevo declara la transferencia con
+claridad, pero **si el abogado concluye que hace falta autorización
+separada**, esto deja de ser un cambio de texto y pasa a ser un cambio de
+producto: una casilla propia en el registro, desmarcada por defecto,
+registrada con fecha y hora como prueba de la autorización. Eso es
+trabajo de implementación, no de redacción.
+
+Conviene además verificar si la jurisdicción donde opera el proveedor
+figura en el listado de países adecuados de la SIC, porque de ahí depende
+cuál de las excepciones del artículo 26 aplica.
+
+**2. ¿Qué compromisos tiene realmente el proveedor sobre entrenamiento?**
+
+La redacción anterior afirmaba que los contratos no se usan «para
+entrenar modelos públicos de terceros». Esa es una afirmación **sobre lo
+que hace un tercero**, y Clausum no puede garantizarla: depende de los
+términos de servicio de DeepSeek, que pueden cambiar sin intervención
+nuestra.
+
+El texto nuevo limita el compromiso a lo que Clausum sí controla (no
+vender, no entrenar modelos propios, no compartir con terceros ajenos) y
+remite al proveedor para el resto. **Antes de cobrar**, hay que leer los
+términos vigentes de la API de DeepSeek y confirmar qué dicen sobre
+retención y entrenamiento. Si no hay garantía contractual de
+no-entrenamiento, hay dos caminos: declararlo con esa misma honestidad en
+la política, o cambiar a un proveedor que sí la ofrezca. Para contratos
+confidenciales de clientes de abogados, lo segundo puede ser un requisito
+comercial, no solo legal.
+
+**Plazo de retención de comprobantes.** El texto dice «la normativa
+tributaria y contable» sin fijar años a propósito: el plazo exacto lo
+determina el régimen aplicable y debe escribirlo el abogado.
 
 ### F5-02 — Dominio, facturación y SEO
 

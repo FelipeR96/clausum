@@ -54,12 +54,15 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
   },
   {
     id: 'ia',
-    title: '5. Uso de inteligencia artificial y transferencia a proveedores',
+    title: '5. Uso de inteligencia artificial y transferencia internacional de datos',
     paragraphs: [
-      'Para generar análisis, Clausum envía fragmentos del texto extraído de sus documentos a proveedores de modelos de lenguaje (actualmente DeepSeek u otros que designemos, alojados fuera de Colombia). Solo se transmite el contenido necesario para la operación solicitada.',
-      'No vendemos sus contratos ni los usamos para entrenar modelos públicos de terceros, salvo que usted nos autorice expresamente por escrito para otra finalidad.',
+      'Para generar los análisis, Clausum transmite a un proveedor de modelos de lenguaje el texto extraído del documento que usted sube. Este es el punto más relevante de esta política y conviene que lo lea con atención: el contenido de sus contratos sale del país.',
+      'Nuestro subencargado actual para esta finalidad es DeepSeek, cuya infraestructura se encuentra fuera de Colombia. La transmisión se limita al texto necesario para la operación que usted solicita (analizar, detectar riesgos o comparar) junto con los artículos normativos que acompañan la consulta. No se envían su nombre, su correo electrónico ni sus datos de facturación.',
+      'Esto constituye una transferencia internacional de datos personales en el sentido de la Ley 1581 de 2012. Al aceptar esta política y utilizar las funciones de análisis, usted autoriza de forma expresa e informada dicha transferencia. Si no desea que el contenido de sus documentos sea transmitido fuera de Colombia, no utilice las funciones de análisis: no es posible prestarlas sin esa transmisión.',
+      'En relación con el entrenamiento de modelos: Clausum no vende sus contratos, no los utiliza para entrenar modelos propios ni los comparte con terceros distintos de los subencargados descritos en esta política. Las condiciones bajo las cuales el proveedor de inteligencia artificial trata la información que recibe se rigen por los términos de servicio de dicho proveedor, que pueden cambiar sin nuestra intervención; cuando esas condiciones cambien de forma relevante, actualizaremos esta política e informaremos a los usuarios.',
       'Los resultados generados por IA pueden contener imprecisiones. Clausum no garantiza exactitud jurídica ni sustituye el criterio de un abogado (véase Aviso legal).',
       'También utilizamos infraestructura de Google Firebase (autenticación, base de datos Firestore, almacenamiento de archivos y funciones en la nube), con centros de datos que pueden estar fuera de Colombia. Google actúa como encargado del tratamiento según sus propios términos y certificaciones.',
+      'Puede solicitar en cualquier momento la lista actualizada de subencargados escribiendo a la dirección de contacto indicada al final de esta política.',
     ],
   },
   {
@@ -82,11 +85,13 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
   },
   {
     id: 'conservacion',
-    title: '8. Plazos de conservación',
+    title: '8. Plazos de conservación y eliminación de la cuenta',
     paragraphs: [
       'Conservamos sus datos mientras mantenga una cuenta activa o sea necesario para prestar el servicio, cumplir obligaciones legales o resolver reclamaciones.',
-      'Si elimina su cuenta, borraremos o anonimizaremos sus datos personales y documentos en un plazo razonable, salvo copias de respaldo temporales o registros que debamos conservar por ley (por ejemplo, registros de facturación).',
-      'Los logs técnicos y de seguridad se conservan por períodos limitados acordes a buenas prácticas.',
+      'Cuando usted elimina su cuenta desde Ajustes, el proceso se ejecuta en este orden: primero cancelamos su suscripción ante la pasarela de pago, para que no se genere ningún cobro posterior; después eliminamos su perfil, sus contratos y los archivos que subió, sus análisis, comparaciones, alertas e historial de actividad.',
+      'Hay una excepción, y queremos que quede explícita: los comprobantes de pago NO se eliminan. La normativa tributaria y contable obliga a conservar los soportes de facturación, y esa obligación prevalece sobre la supresión. Lo que hacemos es desvincularlos de usted: sustituimos su identificador de usuario por un código irreversible, de modo que el registro contable subsiste sin seguir siendo un dato personal atribuible a su persona. No conservamos su nombre, su correo ni el contenido de sus documentos asociados a esos comprobantes.',
+      'Antes de eliminar su cuenta puede descargar una copia de todos sus datos desde Ajustes → Seguridad → Descargar mis datos.',
+      'Las copias de respaldo técnicas pueden retener información durante un período adicional limitado hasta su rotación normal. Los logs técnicos y de seguridad se conservan por períodos limitados acordes a buenas prácticas.',
     ],
   },
   {
