@@ -18,6 +18,7 @@
     "build:co-corpus": "node scripts/build-co-corpus.cjs",
     "import:co-corpus": "node scripts/import-co-corpus.cjs",
     "test:api": "node scripts/test-api-flow.cjs",
+    "sim:wompi": "node scripts/wompi-webhook-sim.cjs",
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
