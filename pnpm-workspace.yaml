@@ -2,12 +2,22 @@ packages:
   - 'frontend'
   - 'backend/functions'
   - 'shared'
+# Scripts de postinstall que se permiten o se bloquean explicitamente.
+# En CI pnpm convierte un script no declarado en ERROR
+# (ERR_PNPM_IGNORED_BUILDS), no en aviso como en local, asi que cualquier
+# dependencia con postinstall tiene que aparecer aqui.
 allowBuilds:
   '@firebase/util': true
   canvas: false
   esbuild: true
   protobufjs: true
   tesseract.js: true
+  # optionalDependency de superstatic, que viene con firebase-tools para el
+  # emulador de hosting. Requiere compilacion nativa (node-gyp + nan) y
+  # firebase-tools funciona sin ella, cayendo a las expresiones regulares
+  # de JavaScript. No merece arrastrar un toolchain de C++ al CI para una
+  # mejora de rendimiento que no usamos.
+  re2: false
 
 # Red de seguridad. @eslint/eslintrc@3.3.7 (latest) declara js-yaml ^4.3.2 y
 # esa version no existe: la linea v4 de js-yaml termina en 4.3.0. eslint 10 ya
