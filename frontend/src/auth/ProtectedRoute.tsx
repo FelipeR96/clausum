@@ -1,6 +1,8 @@
+import { Suspense } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthProvider';
 import { useRobotsMeta } from '@/seo/useRobotsMeta';
+import { RouteFallback } from '@/app/LazyBoundary';
 
 export function ProtectedRoute() {
   const { user, loading } = useAuth();
@@ -24,5 +26,12 @@ export function ProtectedRoute() {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  return <Outlet />;
+  // Las páginas del panel llegan diferidas: el Suspense va aquí dentro,
+  // ya pasada la comprobación de sesión, para que el chunk no se pida
+  // hasta que se sepa que el usuario puede verlo.
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      <Outlet />
+    </Suspense>
+  );
 }
