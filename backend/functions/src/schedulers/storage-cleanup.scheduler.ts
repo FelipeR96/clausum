@@ -1,5 +1,6 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { adminStorage } from '../firebase/admin';
+import { ALL_SECRETS } from '../config/env';
 import { logger } from '../utils/logger';
 
 const DEFAULT_EXPORT_RETENTION_DAYS = 30;
@@ -16,6 +17,9 @@ export const storageCleanupScheduler = onSchedule(
     schedule: 'every day 04:00',
     timeZone: 'America/Bogota',
     region: 'us-east1',
+    // Las renovaciones recurrentes necesitan las credenciales igual
+    // que los endpoints: sin esto el scheduler corre sin acceso.
+    secrets: ALL_SECRETS,
   },
   async () => {
     const retentionDays = getExportRetentionDays();

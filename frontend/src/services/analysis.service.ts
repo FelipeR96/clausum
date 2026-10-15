@@ -3,7 +3,7 @@ import type { Contract } from '@clausum/shared';
 import type { ProcessingProgress } from '@clausum/shared';
 import { invalidateSubscriptionCache } from '@/hooks/useSubscriptionSummary';
 import { apiClient } from '@/services/api/client';
-import { pollAnalysisUntilDone } from '@/utils/poll-analysis';
+import { waitForJob } from '@/utils/wait-for-job';
 
 export type AnalysisPayload = {
   analysisId: string;
@@ -23,7 +23,15 @@ export async function runAnalysis(
     body: JSON.stringify({ contractId, country }),
   });
 
-  const analysis = await pollAnalysisUntilDone(start.analysisId, options?.onProgress);
+  const { analysis } = await waitForJob({
+    collection: 'analyses',
+    docId: start.analysisId,
+    fetchViaApi: () => getAnalysisById(start.analysisId),
+    onProgress: options?.onProgress,
+    timeoutMessage:
+      'El análisis está tardando más de lo habitual. Vuelve a intentarlo en unos minutos.',
+  });
+
   const contract = await apiClient<{ contract: Contract & { id: string } }>(
     `/contracts/${contractId}`
   );
@@ -33,17 +41,32 @@ export async function runAnalysis(
 
 export async function runRiskDetection(
   contractId: string,
-  country: CountryCode = 'CO'
+  country: CountryCode = 'CO',
+  options?: {
+    onProgress?: (progress: ProcessingProgress | undefined) => void;
+  }
 ): Promise<AnalysisPayload> {
-  const result = await apiClient<{ analysisId: string; analysis: Analysis }>('/risks', {
+  // Desde el paso a Cloud Tasks, /risks responde 202 y el trabajo corre
+  // aparte; el resultado se espera por el documento de Firestore.
+  const start = await apiClient<{ analysisId: string; status: string }>('/risks', {
     method: 'POST',
     body: JSON.stringify({ contractId, country }),
   });
+
+  const { analysis } = await waitForJob({
+    collection: 'analyses',
+    docId: start.analysisId,
+    fetchViaApi: () => getAnalysisById(start.analysisId),
+    onProgress: options?.onProgress,
+    timeoutMessage:
+      'La detección de riesgos está tardando más de lo habitual. Vuelve a intentarlo en unos minutos.',
+  });
+
   const contract = await apiClient<{ contract: Contract & { id: string } }>(
     `/contracts/${contractId}`
   );
   invalidateSubscriptionCache();
-  return { ...result, contract: contract.contract };
+  return { analysisId: start.analysisId, analysis, contract: contract.contract };
 }
 
 export async function getContractAnalysis(

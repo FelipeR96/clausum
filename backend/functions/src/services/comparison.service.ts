@@ -22,7 +22,8 @@ import {
   buildLegalContext,
   mergeLegalContexts,
 } from './legal-context.service';
-import type { AnalysisOptions } from './analysis.service';
+import type { AnalysisOptions, JobExecutionOptions } from './analysis.service';
+import { setComparisonProgress } from './processing-progress.service';
 import { AppError } from '../utils/errors';
 import { logger } from '../utils/logger';
 
@@ -41,13 +42,69 @@ export async function getOwnedComparison(
   return { id: doc.id, ...data };
 }
 
-export async function compareContracts(
+/**
+ * Prepara la comparación: valida propiedad de ambos contratos, reserva cuota
+ * y crea el documento en `processing`. Corre dentro de la request.
+ */
+export async function initiateCompareContracts(
+  userId: string,
+  contractIdA: string,
+  contractIdB: string
+): Promise<{ comparisonId: string }> {
+  const [contractA, contractB] = await Promise.all([
+    getOwnedContract(userId, contractIdA),
+    getOwnedContract(userId, contractIdB),
+  ]);
+
+  if (!contractA.storagePath || !contractB.storagePath) {
+    throw new AppError('Ambos contratos deben tener PDF asociado', 422, 'NO_PDF');
+  }
+
+  await reserveComparisonUsage(userId);
+
+  const comparisonRef = adminDb().collection(COLLECTIONS.comparisons).doc();
+  await comparisonRef.set({
+    userId,
+    contractIdA,
+    contractIdB,
+    status: 'processing',
+    processingProgress: {
+      stage: 'queued',
+      message: 'Preparando comparación…',
+    },
+    createdAt: FieldValue.serverTimestamp(),
+  });
+
+  return { comparisonId: comparisonRef.id };
+}
+
+/**
+ * Ejecuta la comparación. Es el trabajo más lento de los tres: extrae y
+ * analiza DOS documentos, así que va en una tarea de Cloud Tasks.
+ */
+export async function executeCompareContracts(
   userId: string,
   contractIdA: string,
   contractIdB: string,
-  options?: AnalysisOptions
+  comparisonId: string,
+  options?: AnalysisOptions,
+  execOptions?: JobExecutionOptions
 ): Promise<{ comparisonId: string; comparison: Comparison }> {
   const startedAt = Date.now();
+  const comparisonRef = adminDb().collection(COLLECTIONS.comparisons).doc(comparisonId);
+
+  // Idempotencia: ver la nota en executeAnalyzeContract.
+  const existing = await comparisonRef.get();
+  if (!existing.exists) {
+    throw new AppError('Comparación no encontrada', 404, 'COMPARISON_NOT_FOUND');
+  }
+  if (existing.get('status') === 'done') {
+    logger.info('api', 'Comparación ya completada; se omite el reintento', {
+      userId,
+      metadata: { comparisonId },
+    });
+    return { comparisonId, comparison: existing.data() as Comparison };
+  }
 
   const [contractA, contractB] = await Promise.all([
     getOwnedContract(userId, contractIdA),
@@ -58,20 +115,15 @@ export async function compareContracts(
     throw new AppError('Ambos contratos deben tener PDF asociado', 422, 'NO_PDF');
   }
 
-  let quotaReserved = false;
-  await reserveComparisonUsage(userId);
-  quotaReserved = true;
-
-  const comparisonRef = adminDb().collection(COLLECTIONS.comparisons).doc();
-  await comparisonRef.set({
-    userId,
-    contractIdA,
-    contractIdB,
-    status: 'processing',
-    createdAt: FieldValue.serverTimestamp(),
-  });
+  const reportProgress = (progress: Parameters<typeof setComparisonProgress>[1]) =>
+    setComparisonProgress(comparisonId, progress);
 
   try {
+    await reportProgress({
+      stage: 'extracting',
+      message: 'Extrayendo texto de ambos documentos…',
+    });
+
     const [textA, textB] = await Promise.all([
       extractContractText(contractA.storagePath, contractA.fileName, {
         userId,
@@ -90,6 +142,11 @@ export async function compareContracts(
       contractA.contractTypeId ??
       contractB.contractTypeId;
 
+    await reportProgress({
+      stage: 'legal_context',
+      message: 'Consultando contexto legal…',
+    });
+
     const [ctxA, ctxB] = await Promise.all([
       buildLegalContext({
         contractText: textA.text,
@@ -106,6 +163,11 @@ export async function compareContracts(
     ]);
 
     const legalContext = mergeLegalContexts([ctxA, ctxB]);
+
+    await reportProgress({
+      stage: 'ai_analysis',
+      message: 'Comparando cláusula por cláusula…',
+    });
 
     const deepseek = await callDeepSeek(
       buildComparePrompt(textA.text, textB.text, legalContext),
@@ -135,6 +197,7 @@ export async function compareContracts(
       legalSearchMethod: legalContext.searchMethod,
       tokensUsed: deepseek.tokensUsed,
       completedAt: FieldValue.serverTimestamp(),
+      processingProgress: FieldValue.delete(),
     });
 
     await addHistoryEntry(userId, {
@@ -167,14 +230,28 @@ export async function compareContracts(
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
-    if (quotaReserved) {
-      await releaseComparisonUsage(userId);
-      quotaReserved = false;
+
+    if (execOptions?.markErrorOnFailure === false) {
+      await reportProgress({ stage: 'queued', message: 'Reintentando…' });
+      logger.warn('deepseek', 'Fallo en intento de comparación; se reintentará', {
+        userId,
+        metadata: {
+          contractIdA,
+          contractIdB,
+          comparisonId,
+          attempt: execOptions?.attempt ?? 0,
+          reason: message,
+        },
+      });
+      throw error;
     }
+
+    await releaseComparisonUsage(userId);
     await comparisonRef.update({
       status: 'error',
       errorMessage: message,
       completedAt: FieldValue.serverTimestamp(),
+      processingProgress: FieldValue.delete(),
     });
     logger.error('deepseek', 'Error en comparación', error, {
       userId,
@@ -184,6 +261,19 @@ export async function compareContracts(
       ? error
       : new AppError(message, 500, 'COMPARE_FAILED');
   }
+}
+
+/**
+ * Envoltorio sincrónico para scripts y pruebas. El endpoint HTTP encola.
+ */
+export async function compareContracts(
+  userId: string,
+  contractIdA: string,
+  contractIdB: string,
+  options?: AnalysisOptions
+): Promise<{ comparisonId: string; comparison: Comparison }> {
+  const { comparisonId } = await initiateCompareContracts(userId, contractIdA, contractIdB);
+  return executeCompareContracts(userId, contractIdA, contractIdB, comparisonId, options);
 }
 
 export async function setComparisonReview(

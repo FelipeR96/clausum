@@ -1,5 +1,10 @@
 import type { Plan, PlanEntitlements, PlanSlug } from '@clausum/shared';
-import { COLLECTIONS, DEFAULT_ENTITLEMENTS } from '@clausum/shared';
+import {
+  BILLING_CURRENCY,
+  COLLECTIONS,
+  DEFAULT_ENTITLEMENTS,
+  PRO_BILLING,
+} from '@clausum/shared';
 import { adminDb } from '../firebase/admin';
 
 const planCache = new Map<string, { plan: Plan; expiresAt: number }>();
@@ -38,11 +43,15 @@ export async function getPlanBySlug(slug: PlanSlug): Promise<Plan | null> {
   if (!doc.exists) {
     const known = slug as 'free' | 'pro';
     if (known in DEFAULT_ENTITLEMENTS) {
+      // Respaldo cuando el documento del plan no está en Firestore (por
+      // ejemplo antes de correr el seed). El precio sale de la constante
+      // compartida, que es la fuente de verdad del pricing: antes estaba
+      // fijado a 2900 EUR, de una versión anterior del producto.
       return {
         name: known === 'pro' ? 'Pro' : 'Free',
         slug: known,
-        priceMonthly: known === 'pro' ? 2900 : 0,
-        currency: 'EUR',
+        priceMonthly: known === 'pro' ? PRO_BILLING.monthlyAmountInCents / 100 : 0,
+        currency: BILLING_CURRENCY,
         limits: normalizeKnownEntitlements(known, DEFAULT_ENTITLEMENTS[known]),
         features: [],
         active: true,

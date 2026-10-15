@@ -30,6 +30,20 @@ export interface AnalysisOptions {
   contractTypeId?: string;
 }
 
+/**
+ * Opciones de ejecución del trabajo pesado, no del análisis en sí.
+ *
+ * `markErrorOnFailure` existe por los reintentos de Cloud Tasks: en un
+ * intento intermedio no se marca el análisis como `error` ni se libera la
+ * cuota, porque la cola va a volver a intentarlo y el usuario vería un
+ * estado de fallo que no es definitivo. Solo el último intento persiste el
+ * error. La ruta sincrónica (`analyzeContract`) lo deja en `true`.
+ */
+export interface JobExecutionOptions {
+  markErrorOnFailure?: boolean;
+  attempt?: number;
+}
+
 export async function initiateAnalyzeContract(
   userId: string,
   contractId: string
@@ -66,10 +80,28 @@ export async function executeAnalyzeContract(
   userId: string,
   contractId: string,
   analysisId: string,
-  options?: AnalysisOptions
+  options?: AnalysisOptions,
+  execOptions?: JobExecutionOptions
 ): Promise<void> {
   const startedAt = Date.now();
   const analysisRef = adminDb().collection(COLLECTIONS.analyses).doc(analysisId);
+
+  // Guarda de idempotencia. Cloud Tasks puede entregar la misma tarea más de
+  // una vez (reintento tras un timeout en el que el trabajo sí terminó, o
+  // entrega duplicada). Sin esto se repetiría la llamada a DeepSeek, se
+  // duplicaría la alerta y se sobrescribiría un resultado válido.
+  const existing = await analysisRef.get();
+  if (!existing.exists) {
+    throw new AppError('Análisis no encontrado', 404, 'ANALYSIS_NOT_FOUND');
+  }
+  if (existing.get('status') === 'done') {
+    logger.info('api', 'Análisis ya completado; se omite el reintento', {
+      userId,
+      metadata: { analysisId, contractId, attempt: execOptions?.attempt ?? 0 },
+    });
+    return;
+  }
+
   const contract = await getOwnedContract(userId, contractId);
   let quotaReserved = true;
 
@@ -271,6 +303,28 @@ export async function executeAnalyzeContract(
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
+    const isFinal = execOptions?.markErrorOnFailure !== false;
+
+    if (!isFinal) {
+      // Intento intermedio: se conserva la cuota reservada y el estado
+      // `processing`, y se deja constancia en el progreso de que se va a
+      // reintentar. Se relanza para que la cola haga su trabajo.
+      await reportProgress({
+        stage: 'queued',
+        message: 'Reintentando el análisis…',
+      });
+      logger.warn('deepseek', 'Fallo en intento de análisis; se reintentará', {
+        userId,
+        metadata: {
+          contractId,
+          analysisId,
+          attempt: execOptions?.attempt ?? 0,
+          reason: message,
+        },
+      });
+      throw error;
+    }
+
     if (quotaReserved) {
       await releaseAnalysisUsage(userId);
       quotaReserved = false;

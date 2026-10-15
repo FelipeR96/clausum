@@ -6,6 +6,11 @@ import {
   type BillingInterval,
 } from '@clausum/shared';
 import { adminDb } from '../firebase/admin';
+import {
+  paypalClientSecretSecret,
+  paypalWebhookIdSecret,
+  readSecret,
+} from '../config/env';
 import { setUserPlan } from './subscription.service';
 import { AppError } from '../utils/errors';
 import { logger } from '../utils/logger';
@@ -48,8 +53,8 @@ let cachedToken: { value: string; expiresAt: number } | null = null;
 
 export function getPayPalConfig(): PayPalConfig | null {
   const clientId = process.env.PAYPAL_CLIENT_ID;
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
-  const webhookId = process.env.PAYPAL_WEBHOOK_ID;
+  const clientSecret = readSecret(paypalClientSecretSecret, 'PAYPAL_CLIENT_SECRET');
+  const webhookId = readSecret(paypalWebhookIdSecret, 'PAYPAL_WEBHOOK_ID');
   const planIdMonthly = process.env.PAYPAL_PLAN_ID_MONTHLY;
   const planIdAnnual = process.env.PAYPAL_PLAN_ID_ANNUAL;
   const mode = process.env.PAYPAL_MODE === 'live' ? 'live' : 'sandbox';

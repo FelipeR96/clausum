@@ -18,36 +18,37 @@ import {
   reserveAnalysisUsage,
 } from './usage.service';
 import { buildLegalContext } from './legal-context.service';
-import type { AnalysisOptions } from './analysis.service';
+import type { AnalysisOptions, JobExecutionOptions } from './analysis.service';
+import { setAnalysisProgress } from './processing-progress.service';
 import { assertEntitlement } from './subscription.service';
 import { persistRisksAnalysis } from './risks-persist.service';
 import { AppError } from '../utils/errors';
 import { logger } from '../utils/logger';
 
-type RiskDetectionOptions = AnalysisOptions & {
+export type RiskDetectionOptions = AnalysisOptions & {
   reserveQuota?: boolean;
   markContractProcessing?: boolean;
   markContractError?: boolean;
 };
 
-export async function detectRisks(
+/**
+ * Prepara la detección de riesgos: valida permisos, reserva cuota y crea el
+ * documento en `processing`. Barato y rápido — corre dentro de la request.
+ */
+export async function initiateDetectRisks(
   userId: string,
   contractId: string,
   options?: RiskDetectionOptions
-): Promise<{ analysisId: string; analysis: Analysis }> {
+): Promise<{ analysisId: string }> {
   await assertEntitlement(userId, ENTITLEMENT_ACTIONS.ALERTS_ADVANCED);
-
-  const startedAt = Date.now();
 
   const contract = await getOwnedContract(userId, contractId);
   if (!contract.storagePath) {
     throw new AppError('El contrato no tiene PDF asociado', 422, 'NO_PDF');
   }
 
-  let quotaReserved = false;
   if (options?.reserveQuota !== false) {
     await reserveAnalysisUsage(userId);
-    quotaReserved = true;
   }
 
   const analysisRef = adminDb().collection(COLLECTIONS.analyses).doc();
@@ -56,6 +57,10 @@ export async function detectRisks(
     contractId,
     mode: 'risks',
     status: 'processing',
+    processingProgress: {
+      stage: 'queued',
+      message: 'Preparando detección de riesgos…',
+    },
     createdAt: FieldValue.serverTimestamp(),
   });
 
@@ -66,12 +71,59 @@ export async function detectRisks(
     });
   }
 
+  return { analysisId: analysisRef.id };
+}
+
+/**
+ * Ejecuta el trabajo pesado. Va en una tarea de Cloud Tasks, no en el ciclo
+ * de la request: extracción de texto, OCR, contexto legal y DeepSeek pueden
+ * tardar minutos, y Cloud Run estrangula la CPU en cuanto la respuesta HTTP
+ * se cierra.
+ */
+export async function executeDetectRisks(
+  userId: string,
+  contractId: string,
+  analysisId: string,
+  options?: RiskDetectionOptions,
+  execOptions?: JobExecutionOptions
+): Promise<{ analysisId: string; analysis: Analysis }> {
+  const startedAt = Date.now();
+  const analysisRef = adminDb().collection(COLLECTIONS.analyses).doc(analysisId);
+
+  // Idempotencia: ver la nota en executeAnalyzeContract.
+  const existing = await analysisRef.get();
+  if (!existing.exists) {
+    throw new AppError('Análisis no encontrado', 404, 'ANALYSIS_NOT_FOUND');
+  }
+  if (existing.get('status') === 'done') {
+    logger.info('api', 'Detección de riesgos ya completada; se omite el reintento', {
+      userId,
+      metadata: { analysisId, contractId },
+    });
+    return { analysisId, analysis: existing.data() as Analysis };
+  }
+
+  const contract = await getOwnedContract(userId, contractId);
+  if (!contract.storagePath) {
+    throw new AppError('El contrato no tiene PDF asociado', 422, 'NO_PDF');
+  }
+
+  const quotaReserved = options?.reserveQuota !== false;
+  const reportProgress = (progress: Parameters<typeof setAnalysisProgress>[1]) =>
+    setAnalysisProgress(analysisId, progress);
+
   try {
     const { text, pageCount } = await extractContractText(
       contract.storagePath,
       contract.fileName,
-      { userId, contractId }
+      { userId, contractId },
+      reportProgress
     );
+
+    await reportProgress({
+      stage: 'legal_context',
+      message: 'Consultando contexto legal…',
+    });
 
     const legalContext = await buildLegalContext({
       contractText: text,
@@ -79,6 +131,11 @@ export async function detectRisks(
       contractId,
       country: options?.country ?? contract.country,
       contractTypeId: options?.contractTypeId ?? contract.contractTypeId,
+    });
+
+    await reportProgress({
+      stage: 'ai_analysis',
+      message: 'Detectando riesgos con inteligencia artificial…',
     });
 
     const deepseek = await callDeepSeek(buildRisksPrompt(text, legalContext), {
@@ -90,6 +147,11 @@ export async function detectRisks(
     const parsed = parseJsonResponse(deepseek.content, risksResponseSchema);
     const processingMs = Date.now() - startedAt;
     const riskScore = 100 - parsed.score;
+
+    await reportProgress({
+      stage: 'finalizing',
+      message: 'Guardando perfil de riesgo…',
+    });
 
     const { risksAnalysisId } = await persistRisksAnalysis({
       userId,
@@ -120,18 +182,37 @@ export async function detectRisks(
       },
     });
 
+    await adminDb().collection(COLLECTIONS.analyses).doc(risksAnalysisId).update({
+      processingProgress: FieldValue.delete(),
+    });
+
     const saved = await adminDb().collection(COLLECTIONS.analyses).doc(risksAnalysisId).get();
     return { analysisId: risksAnalysisId, analysis: saved.data() as Analysis };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
+
+    if (execOptions?.markErrorOnFailure === false) {
+      await reportProgress({ stage: 'queued', message: 'Reintentando…' });
+      logger.warn('deepseek', 'Fallo en intento de riesgos; se reintentará', {
+        userId,
+        metadata: {
+          contractId,
+          analysisId,
+          attempt: execOptions?.attempt ?? 0,
+          reason: message,
+        },
+      });
+      throw error;
+    }
+
     if (quotaReserved) {
       await releaseAnalysisUsage(userId);
-      quotaReserved = false;
     }
     await analysisRef.update({
       status: 'error',
       errorMessage: message,
       completedAt: FieldValue.serverTimestamp(),
+      processingProgress: FieldValue.delete(),
     });
     if (options?.markContractError !== false) {
       await adminDb().collection(COLLECTIONS.contracts).doc(contractId).update({
@@ -145,4 +226,18 @@ export async function detectRisks(
     });
     throw error instanceof AppError ? error : new AppError(message, 500, 'RISKS_FAILED');
   }
+}
+
+/**
+ * Envoltorio sincrónico: inicia y ejecuta en la misma llamada.
+ *
+ * Sirve para scripts y pruebas. El endpoint HTTP NO lo usa — encola.
+ */
+export async function detectRisks(
+  userId: string,
+  contractId: string,
+  options?: RiskDetectionOptions
+): Promise<{ analysisId: string; analysis: Analysis }> {
+  const { analysisId } = await initiateDetectRisks(userId, contractId, options);
+  return executeDetectRisks(userId, contractId, analysisId, options);
 }

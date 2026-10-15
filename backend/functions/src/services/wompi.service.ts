@@ -9,6 +9,12 @@ import {
 } from '@clausum/shared';
 import type { User } from '@clausum/shared';
 import { adminDb } from '../firebase/admin';
+import {
+  readSecret,
+  wompiEventsSecret,
+  wompiIntegritySecret,
+  wompiPrivateKeySecret,
+} from '../config/env';
 import { setUserPlan } from './subscription.service';
 import { AppError } from '../utils/errors';
 import { logger } from '../utils/logger';
@@ -87,10 +93,12 @@ const RENEWAL_RETRY_GRACE_MS = 3 * 24 * 60 * 60 * 1000;
 const RENEWAL_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 
 export function getWompiConfig(): WompiConfig | null {
+  // La llave pública no es secreta (va al widget del navegador); las otras
+  // tres salen de Secret Manager, con fallback a .env.local en emulador.
   const publicKey = process.env.WOMPI_PUBLIC_KEY;
-  const privateKey = process.env.WOMPI_PRIVATE_KEY;
-  const integritySecret = process.env.WOMPI_INTEGRITY_SECRET;
-  const eventsSecret = process.env.WOMPI_EVENTS_SECRET;
+  const privateKey = readSecret(wompiPrivateKeySecret, 'WOMPI_PRIVATE_KEY');
+  const integritySecret = readSecret(wompiIntegritySecret, 'WOMPI_INTEGRITY_SECRET');
+  const eventsSecret = readSecret(wompiEventsSecret, 'WOMPI_EVENTS_SECRET');
   const appUrl = process.env.APP_URL ?? 'http://localhost:5173';
 
   if (!publicKey || !integritySecret || !eventsSecret) {

@@ -5,6 +5,7 @@ import type {
   WithTimestamps,
 } from './common.types';
 import type { CountryCode, LawReference, LegalSearchMethod } from './legal.types';
+import type { ProcessingProgress } from './processing.types';
 
 export interface ComparisonDiffItem {
   title: string;
@@ -35,6 +36,9 @@ export interface Comparison extends WithTimestamps {
   contractIdB: string;
   title?: string;
   status: JobStatus;
+  /** Etapa en curso mientras `status` es `processing`; se borra al terminar. */
+  processingProgress?: ProcessingProgress;
+  errorMessage?: string;
   summary?: string;
   diff?: ComparisonDiff;
   country?: CountryCode;

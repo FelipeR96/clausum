@@ -1,7 +1,68 @@
 import { defineSecret } from 'firebase-functions/params';
+import type { SecretParam } from 'firebase-functions/lib/params/types';
 import { z } from 'zod';
 
+// ─────────────────────────────────────────────────────────────────────────
+// Secretos
+//
+// Todo lo que sea una credencial va aquí y se inyecta explícitamente en la
+// función que lo necesita (`secrets: ALL_SECRETS`). Un `process.env.X` suelto
+// NO llega al runtime desplegado: los `.env.local` son exclusivos del
+// emulador y Firebase no los sube.
+//
+// Cargar en producción:
+//   firebase functions:secrets:set NOMBRE --config backend/firebase/firebase.json
+// Verificar:
+//   firebase functions:secrets:access NOMBRE --config backend/firebase/firebase.json
+// ─────────────────────────────────────────────────────────────────────────
+
 export const deepseekApiKeySecret = defineSecret('DEEPSEEK_API_KEY');
+export const wompiPrivateKeySecret = defineSecret('WOMPI_PRIVATE_KEY');
+export const wompiIntegritySecret = defineSecret('WOMPI_INTEGRITY_SECRET');
+export const wompiEventsSecret = defineSecret('WOMPI_EVENTS_SECRET');
+export const paypalClientSecretSecret = defineSecret('PAYPAL_CLIENT_SECRET');
+export const paypalWebhookIdSecret = defineSecret('PAYPAL_WEBHOOK_ID');
+
+/**
+ * Lista completa de secretos. Toda función que toque DeepSeek, Wompi o PayPal
+ * debe declararla, incluidos los schedulers: la renovación recurrente de
+ * Wompi necesita la llave privada igual que el endpoint de checkout.
+ */
+export const ALL_SECRETS: SecretParam[] = [
+  deepseekApiKeySecret,
+  wompiPrivateKeySecret,
+  wompiIntegritySecret,
+  wompiEventsSecret,
+  paypalClientSecretSecret,
+  paypalWebhookIdSecret,
+];
+
+/**
+ * Lee un secreto con fallback a `process.env`.
+ *
+ * En el runtime desplegado el valor viene de Secret Manager vía `.value()`.
+ * En emulador `.value()` lanza o devuelve vacío, y el valor sale del
+ * `.env.local`. Devuelve `undefined` si no hay ninguno de los dos, para que
+ * cada servicio decida si eso es fatal o solo significa "no configurado".
+ */
+export function readSecret(
+  secret: SecretParam,
+  envKey: string
+): string | undefined {
+  try {
+    const value = secret.value();
+    if (value) return value;
+  } catch {
+    // Sin secret vinculado (emulador, o función que no lo declaró).
+  }
+  return process.env[envKey] || undefined;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Configuración no sensible
+//
+// Esto sí puede vivir en un `.env` desplegado junto a la función.
+// ─────────────────────────────────────────────────────────────────────────
 
 const envSchema = z.object({
   DEEPSEEK_API_KEY: z.string().optional(),
@@ -13,6 +74,7 @@ const envSchema = z.object({
   MIN_PDF_TEXT_CHARS: z.coerce.number().default(80),
   OCR_MAX_PAGES: z.coerce.number().default(7),
   WOMPI_PUBLIC_KEY: z.string().optional(),
+  WOMPI_PRIVATE_KEY: z.string().optional(),
   WOMPI_INTEGRITY_SECRET: z.string().optional(),
   WOMPI_EVENTS_SECRET: z.string().optional(),
   PAYPAL_CLIENT_ID: z.string().optional(),
@@ -22,6 +84,8 @@ const envSchema = z.object({
   PAYPAL_PLAN_ID_MONTHLY: z.string().optional(),
   PAYPAL_PLAN_ID_ANNUAL: z.string().optional(),
   APP_URL: z.string().url().optional(),
+  CORS_ORIGINS: z.string().optional(),
+  STORAGE_EXPORT_RETENTION_DAYS: z.coerce.number().optional(),
   LEGAL_SEARCH_PROVIDER: z.enum(['firestore', 'vector']).default('firestore'),
   LEGAL_DEFAULT_COUNTRY: z.string().default('CO'),
   LEGAL_MAX_ARTICLES: z.coerce.number().default(25),
@@ -36,19 +100,13 @@ export function getEnv(): Env {
 }
 
 export function getDeepSeekApiKey(): string {
-  const fromSecret = process.env.DEEPSEEK_API_KEY;
-  try {
-    const secretValue = deepseekApiKeySecret.value();
-    if (secretValue) return secretValue;
-  } catch {
-    // En emulador o sin secret vinculado, usar .env
+  const key = readSecret(deepseekApiKeySecret, 'DEEPSEEK_API_KEY');
+  if (!key) {
+    throw new Error('DEEPSEEK_API_KEY no configurada en el servidor');
   }
-  if (fromSecret) return fromSecret;
-  throw new Error('DEEPSEEK_API_KEY no configurada en el servidor');
+  return key;
 }
 
-export const isEmulator = (): boolean =>
-  Boolean(process.env.FIRESTORE_EMULATOR_HOST);
+export const isEmulator = (): boolean => Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 
-export const isProduction = (): boolean =>
-  process.env.NODE_ENV === 'production';
+export const isProduction = (): boolean => process.env.NODE_ENV === 'production';

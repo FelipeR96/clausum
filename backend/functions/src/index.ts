@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { getCorsOptions } from './config/cors';
 import type { User } from '@clausum/shared';
-import { deepseekApiKeySecret } from './config/env';
+import { ALL_SECRETS } from './config/env';
 import { authenticate, AuthenticatedRequest } from './middleware/authenticate';
 import { errorHandler } from './middleware/errorHandler';
 import { asyncHandler } from './middleware/asyncHandler';
@@ -19,7 +19,14 @@ import { getSubscriptionSummary } from './services/subscription.service';
 const app = express();
 
 app.use(cors(getCorsOptions()));
-app.use(express.json({ limit: '1mb' }));
+
+// Los bodies de la API son diminutos (ids y opciones), así que un límite
+// bajo es gratis y reduce superficie de abuso. Los webhooks de las
+// pasarelas son la excepción: si Wompi o PayPal engordan el payload de un
+// evento, un 413 significa perder la notificación de un pago.
+app.use('/api/billing/wompi/webhook', express.json({ limit: '5mb' }));
+app.use('/api/billing/paypal/webhook', express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '100kb' }));
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'clausum-api', version: '0.2.0' });
@@ -59,12 +66,24 @@ app.use(errorHandler);
 export const api = onRequest(
   {
     region: 'us-east1',
-    timeoutSeconds: 300,
-    memory: '2GiB',
-    secrets: [deepseekApiKeySecret],
+    // La API ya no hace trabajo de IA: valida, encola y responde. El
+    // presupuesto largo vive en las tareas (tasks/jobs.task.ts).
+    timeoutSeconds: 120,
+    memory: '1GiB',
+    // Techo de instancias: sin esto un pico de tráfico escala sin límite y
+    // la factura con él.
+    maxInstances: 20,
+    secrets: ALL_SECRETS,
   },
   app
 );
 
 export { wompiRenewalScheduler } from './schedulers/wompi-renewal.scheduler';
 export { storageCleanupScheduler } from './schedulers/storage-cleanup.scheduler';
+
+// Colas de trabajo: analizar, detectar riesgos y comparar.
+export {
+  processAnalysisTask,
+  processRisksTask,
+  processComparisonTask,
+} from './tasks/jobs.task';

@@ -69,7 +69,7 @@ service cloud.firestore {
           'draft', 'uploaded'
         ]
         && request.resource.data.storagePath.matches(
-          '^users/' + request.auth.uid + '/contracts/[^/]+\\.(pdf|docx)$'
+          '^users/' + request.auth.uid + '/contracts/[^/]+\\.(pdf|doc|docx)$'
         );
     }
 
