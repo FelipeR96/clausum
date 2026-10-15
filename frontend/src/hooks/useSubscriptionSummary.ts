@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { SubscriptionSummary } from '@clausum/shared';
 import { useAuth } from '@/auth/AuthProvider';
 import { fetchMe } from '@/services/user.service';
@@ -69,21 +69,20 @@ function loadSubscription(options?: { force?: boolean }): Promise<SubscriptionSu
 /** Suscripción del usuario (cacheada en sesión) para mostrar límites y OCR. */
 export function useSubscriptionSummary() {
   const { user, loading: authLoading } = useAuth();
-  const [subscription, setSubscription] = useState<SubscriptionSummary | null>(
+  const [fetched, setFetched] = useState<SubscriptionSummary | null>(
     subscriptionConfirmed ? cachedSubscription : null
   );
 
+  // Para un anónimo los límites son los del plan Free y son
+  // deterministas, así que se calculan durante el render. Empujarlos desde
+  // un efecto provocaría un render en cascada sin ganar nada.
+  const anonymousFallback = useMemo(() => buildFreeSubscriptionFallback(), []);
+
   useEffect(() => {
     // Mientras Firebase resuelve la sesión no se sabe aún si hay usuario:
-    // esperar evita una llamada que acabaría en 401.
-    if (authLoading) return;
-
-    // Visitante anónimo: los límites que se muestran son los del plan Free
-    // y se calculan en el cliente. Nada que preguntar al servidor.
-    if (!user) {
-      setSubscription(buildFreeSubscriptionFallback());
-      return;
-    }
+    // esperar evita una llamada que acabaría en 401. Y sin usuario no hay
+    // nada que preguntarle al servidor.
+    if (authLoading || !user) return;
 
     let cancelled = false;
     let pollId: ReturnType<typeof setInterval> | null = null;
@@ -99,10 +98,10 @@ export function useSubscriptionSummary() {
     const refresh = () => {
       loadSubscription({ force: !subscriptionConfirmed })
         .then((sub) => {
-          if (!cancelled) setSubscription(sub);
+          if (!cancelled) setFetched(sub);
         })
         .catch(() => {
-          if (!cancelled) setSubscription(buildFreeSubscriptionFallback());
+          if (!cancelled) setFetched(buildFreeSubscriptionFallback());
         });
     };
 
@@ -131,7 +130,9 @@ export function useSubscriptionSummary() {
     };
   }, [user, authLoading]);
 
-  return subscription;
+  if (authLoading) return null;
+  if (!user) return anonymousFallback;
+  return fetched;
 }
 
 export function invalidateSubscriptionCache() {

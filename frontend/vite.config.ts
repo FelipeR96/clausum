@@ -38,16 +38,17 @@ export default defineConfig(({ mode }) => {
             ) {
               return 'vendor-react';
             }
-            if (
-              id.includes('@firebase/firestore') ||
-              id.includes('@firebase/storage')
-            ) {
-              return 'vendor-firebase-data';
-            }
-            if (id.includes('@firebase/') || id.includes('node_modules/firebase/')) {
-              return 'vendor-firebase-core';
-            }
 
+            // Firebase NO se agrupa a mano. Un intento anterior separaba
+            // firestore y storage de auth, y Rollup avisaba de
+            // "Circular chunk": los módulos del SDK se referencian entre
+            // sí, así que los dos trozos quedaban mutuamente dependientes
+            // y cargar auth --que hace falta en toda página-- arrastraba
+            // firestore y storage igualmente. Eso anulaba el beneficio.
+            //
+            // Rollup reparte mejor por sí solo: con las rutas de /panel
+            // diferidas, firestore y storage caen en los chunks de esas
+            // rutas, que es exactamente donde se usan.
             return undefined;
           },
         },

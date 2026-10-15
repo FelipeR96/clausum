@@ -37,8 +37,8 @@ Actualizado: 2026-10-15.
 | F3-03 Perfil persistido | ⏳ |
 | F3-04 Inconsistencias | ✅ |
 | F3-05 Accesibilidad | ⏳ |
-| F3-06 Partir el bundle | ✅ Rutas de /panel y legales diferidas + vendor chunks |
-| F3-07 Avisos de lint a cero | ⏳ ~26 avisos, no bloquean el CI |
+| F3-06 Partir el bundle | ✅ Chunk de entrada de 1.098 kB a 135 kB (34 kB gzip) |
+| F3-07 Avisos de lint a cero | ⏳ 27 avisos, no bloquean el CI |
 | Fase 4 Corpus legal | ⏳ trabajo de contenido |
 | Fase 5 Legal y lanzamiento | ⏳ |
 
