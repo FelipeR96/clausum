@@ -20,14 +20,14 @@ Actualizado: 2026-10-15.
 | F0-02 README | ✅ |
 | F0-03 ESLint + Prettier | ✅ Configurado · ⏳ falta `pnpm install` y primera pasada |
 | F0-04 CI | ✅ Workflow escrito · ⏳ se activa al subir a GitHub |
-| F0-05 Build limpio | ⏳ **pendiente de verificar en tu máquina** |
+| F0-05 Build limpio | ✅ `pnpm build` y `pnpm typecheck` en verde en los tres paquetes |
 | F1-01 Proyecto Firebase prod | ⏳ requiere la consola de Firebase |
 | F1-02 Secretos de pago | ✅ Código listo · ⏳ falta `functions:secrets:set` |
 | F1-03/04 Cloud Tasks | ✅ |
 | F1-05 onSnapshot | ✅ |
 | F1-06 Límite de body | ✅ |
 | F2-01/02 Pruebas de reglas | ✅ |
-| F2-03 Pruebas de billing y esquemas | ✅ Parcial — falta cuotas y clasificador |
+| F2-03 Pruebas de billing, esquemas y cuotas | ✅ Falta solo el clasificador |
 | F2-04 Prueba de flujo completo | ⏳ |
 | F2-05 Observabilidad | ⏳ requiere cuenta de Sentry |
 | F2-06 Rate limiting | ⏳ parcial: ya hay `maxInstances` y techo de concurrencia en las colas |
@@ -37,6 +37,7 @@ Actualizado: 2026-10-15.
 | F3-03 Perfil persistido | ⏳ |
 | F3-04 Inconsistencias | ✅ |
 | F3-05 Accesibilidad | ⏳ |
+| F3-06 Partir el bundle | ⏳ nuevo, detectado en el build |
 | Fase 4 Corpus legal | ⏳ trabajo de contenido |
 | Fase 5 Legal y lanzamiento | ⏳ |
 
@@ -612,10 +613,12 @@ Es donde el dinero puede romperse en silencio. Prioridad:
   `proAnnualSavingsPercentForRegion` (debe dar ~17%).
 - `assertEntitlement`: Free dentro de cuota pasa, Free agotado lanza
   `QUOTA_EXCEEDED`, Pro dentro de sus topes pasa.
-- `reserveAnalysisUsage` / `releaseAnalysisUsage`: el rollback tras un fallo de
-  DeepSeek devuelve el contador al valor previo. **Verificar que la reserva es
-  atómica** (transacción o `FieldValue.increment`), porque dos análisis
-  simultáneos de un usuario Free con 1 crédito restante no deben pasar los dos.
+- `reserveAnalysisUsage` / `releaseAnalysisUsage`: ✅ **verificado** —
+  `reserveMonthlyUsage` y `releaseMonthlyUsage` ya usan `runTransaction`, así
+  que la reserva es atómica y dos análisis simultáneos de un usuario Free con
+  1 crédito restante no pasan los dos. Cubierto con pruebas de regresión en
+  `__tests__/quota.test.ts`, incluido el caso de 10 peticiones concurrentes
+  con la cuota agotada y que el rollback no deje el contador en negativo.
 - `normalizeKnownEntitlements`: un plan viejo en Firestore con
   `analysesPerMonth: -1` (ilimitado) debe quedar topado al default de Pro.
 - `contract-classifier.service`: un contrato de arrendamiento clasifica como
@@ -822,6 +825,41 @@ Cuatro cosas pequeñas que hoy no rompen pero son trampas:
 - **Residuos en la raíz**: `firestore-debug.log` y `tsconfig.tsbuildinfo`
   están en el working tree aunque el `.gitignore` los cubre. Limpiar antes del
   primer commit.
+
+### F3-06 — Partir el bundle del frontend
+
+El build actual emite **un solo chunk de 1,09 MB** (278 kB gzip) y Vite ya
+avisa de ello:
+
+```
+dist/assets/index-Dyf21VmH.js   1,092.00 kB │ gzip: 278.06 kB
+(!) Some chunks are larger than 500 kB after minification
+```
+
+Importa más de lo que parece en este producto concreto: las landings de SEO
+(`/analizar-contratos`, `/comparar-contratos`, `/detectar-riesgos`) son la
+puerta de entrada de tráfico orgánico, y hoy un visitante que llega a una de
+ellas descarga **toda la aplicación autenticada** — panel, visor de diff,
+ajustes, billing, el SDK de Firebase completo — antes de ver la primera
+pantalla. Eso castiga el LCP, que es justo la métrica que afecta al
+posicionamiento que se está persiguiendo con esas landings.
+
+Dos cambios, por orden de rendimiento por hora invertida:
+
+1. **`React.lazy` en las rutas protegidas.** Todo lo que cuelga de
+   `/panel/*` en `App.tsx` solo hace falta después de iniciar sesión.
+   Envolver esas rutas en `lazy()` + `<Suspense>` saca del chunk inicial el
+   panel, el historial, el resultado de análisis, la comparación y los
+   ajustes.
+2. **`manualChunks` para los pesos grandes.** `firebase/firestore` y
+   `firebase/storage` solo se usan dentro de la app autenticada. Separarlos
+   en su propio chunk evita que el visitante anónimo los pague.
+
+Objetivo razonable: chunk inicial por debajo de 200 kB gzip para las
+landings.
+
+**Aceptación:** `pnpm build:web` no emite el aviso de 500 kB para el chunk
+de entrada; medir el antes/después con Lighthouse en una de las landings.
 
 ### F3-05 — Revisión de accesibilidad y responsive
 
