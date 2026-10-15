@@ -103,7 +103,6 @@ export async function executeAnalyzeContract(
   }
 
   const contract = await getOwnedContract(userId, contractId);
-  let quotaReserved = true;
 
   const reportProgress = (progress: Parameters<typeof setAnalysisProgress>[1]) =>
     setAnalysisProgress(analysisId, progress);
@@ -325,9 +324,9 @@ export async function executeAnalyzeContract(
       throw error;
     }
 
-    if (quotaReserved) {
-      await releaseAnalysisUsage(userId);
-    }
+    // La cuota se reservo en initiateAnalyzeContract, antes de encolar:
+    // si el trabajo fracasa de forma definitiva hay que devolverla.
+    await releaseAnalysisUsage(userId);
     await analysisRef.update({
       status: 'error',
       errorMessage: message,
