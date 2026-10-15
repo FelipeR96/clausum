@@ -13,14 +13,21 @@ function logToConsole(
   level: LogLevel,
   service: SystemLogService,
   message: string,
-  context?: LogContext
+  context?: LogContext,
+  error?: unknown
 ): void {
   const payload = { service, ...context };
   const line = `[${service}] ${message}`;
 
   switch (level) {
     case 'error':
-      console.error(line, payload);
+      // El error va como argumento aparte para que Node imprima el stack.
+      // Sin esto un 500 no deja rastro en la consola y hay que adivinar.
+      if (error !== undefined) {
+        console.error(line, payload, error);
+      } else {
+        console.error(line, payload);
+      }
       break;
     case 'warn':
       console.warn(line, payload);
@@ -80,7 +87,7 @@ export const logger = {
     context?: LogContext
   ): void {
     const stack = error instanceof Error ? error.stack : undefined;
-    logToConsole('error', service, message, context);
+    logToConsole('error', service, message, context, error);
     void persistLog('error', service, message, context, stack);
   },
 };
