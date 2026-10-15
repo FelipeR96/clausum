@@ -10,6 +10,82 @@
 
 ---
 
+## Estado de ejecución
+
+Actualizado: 2026-10-15.
+
+| Tarea | Estado |
+|---|---|
+| F0-01 Git | ✅ Repo local con 4 commits · ⏳ falta `git remote add` + push |
+| F0-02 README | ✅ |
+| F0-03 ESLint + Prettier | ✅ Configurado · ⏳ falta `pnpm install` y primera pasada |
+| F0-04 CI | ✅ Workflow escrito · ⏳ se activa al subir a GitHub |
+| F0-05 Build limpio | ⏳ **pendiente de verificar en tu máquina** |
+| F1-01 Proyecto Firebase prod | ⏳ requiere la consola de Firebase |
+| F1-02 Secretos de pago | ✅ Código listo · ⏳ falta `functions:secrets:set` |
+| F1-03/04 Cloud Tasks | ✅ |
+| F1-05 onSnapshot | ✅ |
+| F1-06 Límite de body | ✅ |
+| F2-01/02 Pruebas de reglas | ✅ |
+| F2-03 Pruebas de billing y esquemas | ✅ Parcial — falta cuotas y clasificador |
+| F2-04 Prueba de flujo completo | ⏳ |
+| F2-05 Observabilidad | ⏳ requiere cuenta de Sentry |
+| F2-06 Rate limiting | ⏳ parcial: ya hay `maxInstances` y techo de concurrencia en las colas |
+| F2-07 Staging | ⏳ requiere la consola de Firebase |
+| F3-01 Email transaccional | ⏳ requiere cuenta de proveedor |
+| F3-02 Borrado de cuenta | ⏳ |
+| F3-03 Perfil persistido | ⏳ |
+| F3-04 Inconsistencias | ✅ |
+| F3-05 Accesibilidad | ⏳ |
+| Fase 4 Corpus legal | ⏳ trabajo de contenido |
+| Fase 5 Legal y lanzamiento | ⏳ |
+
+### Verificación pendiente (bloquea todo lo demás)
+
+Nada de lo escrito se ha compilado todavía: el entorno desde el que se
+editó no puede resolver los enlaces de pnpm de Windows. **Corre esto antes
+de seguir:**
+
+```powershell
+cd C:\Users\User\repos\contratos
+pnpm install          # instala eslint, prettier, vitest, firebase, rules-unit-testing
+pnpm build            # shared -> web -> functions
+pnpm typecheck
+pnpm lint
+```
+
+Los errores más probables, por orden:
+
+1. **Tipos en los servicios divididos** (`risks.service.ts`,
+   `comparison.service.ts`): la división en `initiate`/`execute` movió
+   variables de ámbito.
+2. **`@clausum/shared` sin reconstruir**: `Comparison` ganó
+   `processingProgress` y `errorMessage`. Si el frontend se queja de esos
+   campos, falta `pnpm --filter @clausum/shared build`.
+3. **`eslint-plugin-react-hooks`**: la v5 expone
+   `configs.recommended.rules`; si la versión instalada no lo tiene, el
+   bloque del frontend en `eslint.config.mjs` necesita ajuste.
+4. **`pnpm lint`** va a sacar avisos reales de `no-floating-promises` y
+   `no-explicit-any` en código que no toqué. Eso es la regla haciendo su
+   trabajo: vale la pena leerlos uno por uno antes de silenciarlos.
+
+Después, las pruebas (necesitan Java para el emulador de Firestore):
+
+```powershell
+pnpm exec firebase emulators:exec --only firestore,storage,auth --config backend/firebase/firebase.json --project clausum-test "pnpm test"
+```
+
+### Subir a GitHub
+
+```powershell
+gh repo create clausum --private --source=. --remote=origin --push
+# o, con el repo ya creado:
+git remote add origin https://github.com/<tu-usuario>/clausum.git
+git push -u origin main
+```
+
+---
+
 ## Índice
 
 - [Fase 0 — Fundaciones del repositorio](#fase-0--fundaciones-del-repositorio) · 1-2 días
