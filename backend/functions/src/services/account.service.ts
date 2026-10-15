@@ -177,7 +177,8 @@ async function deleteUserFiles(userId: string): Promise<void> {
 }
 
 export interface DeleteAccountResult {
-  deleted: {
+  /** Documentos eliminados por colección. */
+  counts: {
     contracts: number;
     analyses: number;
     comparisons: number;
@@ -265,7 +266,7 @@ export async function deleteAccount(userId: string): Promise<DeleteAccountResult
   });
 
   return {
-    deleted: { contracts, analyses, comparisons, alerts, usage, settings, history },
+    counts: { contracts, analyses, comparisons, alerts, usage, settings, history },
     paymentsAnonymized,
     warnings,
   };
