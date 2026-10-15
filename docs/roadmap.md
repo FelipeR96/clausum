@@ -75,6 +75,36 @@ Después, las pruebas (necesitan Java para el emulador de Firestore):
 pnpm exec firebase emulators:exec --only firestore,storage,auth --config backend/firebase/firebase.json --project clausum-test "pnpm test"
 ```
 
+### Override de `@eslint/eslintrc` — temporal
+
+`package.json` fija `@eslint/eslintrc` a `3.3.1` vía `pnpm.overrides`.
+
+**Motivo.** `@eslint/eslintrc@3.3.7` (que es `latest`, y la que arrastra
+cualquier `eslint@^9`) declara `js-yaml@^4.3.2`, y la línea v4 de js-yaml
+se detiene en 4.3.0 — el tag `v4-legacy` apunta ahí. Lo más probable es que
+4.3.1/4.3.2 se publicaran y se retiraran después, dejando a `eslintrc@3.3.7`
+instalable solo durante esa ventana. `pnpm install` falla con
+`ERR_PNPM_NO_MATCHING_VERSION`.
+
+No se tocó `js-yaml` directamente a propósito: forzar un rango a violarse es
+más invasivo que fijar el paquete que lo declara mal. `3.3.1` pide
+`js-yaml@^4.1.0` y el resto de sus rangos son satisfacibles. Y `eslintrc`
+solo sirve para compatibilidad con la configuración antigua `.eslintrc`,
+que este repo no usa (está en flat config), así que el pin no afecta al
+linting real.
+
+**Cuándo quitarlo.** Cuando salga un `@eslint/eslintrc` con un rango de
+js-yaml satisfacible (o cuando js-yaml republique la 4.3.2). Para
+comprobarlo:
+
+```powershell
+npm view @eslint/eslintrc@latest dependencies
+npm view js-yaml dist-tags
+```
+
+Si el rango de js-yaml ya se puede resolver, borra la clave `pnpm.overrides`
+de `package.json` y corre `pnpm install`.
+
 ### Subir a GitHub
 
 ```powershell
