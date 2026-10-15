@@ -21,8 +21,9 @@ Actualizado: 2026-10-15.
 | F0-03 ESLint + Prettier | ✅ Configurado y primera pasada hecha: 66 errores arreglados |
 | F0-04 CI | ✅ Verde en la corrida #4 (`5584ef2`): build, typecheck, lint y 134 pruebas contra emuladores |
 | F0-05 Build limpio | ✅ `pnpm build` y `pnpm typecheck` en verde en los tres paquetes |
-| F1-01 Proyecto Firebase prod | ⏳ requiere la consola de Firebase |
-| F1-02 Secretos de pago | ✅ Código listo · ⏳ falta `functions:secrets:set` |
+| F1-01 Proyecto Firebase prod | ⏸️ Aplazado a propósito: seguimos en desarrollo sobre `clausum-dev` (ya en Blaze) |
+| F1-02 Secretos de pago | ✅ Código listo · ⏸️ `functions:secrets:set` va con F1-01 |
+| F1-02b Pagos probables en local | ✅ Simulador de webhooks (`sim:wompi`) + llaves ficticias en `.env.local` |
 | F1-03/04 Cloud Tasks | ✅ |
 | F1-05 onSnapshot | ✅ |
 | F1-06 Límite de body | ✅ |
@@ -428,6 +429,60 @@ están declaradas: `WOMPI_PRIVATE_KEY`, `CORS_ORIGINS`,
 **Aceptación:** desplegado en prod, `GET /api/billing/wompi/status` y
 `GET /api/billing/paypal/status` responden configurado; un webhook de prueba de
 sandbox se verifica correctamente y escribe en `payments`.
+
+### F1-02b — Probar pagos sin pasarela configurada
+
+El problema: Wompi no tiene cuenta todavía y, aunque la tuviera, su servidor
+no puede alcanzar `localhost:5001` para entregar un webhook. Sin webhook no
+se prueba nada de lo que importa, porque el pago se *confirma* ahí: la firma,
+la verificación de monto y moneda, la activación de Pro, la idempotencia.
+
+La solución es separar los dos tramos:
+
+| Tramo | Qué hace | Se prueba con |
+|---|---|---|
+| Checkout | Crea el pago pendiente, firma la integridad, manda al widget | Llaves `pub_test_` / `prv_test_` de sandbox (opcional) |
+| Webhook | Confirma o rechaza, activa Pro, ajusta el periodo | **Simulador local** (sin llaves reales) |
+
+El segundo tramo es el que tiene la lógica de negocio y el riesgo, y es el
+que ahora se puede probar entero sin pasarela:
+
+```bash
+pnpm --filter @clausum/functions sim:wompi -- --uid=<uid>
+```
+
+El script (`backend/functions/scripts/wompi-webhook-sim.cjs`) crea el pago
+pendiente en el emulador, construye un evento `transaction.updated` firmado
+con el mismo `WOMPI_EVENTS_SECRET` del `.env.local`, lo manda al endpoint
+real y luego imprime el estado resultante de `payments/<ref>` y del usuario.
+Las llaves del `.env.local` son ficticias a propósito: el backend solo exige
+que existan, y el checksum coincide porque ambos lados usan el mismo valor.
+
+Casos que conviene correr, en este orden:
+
+| Caso | Comando | Resultado esperado |
+|---|---|---|
+| Pago aprobado | `--uid=X` | `succeeded`, usuario en Pro, periodo +1 mes |
+| Reenvío del mismo evento | `--reference=<ref>` | Sin cambios: no extiende el periodo dos veces |
+| Rechazado | `--uid=X --status=DECLINED` | `failed`, `failureCode: DECLINED`, sigue en Free |
+| Monto alterado | `--uid=X --amount=1` | `failed`, `failureCode: AMOUNT_MISMATCH` |
+| Moneda alterada | `--uid=X --currency=USD` | `failed`, `failureCode: CURRENCY_MISMATCH` |
+| Firma inválida | `--uid=X --bad-signature` | HTTP 401, el pago sigue `pending` |
+| Anual | `--uid=X --interval=annual` | Periodo +12 meses |
+| Renovación | `--uid=X --renewal` | Extiende desde el periodo actual, no desde hoy |
+
+Los dos últimos de la columna de fallos son los que de verdad importan: un
+webhook es un endpoint público y sin autenticar, así que el único control
+contra un tercero que invente un pago es la firma y la comparación de monto.
+
+**Pendiente de este bloque:** convertir estos casos en pruebas de Vitest para
+que corran en el CI, en vez de depender de que alguien ejecute el script.
+
+**PayPal queda fuera por ahora.** Su verificación de webhook no es un HMAC
+local sino una llamada a `/v1/notifications/verify-webhook-signature`, que
+exige credenciales reales de sandbox. Para probarlo hace falta primero una
+app en developer.paypal.com (gratis) y un túnel para que PayPal alcance el
+emulador. No bloquea nada mientras Colombia sea el mercado inicial.
 
 ### 🔴 F1-03 — Mover el análisis a Cloud Tasks
 
