@@ -19,7 +19,7 @@ Actualizado: 2026-10-15.
 | F0-01 Git | ✅ Repo local con 4 commits · ⏳ falta `git remote add` + push |
 | F0-02 README | ✅ |
 | F0-03 ESLint + Prettier | ✅ Configurado y primera pasada hecha: 66 errores arreglados |
-| F0-04 CI | ✅ Workflow escrito · ⏳ se activa al subir a GitHub |
+| F0-04 CI | ✅ Verde en la corrida #4 (`5584ef2`): build, typecheck, lint y 134 pruebas contra emuladores |
 | F0-05 Build limpio | ✅ `pnpm build` y `pnpm typecheck` en verde en los tres paquetes |
 | F1-01 Proyecto Firebase prod | ⏳ requiere la consola de Firebase |
 | F1-02 Secretos de pago | ✅ Código listo · ⏳ falta `functions:secrets:set` |
@@ -263,10 +263,28 @@ actual (arreglar lo que salte, que debería ser poco).
 
 **Archivo nuevo:** `.github/workflows/ci.yml`
 
-Un solo job en `push` y `pull_request`: checkout → `pnpm/action-setup` →
-Node 20 con cache de pnpm → `pnpm install --frozen-lockfile` →
-`pnpm build` (que ya encadena shared → web → functions) → `pnpm lint` →
-`pnpm typecheck` → `pnpm test`.
+Un solo job en `push` y `pull_request`: checkout → `pnpm/action-setup` (sin
+`version`: lee `packageManager`) → **Node 22** con cache de pnpm → Java 17
+(lo exigen los emuladores) → `pnpm install --frozen-lockfile` →
+`pnpm build` (que ya encadena shared → web → functions) → `pnpm typecheck` →
+`pnpm lint` → `pnpm test` dentro de `firebase emulators:exec`.
+
+**Historial: tres fallos antes del verde, los tres de configuración.**
+
+| # | Fallo | Causa |
+|---|---|---|
+| 1 | `pnpm 9` no leía los `overrides` | Pineé `version: 9` por suposición; el proyecto usa pnpm 11 |
+| 2 | `No such built-in module: node:sqlite` | Confundí el Node de las herramientas (≥22.13 para pnpm 11) con el de Functions (20) |
+| 3 | `ERR_PNPM_IGNORED_BUILDS: re2@1.25.0` | `re2` es `optionalDependency` de `superstatic` (viene con firebase-tools) y pide `node-gyp`; se declaró `re2: false` en `allowBuilds` y firebase-tools cae a regex de JS |
+
+Lección: no se pudo reproducir en local porque con `node_modules` ya poblado
+pnpm responde "Already up to date" y no ejecuta ningún script de instalación.
+Reproducir el CI de verdad exige un árbol limpio.
+
+**Resultado de la corrida #4** (`5584ef2`, 1m 29s): 6 archivos, **134 pruebas
+en verde** — 66 de reglas de Firestore, 17 de reglas de Storage, 22 de
+facturación, 13 de esquemas DeepSeek, 10 de cuota, 6 de borrado de cuenta.
+Quedan los 27 avisos de lint de F3-07, que no bloquean.
 
 Proteger `main`: requiere que CI pase y un PR aprobado.
 
