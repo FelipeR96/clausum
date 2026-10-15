@@ -37,7 +37,7 @@ Actualizado: 2026-10-15.
 | F3-03 Perfil persistido | ⏳ |
 | F3-04 Inconsistencias | ✅ |
 | F3-05 Accesibilidad | ⏳ |
-| F3-06 Partir el bundle | ✅ Chunk de entrada de 1.098 kB a 135 kB (34 kB gzip) |
+| F3-06 Partir el bundle | ✅ Primera carga de 279 a 142 kB gzip, medido en el navegador |
 | F3-07 Avisos de lint a cero | ⏳ 27 avisos, no bloquean el CI |
 | Fase 4 Corpus legal | ⏳ trabajo de contenido |
 | Fase 5 Legal y lanzamiento | ⏳ |
@@ -943,8 +943,35 @@ Dos cambios, por orden de rendimiento por hora invertida:
 Objetivo razonable: chunk inicial por debajo de 200 kB gzip para las
 landings.
 
-**Aceptación:** `pnpm build:web` no emite el aviso de 500 kB para el chunk
-de entrada; medir el antes/después con Lighthouse en una de las landings.
+**Resultado (verificado).** La landing carga 3 chunks y **142 kB
+transferidos**, frente a los 279 kB iniciales: una reducción del 49%.
+Medido con `performance.getEntriesByType('resource')` sobre el build de
+producción servido con `vite preview`, no con la tabla del build.
+
+**La causa raíz no estaba donde parecía.** Tres intentos fallaron antes de
+dar con ella, y conviene que quede escrito:
+
+1. `manualChunks` separando firestore/storage de auth → Rollup avisó de
+   `Circular chunk`: los módulos del SDK se referencian entre sí, los dos
+   trozos quedaban mutuamente dependientes y cargar auth arrastraba el
+   resto igual. El chunk de entrada marcaba 135 kB pero el navegador
+   descargaba 656 kB en tres archivos.
+2. Importación dinámica de `firebase/firestore` en `AuthProvider` → Vite
+   avisó de `dynamic import will not move module into another chunk`: un
+   único import estático en el camino eager anula la carga dinámica.
+3. La causa real era un **barrel file**. `frontend/src/firebase/index.ts`
+   reexporta `./firestore` y `./storage`, y lo importaba
+   `services/api/client.ts`, que importa casi todo el frontend. Cualquier
+   página que hiciera una petición HTTP se traía los dos SDK completos.
+
+La lección: el problema estaba en **el grafo de importaciones**, no en cómo
+se agrupan los módulos. Ninguna regla de `manualChunks` puede separar lo
+que un import estático ancló al camino eager. Y el tamaño del chunk de
+entrada no es lo que descarga un visitante: eso solo se ve mirando la red.
+
+**Regla para el futuro:** en el camino eager (todo lo que alcanza
+`main.tsx` y las rutas no diferidas), importar del módulo concreto
+(`@/firebase/auth`, `@/firebase/config`), nunca del barrel `@/firebase`.
 
 ### F3-05 — Revisión de accesibilidad y responsive
 

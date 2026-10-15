@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { updateProfile } from 'firebase/auth';
 import { useAuth } from '@/auth/AuthProvider';
 import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
-import { getFirebaseAuth } from '@/firebase';
+import { getFirebaseAuth } from '@/firebase/auth';
 import { PasswordInput } from '@/components/auth/PasswordInput';
 
 const ROLES = [

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { useEmulators } from '@/firebase';
+import { useEmulators } from '@/firebase/config';
 import { setDevPlan } from '@/services/user.service';
 import { invalidateSubscriptionCache } from '@/hooks/useSubscriptionSummary';
 

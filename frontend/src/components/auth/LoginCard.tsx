@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { useAuth } from '@/auth/AuthProvider';
 import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
-import { getFirebaseAuth } from '@/firebase';
+import { getFirebaseAuth } from '@/firebase/auth';
 import { useEmulators } from '@/firebase/config';
 import { GoogleIcon } from '@/components/auth/GoogleIcon';
 import { PasswordInput } from '@/components/auth/PasswordInput';

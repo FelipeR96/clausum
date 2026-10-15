@@ -1,4 +1,9 @@
-import { getFirebaseAuth, apiBaseUrl } from '@/firebase';
+// Del módulo concreto, no del barrel '@/firebase': ese reexporta
+// ./firestore y ./storage, y este archivo lo importa casi todo el
+// frontend. Pasar por el barrel metía ~460 kB de SDK en el chunk de
+// entrada de cualquier página, incluidas las landings públicas.
+import { getFirebaseAuth } from '@/firebase/auth';
+import { apiBaseUrl } from '@/firebase/config';
 import { ApiError } from '@/services/api/errors';
 import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
 

@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import type { BillingRegion } from '@clausum/shared';
 import { useAuth } from '@/auth/AuthProvider';
-import { getFirebaseFirestore } from '@/firebase';
 import {
   readBillingRegionFromStorage,
   writeBillingRegionToStorage,
@@ -27,6 +25,14 @@ export function useBillingRegion(initialRegion?: BillingRegion) {
       writeBillingRegionToStorage(next);
 
       if (user) {
+        // Firestore se carga aquí y no arriba: este hook lo usa el selector
+        // de región, que aparece en páginas públicas, y el SDK son ~291 kB
+        // que un visitante anónimo no debería descargar.
+        const [{ doc, serverTimestamp, updateDoc }, { getFirebaseFirestore }] =
+          await Promise.all([
+            import('firebase/firestore'),
+            import('@/firebase/firestore'),
+          ]);
         const db = getFirebaseFirestore();
         await updateDoc(doc(db, 'users', user.uid), {
           billingRegion: next,
