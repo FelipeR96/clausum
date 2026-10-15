@@ -451,6 +451,13 @@ que ahora se puede probar entero sin pasarela:
 pnpm --filter @clausum/functions sim:wompi -- --uid=<uid>
 ```
 
+**Antes de nada, `.secret.local`.** Los emuladores no leen `.env.local` para
+las variables declaradas con `defineSecret`: van a Secret Manager y fallan con
+403 si la API no esta habilitada en el proyecto. El override va en
+`backend/functions/.secret.local` (gitignored), con los cinco secretos de pago
+en valores ficticios. Sin ese archivo el arranque llena la consola de 403 y
+`getWompiConfig()` solo sobrevive por el `catch` de `readSecret`.
+
 El script (`backend/functions/scripts/wompi-webhook-sim.cjs`) crea el pago
 pendiente en el emulador, construye un evento `transaction.updated` firmado
 con el mismo `WOMPI_EVENTS_SECRET` del `.env.local`, lo manda al endpoint
