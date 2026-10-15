@@ -827,6 +827,42 @@ Cuatro cosas pequeñas que hoy no rompen pero son trampas:
   están en el working tree aunque el `.gitignore` los cubre. Limpiar antes del
   primer commit.
 
+### ✅ Fuga de invocaciones en las landings (encontrada corriendo la app)
+
+Detectada abriendo la aplicación en el navegador, no compilando: un
+visitante **anónimo** en cualquier página de marketing o legal disparaba
+`GET /api/me` **cada 8 segundos, indefinidamente**. Medido: 1 petición por
+cada 10 segundos de página en reposo, todas devolviendo 401.
+
+El mecanismo eran dos cosas en `useSubscriptionSummary`:
+
+1. El hook lo usa `MarketingHeader`, y por tanto las tres landings de SEO y
+   las cuatro páginas legales. No comprobaba si había sesión, así que un
+   anónimo llamaba igual a un endpoint que exige token.
+2. El `setInterval` solo se cancelaba cuando la suscripción quedaba
+   confirmada. Para un anónimo eso nunca ocurre, así que el sondeo no
+   terminaba nunca. Además `force: !subscriptionConfirmed` ponía
+   `cachePromise = null` en cada intento, saltándose la deduplicación de
+   peticiones en vuelo — de ahí las ráfagas de 4 a 10 llamadas simultáneas
+   al montar varios componentes.
+
+**Por qué importaba.** En producción eso es una invocación de Cloud
+Function más una lectura de Firestore cada 8 segundos **por pestaña
+abierta**, en las páginas de más tráfico del sitio: unas 450 invocaciones
+por hora y pestaña, sin techo y creciendo con el tráfico orgánico que esas
+landings existen para captar. Un coste que no aparece en ninguna métrica de
+producto.
+
+**Arreglo.** El hook espera a que Firebase resuelva la sesión; sin usuario
+devuelve los límites del plan Free calculados en el cliente y no llama al
+servidor. El sondeo se conserva —existía por una razón legítima, el
+emulador de Functions tarda en arrancar en desarrollo— pero acotado a 5
+intentos.
+
+**Verificado en el navegador:** 0 peticiones a la API en 10 segundos sobre
+`/analizar-contratos` y `/legal/privacidad` como anónimo, con las páginas
+renderizando igual, y `/panel` seguía redirigiendo a `/login`.
+
 ### F3-07 — Liquidar los avisos de lint y pasar a estricto
 
 La primera pasada de ESLint sobre el código existente dejó 80 hallazgos. Los
