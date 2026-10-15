@@ -28,10 +28,21 @@ jobs:
       - name: Instalar pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Instalar Node 20
+      # Node 22, no 20, y la distincion importa: esta es la version que
+      # EJECUTA las herramientas (pnpm, tsc, vite, vitest), no la del
+      # runtime de produccion. pnpm 11 exige Node >= 22.13 --en Node 20
+      # falla al cargar node:sqlite-- mientras que las Cloud Functions
+      # corren sobre Node 20 segun `engines.node` de
+      # backend/functions/package.json, que el CI no cambia.
+      #
+      # Consecuencia a tener presente: ni local (24) ni CI (22) coinciden
+      # con el runtime de produccion (20), asi que una incompatibilidad
+      # especifica de Node 20 solo apareceria al desplegar. Ver F2-08 en
+      # docs/roadmap.md.
+      - name: Instalar Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       # El emulador de Firestore corre sobre la JVM: lo necesitan las

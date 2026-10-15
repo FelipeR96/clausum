@@ -689,6 +689,39 @@ tráfico puede escalar sin techo y la factura también).
 **Aceptación:** 20 peticiones simultáneas de un mismo usuario → las primeras N
 pasan, el resto recibe 429; `maxInstances` visible en la consola.
 
+### F2-08 — Nadie prueba sobre el Node de produccion
+
+Hay tres versiones de Node en juego y ninguna coincide con la de
+produccion:
+
+| Dónde | Node | Por qué |
+|---|---|---|
+| Local (Windows) | 24.5 | La que tiene instalada el desarrollador |
+| CI | 22 | pnpm 11 exige ≥22.13; en Node 20 falla al cargar `node:sqlite` |
+| **Cloud Functions** | **20** | `engines.node` en `backend/functions/package.json` |
+
+La consecuencia es concreta: **una incompatibilidad específica de Node 20
+no la detecta nadie hasta el despliegue.** El backend usa `pdf-parse`,
+`tesseract.js`, `pdfkit` y `word-extractor`, que son las dependencias con
+más probabilidad de comportarse distinto entre versiones de Node.
+
+No hay arreglo trivial, porque pnpm 11 no corre en Node 20. Las opciones,
+de menor a mayor esfuerzo:
+
+1. **Un job adicional en CI** que instale con Node 22 y luego cambie a
+   Node 20 (`actions/setup-node` una segunda vez) para ejecutar solo las
+   pruebas del backend. Las dependencias ya están en disco, así que no
+   hace falta pnpm en ese paso.
+2. **Fijar el runtime de Functions a Node 22** si Firebase ya lo soporta
+   para la región usada, y alinear las tres. Es la solución limpia, pero
+   cambia el runtime de producción y hay que verificar soporte.
+3. **Aceptar el riesgo** y confiar en staging como última barrera. Es lo
+   que hay hoy.
+
+Hasta resolverlo, **desplegar a staging antes que a producción no es
+opcional**: es el único punto donde el código se ejecuta sobre Node 20
+antes de que lo vea un usuario.
+
 ### F2-07 — Entorno de staging
 
 Tercer proyecto Firebase `clausum-staging`, idéntico a producción pero con
