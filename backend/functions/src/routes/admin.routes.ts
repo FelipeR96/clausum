@@ -68,16 +68,11 @@ adminRouter.post(
       }
     ).validatedBody;
 
+    // Cambiarse el plan a uno mismo esta permitido, incluido quitarse Pro:
+    // es la forma normal de probar como se ve el producto en Free sin
+    // crear una cuenta aparte. El claim de admin no depende del plan, asi
+    // que no hay forma de quedarse fuera del modulo por esta via.
     const target = routeParam(req.params.uid);
-    if (target === adminUid && planId === 'free') {
-      // No es una restriccion de seguridad (el claim de admin no depende del
-      // plan), pero quitarse Pro a uno mismo sin querer mientras se prueba
-      // es facil y confuso.
-      res.status(400).json({
-        error: 'No puedes quitarte el plan a ti mismo desde aquí. Usa otra cuenta de prueba.',
-      });
-      return;
-    }
 
     res.json(await setUserPlanAsAdmin(adminUid, target, planId, { days }));
   })
