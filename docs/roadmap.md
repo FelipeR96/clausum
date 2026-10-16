@@ -19,18 +19,18 @@ Actualizado: 2026-10-15.
 | F0-01 Git | ✅ Repo local con 4 commits · ⏳ falta `git remote add` + push |
 | F0-02 README | ✅ |
 | F0-03 ESLint + Prettier | ✅ Configurado y primera pasada hecha: 66 errores arreglados |
-| F0-04 CI | ✅ Verde en la corrida #4 (`5584ef2`): build, typecheck, lint y 134 pruebas contra emuladores |
+| F0-04 CI | ✅ Verde: build, typecheck, lint y 155 pruebas contra emuladores |
 | F0-05 Build limpio | ✅ `pnpm build` y `pnpm typecheck` en verde en los tres paquetes |
 | F1-01 Proyecto Firebase prod | ⏸️ Aplazado a propósito: `clausum-dev` (Blaze) hace de staging. `.firebaserc` ya no apunta `prod` a dev |
-| F1-01b Despliegue a dev | 📋 Runbook en `docs/despliegue-dev.md` · ⏳ sin ejecutar |
-| F1-02 Secretos de pago | ✅ Código listo · ⏸️ `functions:secrets:set` va con F1-01 |
+| F1-01b Despliegue a dev | ✅ Desplegado en `clausum-dev` (Node 22, 6 funciones, reglas, 22 índices, corpus de 151 artículos, hosting). Runbook en `docs/despliegue-dev.md` |
+| F1-02 Secretos de pago | ✅ Los 5 secretos creados en `clausum-dev` · ⏳ faltan llaves reales de Wompi sandbox (`pub_test_`, `prv_test_`) |
 | F1-02b Pagos probables en local | ✅ Simulador de webhooks (`sim:wompi`) + llaves ficticias en `.env.local` |
 | F1-03/04 Cloud Tasks | ✅ |
 | F1-05 onSnapshot | ✅ |
 | F1-06 Límite de body | ✅ |
 | F2-01/02 Pruebas de reglas | ✅ |
 | F2-03 Pruebas de billing, esquemas y cuotas | ✅ Falta solo el clasificador |
-| F2-04 Prueba de flujo completo | ⏳ |
+| F2-04 Prueba de flujo completo | ✅ En el sitio desplegado: subida, OCR de escaneo (Pro), análisis completo, reintento tras fallo · ⏳ falta el camino de pago |
 | F2-05 Observabilidad | ⏳ requiere cuenta de Sentry |
 | F2-06 Rate limiting | ⏳ parcial: ya hay `maxInstances` y techo de concurrencia en las colas |
 | F2-07 Staging | ⏳ requiere la consola de Firebase |
@@ -41,43 +41,32 @@ Actualizado: 2026-10-15.
 | F3-05 Accesibilidad | ⏳ |
 | F3-06 Partir el bundle | ✅ Primera carga de 279 a 142 kB gzip, medido en el navegador |
 | F3-07 Avisos de lint a cero | ⏳ 27 avisos, no bloquean el CI |
+| Módulo de administración | ✅ Claim de admin (solo desde `scripts/set-admin.cjs`, nunca desde la web), precios en Firestore, cambio de plan por correo, 12 pruebas |
+| Precios como dato | ✅ `config/pricing` es la fuente de verdad para cobro y pantalla. Suscriptores existentes conservan su precio vía `subscriptionAmountInCents` |
 | Fase 4 Corpus legal | ⏳ trabajo de contenido |
 | Fase 5 Legal y lanzamiento | ⏳ |
 
-### Verificación pendiente (bloquea todo lo demás)
+### Estado actual (2026-10-16)
 
-Nada de lo escrito se ha compilado todavía: el entorno desde el que se
-editó no puede resolver los enlaces de pnpm de Windows. **Corre esto antes
-de seguir:**
+Desplegado y en uso en `clausum-dev`. Lo verificado **en el sitio
+desplegado**, no solo en pruebas:
 
-```powershell
-cd C:\Users\User\repos\contratos
-pnpm install          # instala eslint, prettier, vitest, firebase, rules-unit-testing
-pnpm build            # shared -> web -> functions
-pnpm typecheck
-pnpm lint
-```
+- Subida de contrato, análisis completo de principio a fin.
+- OCR de un PDF escaneado en plan Pro (hasta 15 páginas).
+- Rechazo del mismo escaneo en Free, con el motivo correcto.
+- Reintento de un análisis fallido sin volver a subir el archivo.
+- Módulo de administración: búsqueda por correo, concesión y retirada de
+  Pro, cambio de precios.
+- Borrado de cuenta.
 
-Los errores más probables, por orden:
+Verde en local: `pnpm typecheck`, `pnpm lint` (0 errores, 27 avisos) y
+155 pruebas contra emuladores.
 
-1. **Tipos en los servicios divididos** (`risks.service.ts`,
-   `comparison.service.ts`): la división en `initiate`/`execute` movió
-   variables de ámbito.
-2. **`@clausum/shared` sin reconstruir**: `Comparison` ganó
-   `processingProgress` y `errorMessage`. Si el frontend se queja de esos
-   campos, falta `pnpm --filter @clausum/shared build`.
-3. **`eslint-plugin-react-hooks`**: la v5 expone
-   `configs.recommended.rules`; si la versión instalada no lo tiene, el
-   bloque del frontend en `eslint.config.mjs` necesita ajuste.
-4. **`pnpm lint`** va a sacar avisos reales de `no-floating-promises` y
-   `no-explicit-any` en código que no toqué. Eso es la regla haciendo su
-   trabajo: vale la pena leerlos uno por uno antes de silenciarlos.
-
-Después, las pruebas (necesitan Java para el emulador de Firestore):
-
-```powershell
-pnpm exec firebase emulators:exec --only firestore,storage,auth --project clausum-test "pnpm test"
-```
+**Lo único que separa esto de cobrar** son las llaves de Wompi sandbox
+(`pub_test_`, `prv_test_`). El código del checkout, la firma de
+integridad, la verificación de monto y moneda, la idempotencia y las
+renovaciones están escritos y cubiertos por pruebas, pero nunca han hablado
+con Wompi de verdad: hasta hoy solo con el simulador (`sim:wompi`).
 
 ### ESLint 10 y el override de `@eslint/eslintrc`
 
