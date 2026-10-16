@@ -25,6 +25,16 @@ const SECONDARY_NAV: NavItem[] = [
   { to: '/panel/configuracion', label: 'Configuración', icon: 'settings' },
 ];
 
+/**
+ * Solo se dibuja con el claim de administrador. Ocultarlo es comodidad, no
+ * seguridad: la pagina redirige y la API responde 404 a quien no lo sea.
+ */
+const ADMIN_NAV: NavItem = {
+  to: '/panel/admin',
+  label: 'Administración',
+  icon: 'shield_person',
+};
+
 type AppSidebarProps = {
   onNavigate?: () => void;
 };
@@ -41,7 +51,7 @@ function userInitials(name: string) {
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const subscription = useSubscriptionSummary();
   const [displayName, setDisplayName] = useState('Cuenta Clausum');
   const [photoURL, setPhotoURL] = useState<string | null>(null);
@@ -133,6 +143,22 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             {item.label}
           </Link>
         ))}
+
+        {isAdmin && (
+          <Link
+            to={ADMIN_NAV.to}
+            className={linkClass(ADMIN_NAV)}
+            onClick={onNavigate}
+          >
+            <span
+              className="material-symbols-outlined mr-3 text-xl"
+              style={iconStyle(ADMIN_NAV)}
+            >
+              {ADMIN_NAV.icon}
+            </span>
+            {ADMIN_NAV.label}
+          </Link>
+        )}
       </nav>
 
       <div className="border-t border-outline-variant/60 p-4">

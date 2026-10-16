@@ -45,6 +45,12 @@ export type SignUpProfile = {
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
+  /**
+   * Custom claim `admin` del token. Solo decide si se MUESTRA el modulo de
+   * administracion; quien manda es el backend, que vuelve a verificar el
+   * claim en cada peticion. Manipularlo aqui no da acceso a nada.
+   */
+  isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, profile?: SignUpProfile) => Promise<void>;
   signInDemo: () => Promise<void>;
@@ -115,6 +121,7 @@ async function patchUserDisplayName(uid: string, displayName: string) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const auth = getFirebaseAuth();
@@ -127,6 +134,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // El panel puede funcionar aunque falle la creación del doc de usuario.
         }
       }
+      if (nextUser) {
+        try {
+          // Sin forzar refresco: el claim recien concedido aparece cuando el
+          // token se renueve. Es lo que avisa set-admin.cjs.
+          const token = await nextUser.getIdTokenResult();
+          setIsAdmin(token.claims.admin === true);
+        } catch {
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
+
       setUser(nextUser);
       setLoading(false);
     });
@@ -161,8 +181,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, signIn, signUp, signInDemo, signInWithGoogle, signOut }),
-    [user, loading, signIn, signUp, signInDemo, signInWithGoogle, signOut]
+    () => ({ user, loading, isAdmin, signIn, signUp, signInDemo, signInWithGoogle, signOut }),
+    [user, loading, isAdmin, signIn, signUp, signInDemo, signInWithGoogle, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

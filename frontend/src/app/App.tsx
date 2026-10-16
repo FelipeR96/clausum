@@ -52,6 +52,9 @@ const ComparisonViewPage = lazy(() =>
     default: m.ComparisonViewPage,
   }))
 );
+const AdminPage = lazy(() =>
+  import('@/pages/AdminPage').then((m) => ({ default: m.AdminPage }))
+);
 const SettingsPage = lazy(() =>
   import('@/pages/SettingsPage').then((m) => ({ default: m.SettingsPage }))
 );
@@ -128,6 +131,8 @@ export function App() {
           />
           <Route path="/panel/contratos" element={<ContractsHistoryPage />} />
           <Route path="/panel/configuracion" element={<SettingsPage />} />
+          {/* La pagina comprueba el claim y redirige; la API responde 404. */}
+          <Route path="/panel/admin" element={<AdminPage />} />
           <Route
             path="/panel/contratos/:contractId/comparar"
             element={<ContractCompareRedirect />}

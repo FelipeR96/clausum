@@ -3,7 +3,6 @@ import { Link, Navigate } from 'react-router-dom';
 import {
   SEED_PLANS,
   formatProPrice,
-  getProAmountForRegion,
   proAnnualSavingsPercentForRegion,
   type BillingInterval,
 } from '@clausum/shared';
@@ -15,6 +14,7 @@ import { useRevealOnScroll } from '@/hooks/useRevealOnScroll';
 import { PricingDocumentFormats } from '@/components/pricing/PricingDocumentFormats';
 import { BillingRegionSelector } from '@/components/billing/BillingRegionSelector';
 import { useBillingRegion } from '@/hooks/useBillingRegion';
+import { usePricing, amountFor } from '@/hooks/usePricing';
 import { useAuth } from '@/auth/AuthProvider';
 import { SETTINGS_BILLING_PATH } from '@/constants/app-paths';
 
@@ -27,7 +27,11 @@ export function PricingPage() {
   const [interval, setInterval] = useState<BillingInterval>('monthly');
   const savingsPercent = proAnnualSavingsPercentForRegion(region);
 
-  const proPrice = getProAmountForRegion(
+  // De /api/pricing, la misma fuente que usa el cobro. Mientras llega se
+  // muestran las constantes, que son el ultimo precio desplegado.
+  const { pricing } = usePricing();
+  const proPrice = amountFor(
+    pricing,
     region,
     interval === 'annual' ? 'annual' : 'monthly'
   );
@@ -173,7 +177,7 @@ export function PricingPage() {
           <p className="mt-8 text-center text-sm text-on-surface-variant">
             El plan mensual se renueva cada mes. El plan anual cubre 12 meses con un solo
             pago de{' '}
-            {formatProPrice(region, getProAmountForRegion(region, 'annual'))}.
+            {formatProPrice(region, amountFor(pricing, region, 'annual'))}.
           </p>
 
           <PricingDocumentFormats />

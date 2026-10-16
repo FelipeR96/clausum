@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import {
   SEED_PLANS,
   formatProPrice,
-  getProAmountForRegion,
   proAnnualSavingsPercentForRegion,
   type BillingInterval,
   type BillingRegion,
@@ -16,6 +15,7 @@ import { WompiCheckoutButton } from '@/components/billing/WompiCheckoutButton';
 import { PayPalCheckoutButton } from '@/components/billing/PayPalCheckoutButton';
 import { BillingRegionSelector } from '@/components/billing/BillingRegionSelector';
 import { useBillingRegion } from '@/hooks/useBillingRegion';
+import { usePricing, amountFor } from '@/hooks/usePricing';
 import { useEmulators } from '@/firebase/config';
 import {
   cancelPayPalSubscription,
@@ -48,8 +48,9 @@ export function SettingsBillingTab() {
   const initialRegion = (me?.billingRegion as BillingRegion | undefined) ?? undefined;
   const { region, setRegion, isColombia } = useBillingRegion(initialRegion);
   const savingsPercent = proAnnualSavingsPercentForRegion(region);
-  const monthlyPrice = getProAmountForRegion(region, 'monthly');
-  const annualPrice = getProAmountForRegion(region, 'annual');
+  const { pricing } = usePricing();
+  const monthlyPrice = amountFor(pricing, region, 'monthly');
+  const annualPrice = amountFor(pricing, region, 'annual');
 
   useEffect(() => {
     fetchMe()
