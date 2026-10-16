@@ -32,7 +32,7 @@ const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const external = [
   ...Object.keys(pkg.dependencies ?? {}),
   ...Object.keys(pkg.peerDependencies ?? {}),
-].filter((name) => name !== '@clausum/shared');
+];
 
 const result = await build({
   entryPoints: [join(root, 'src/index.ts')],
@@ -42,6 +42,8 @@ const result = await build({
   target: 'node20',
   format: 'cjs',
   outfile: join(root, 'lib/index.js'),
+  // Explicito: de aqui salen los `paths`, y de ahi @clausum/shared.
+  tsconfig: join(root, 'tsconfig.json'),
   sourcemap: true,
   external,
   logLevel: 'info',

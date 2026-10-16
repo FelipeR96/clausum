@@ -10,11 +10,18 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "rootDir": "src",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": [
+        "./src/*"
+      ],
+      "@clausum/shared": [
+        "../../shared/src/index.ts"
+      ]
+    },
+    "baseUrl": "."
   },
   "compileOnSave": true,
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

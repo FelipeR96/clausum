@@ -35,7 +35,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@clausum/shared": "workspace:*",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.5",

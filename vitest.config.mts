@@ -1,6 +1,18 @@
 import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
+
+// @clausum/shared ya no es una dependencia declarada de ningun paquete: npm
+// no entiende el protocolo `workspace:` de pnpm y rompia el despliegue de
+// las Cloud Functions. Se resuelve por ruta, igual que en tsconfig y en el
+// bundle de esbuild.
+const sharedEntry = fileURLToPath(new URL('./shared/src/index.ts', import.meta.url));
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@clausum/shared': sharedEntry,
+    },
+  },
   test: {
     include: [
       'backend/functions/src/**/*.test.ts',
