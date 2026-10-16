@@ -10,19 +10,19 @@ export type BillingRegion = 'CO' | 'LATAM';
 /** Precios Pro en centavos COP (Wompi usa amount-in-cents). */
 export const PRO_BILLING = {
   currency: BILLING_CURRENCY,
-  /** $40.000 COP / mes */
-  monthlyAmountInCents: 4_000_000,
-  /** $400.000 COP / año (10 meses, 12 de uso) */
-  yearlyAmountInCents: 40_000_000,
+  /** $35.000 COP / mes */
+  monthlyAmountInCents: 3_500_000,
+  /** $350.000 COP / año (10 meses, 12 de uso) */
+  yearlyAmountInCents: 35_000_000,
 } as const;
 
 /** Precios Pro en centavos USD (PayPal LATAM). */
 export const PRO_BILLING_LATAM = {
   currency: BILLING_CURRENCY_LATAM,
-  /** USD 11 / mes */
-  monthlyAmountInCents: 1_100,
-  /** USD 110 / año (10 meses, 12 de uso) */
-  yearlyAmountInCents: 11_000,
+  /** USD 10 / mes */
+  monthlyAmountInCents: 1_000,
+  /** USD 100 / año (10 meses, 12 de uso) */
+  yearlyAmountInCents: 10_000,
 } as const;
 
 export type BillingInterval = 'monthly' | 'annual';

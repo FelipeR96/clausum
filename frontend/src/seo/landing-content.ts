@@ -24,7 +24,7 @@ export const HOME_FAQ: FaqItem[] = [
   {
     question: '¿Qué formatos acepta?',
     answer:
-      'PDF y DOCX digitales: sin límite de páginas. En Pro, PDF escaneados con OCR en las primeras 7 páginas; para contratos largos escaneados, mejor sube un PDF digital o Word.',
+      'PDF y DOCX digitales: sin límite de páginas. En Pro, PDF escaneados con OCR en las primeras 15 páginas; para contratos largos escaneados, mejor sube un PDF digital o Word.',
   },
 ];
 

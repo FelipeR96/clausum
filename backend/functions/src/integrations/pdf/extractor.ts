@@ -75,7 +75,7 @@ export async function extractTextFromPdf(
 
   if (!context.ocrAllowed) {
     throw new AppError(
-      'Este PDF parece escaneado (sin texto seleccionable). El plan Free solo admite PDF o DOCX digitales sin límite de páginas. Actualiza a Pro para OCR en escaneos (primeras 7 páginas).',
+      'Este PDF parece escaneado (sin texto seleccionable). El plan Free solo admite PDF o DOCX digitales sin límite de páginas. Actualiza a Pro para OCR en escaneos (primeras 15 páginas).',
       403,
       'OCR_PRO_REQUIRED'
     );

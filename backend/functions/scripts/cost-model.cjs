@@ -3,7 +3,7 @@
  *
  * Responde a una sola pregunta: si un usuario Pro agota su cuota (75
  * analisis y 30 comparaciones al mes), cuanto cuesta eso en DeepSeek y
- * cuanto queda de los 40.000 COP que paga.
+ * cuanto queda de los 35.000 COP que paga.
  *
  * Las estimaciones de tokens son eso, estimaciones. El codigo ya guarda
  * `tokensUsed` en cada documento de analisis, asi que en cuanto corras
@@ -37,7 +37,7 @@ const price = peak ? PRICES.peak : PRICES.offPeak;
 
 // ── Parametros del producto ────────────────────────────────────────────
 const TRM = Number(args.trm ?? 3219); // COP por USD
-const PRO_COP = 40000; // precio mensual Pro
+const PRO_COP = 35000; // precio mensual Pro
 const QUOTA = { analyses: 75, comparisons: 30 };
 
 // ── Estimacion de tokens ───────────────────────────────────────────────

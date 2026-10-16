@@ -28,7 +28,7 @@ const ERROR_MESSAGES_BY_CODE: Record<string, string> = {
   FORBIDDEN: 'No tienes permiso para acceder a este recurso.',
   FEATURE_PRO_REQUIRED: 'Esta función requiere el plan Pro.',
   OCR_PRO_REQUIRED:
-    'Este PDF parece escaneado. En Free usa un PDF con texto seleccionable o Word (.docx) sin límite de páginas. En Pro el OCR solo lee las primeras 7 páginas del escaneo.',
+    'Este PDF parece escaneado. En Free usa un PDF con texto seleccionable o Word (.docx) sin límite de páginas. En Pro el OCR solo lee las primeras 15 páginas del escaneo.',
 
   // Cuotas
   QUOTA_ANALYSES_EXCEEDED:

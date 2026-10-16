@@ -26,7 +26,7 @@ export function CompareHero() {
             Sube dos versiones del mismo contrato y Clausum resalta adiciones,
             eliminaciones y modificaciones con evaluación de riesgo. Usa{' '}
             <strong>PDF con texto seleccionable</strong> o <strong>Word (.docx)</strong> sin límite
-            de páginas. En Free no admitimos PDF escaneados (Pro: OCR en las primeras 7 páginas).
+            de páginas. En Free no admitimos PDF escaneados (Pro: OCR en las primeras 15 páginas).
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">

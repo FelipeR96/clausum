@@ -72,7 +72,7 @@ const envSchema = z.object({
   DEEPSEEK_MAX_RETRIES: z.coerce.number().default(3),
   MAX_PDF_TEXT_CHARS: z.coerce.number().default(100_000),
   MIN_PDF_TEXT_CHARS: z.coerce.number().default(80),
-  OCR_MAX_PAGES: z.coerce.number().default(7),
+  OCR_MAX_PAGES: z.coerce.number().default(15),
   WOMPI_PUBLIC_KEY: z.string().optional(),
   WOMPI_PRIVATE_KEY: z.string().optional(),
   WOMPI_INTEGRITY_SECRET: z.string().optional(),

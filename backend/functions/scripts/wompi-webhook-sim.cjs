@@ -59,7 +59,7 @@ const status = (args.status ?? 'APPROVED').toUpperCase();
 const isRenewal = args.renewal === 'true';
 const currency = args.currency ?? 'COP';
 
-const REAL_AMOUNTS = { monthly: 4_000_000, annual: 40_000_000 };
+const REAL_AMOUNTS = { monthly: 3_500_000, annual: 35_000_000 };
 const realAmount = REAL_AMOUNTS[interval];
 const sentAmount = args.amount ? Number(args.amount) : realAmount;
 

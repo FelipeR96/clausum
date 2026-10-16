@@ -26,23 +26,23 @@ import { verifyWompiEventChecksum } from '../services/wompi.service';
 describe('firma de integridad de transacción', () => {
   it('encadena referencia + monto + moneda + secreto en ese orden', () => {
     const esperado = createHash('sha256')
-      .update('REF-123' + '4000000' + 'COP' + 'secreto_de_prueba')
+      .update('REF-123' + '3500000' + 'COP' + 'secreto_de_prueba')
       .digest('hex');
 
     expect(
-      buildTransactionIntegritySignature('REF-123', 4_000_000, 'COP', 'secreto_de_prueba')
+      buildTransactionIntegritySignature('REF-123', 3_500_000, 'COP', 'secreto_de_prueba')
     ).toBe(esperado);
   });
 
   it('cambia si cambia el monto', () => {
-    const a = buildTransactionIntegritySignature('REF-1', 4_000_000, 'COP', 's');
+    const a = buildTransactionIntegritySignature('REF-1', 3_500_000, 'COP', 's');
     const b = buildTransactionIntegritySignature('REF-1', 4_000_001, 'COP', 's');
     expect(a).not.toBe(b);
   });
 
   it('cambia si cambia la referencia', () => {
-    const a = buildTransactionIntegritySignature('REF-1', 4_000_000, 'COP', 's');
-    const b = buildTransactionIntegritySignature('REF-2', 4_000_000, 'COP', 's');
+    const a = buildTransactionIntegritySignature('REF-1', 3_500_000, 'COP', 's');
+    const b = buildTransactionIntegritySignature('REF-2', 3_500_000, 'COP', 's');
     expect(a).not.toBe(b);
   });
 
@@ -67,7 +67,7 @@ describe('verificación del checksum de un evento de Wompi', () => {
   const SECRETO = 'eventos_secreto';
 
   /** Construye un evento con checksum correcto para los datos dados. */
-  function eventoValido(id = 'txn_1', status = 'APPROVED', amount = 4_000_000) {
+  function eventoValido(id = 'txn_1', status = 'APPROVED', amount = 3_500_000) {
     const propiedades = [
       'transaction.id',
       'transaction.status',
@@ -168,10 +168,10 @@ describe('precios por región', () => {
   });
 
   it('los montos están en centavos, no en unidades', () => {
-    // $40.000 COP son 4.000.000 de centavos. Confundir esto cobra 100x
+    // $35.000 COP son 3.500.000 de centavos. Confundir esto cobra 100x
     // de menos (o de más) y no salta a la vista en la UI.
-    expect(PRO_BILLING.monthlyAmountInCents).toBe(4_000_000);
-    expect(PRO_BILLING_LATAM.monthlyAmountInCents).toBe(1_100);
+    expect(PRO_BILLING.monthlyAmountInCents).toBe(3_500_000);
+    expect(PRO_BILLING_LATAM.monthlyAmountInCents).toBe(1_000);
   });
 
   it('formatea gratis como texto, no como cero', () => {
@@ -181,7 +181,7 @@ describe('precios por región', () => {
 
   it('formatea los importes sin decimales en COP', () => {
     const texto = formatCopFromCents(PRO_BILLING.monthlyAmountInCents);
-    expect(texto).toContain('40.000');
+    expect(texto).toContain('35.000');
     expect(texto).not.toContain(',00');
   });
 

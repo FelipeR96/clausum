@@ -63,7 +63,7 @@ export const SEO_PAGES = {
     path: '/pricing',
     title: 'Precios y Planes | Clausum',
     description:
-      'Plan Free con 3 análisis al mes y 1 comparación. Plan Pro con 75 análisis y 30 comparaciones, PDF/Word sin límite de páginas y OCR en escaneos (primeras 7 páginas).',
+      'Plan Free con 3 análisis al mes y 1 comparación. Plan Pro con 75 análisis y 30 comparaciones, PDF/Word sin límite de páginas y OCR en escaneos (primeras 15 páginas).',
     keywords: 'precios Clausum, plan análisis contratos, software legal Colombia',
     robots: 'index, follow',
     breadcrumbs: [

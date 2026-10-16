@@ -1,5 +1,5 @@
 /** Páginas máximas que el OCR Pro procesa en un PDF escaneado. */
-export const OCR_SCANNED_MAX_PAGES = 7;
+export const OCR_SCANNED_MAX_PAGES = 15;
 
 /** Atributo `accept` para inputs de subida de contratos. */
 export const CONTRACT_FILE_ACCEPT =

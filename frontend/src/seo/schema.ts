@@ -38,13 +38,13 @@ export function softwareApplicationSchema() {
       },
       {
         '@type': 'Offer',
-        price: '40000',
+        price: '35000',
         priceCurrency: 'COP',
         description: 'Plan Pro Colombia — referencia mensual',
       },
       {
         '@type': 'Offer',
-        price: '11',
+        price: '10',
         priceCurrency: 'USD',
         description: 'Plan Pro LATAM — referencia mensual',
       },

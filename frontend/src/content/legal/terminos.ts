@@ -55,7 +55,7 @@ export const TERMS_SECTIONS: LegalSection[] = [
     title: '6. Planes, límites y pagos',
     paragraphs: [
       'El plan Free incluye límites mensuales de análisis y comparaciones, sin costo. El plan Pro amplía límites y funcionalidades según la página de Precios vigente.',
-      'En Colombia, los precios del plan Pro se expresan en pesos colombianos (COP): referencia $40.000/mes o $400.000/año (pago único por doce meses de uso). En el resto de LATAM, los precios se expresan en dólares estadounidenses (USD): referencia USD 11/mes o USD 110/año.',
+      'En Colombia, los precios del plan Pro se expresan en pesos colombianos (COP): referencia $35.000/mes o $350.000/año (pago único por doce meses de uso). En el resto de LATAM, los precios se expresan en dólares estadounidenses (USD): referencia USD 10/mes o USD 100/año.',
       'Los pagos en Colombia se procesan a través de Wompi (tarjeta, PSE, Nequi u otros medios habilitados). Los pagos en resto de LATAM se procesan a través de PayPal (tarjeta débito o crédito en USD). Clausum no almacena datos completos de medios de pago.',
       'Salvo que la ley exija lo contrario, los pagos por periodos iniciados no son reembolsables. Si cancela o no renueva, su cuenta volverá a los límites del plan Free al vencer el periodo pagado.',
       'Nos reservamos el derecho de modificar precios para futuros periodos, con aviso previo razonable.',

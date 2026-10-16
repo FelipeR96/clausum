@@ -49,8 +49,8 @@ const plans = {
   pro: {
     name: 'Pro',
     slug: 'pro',
-    priceMonthly: 4000000,
-    priceYearly: 40000000,
+    priceMonthly: 3500000,
+    priceYearly: 35000000,
     currency: 'COP',
     limits: {
       analysesPerMonth: 75,
@@ -68,7 +68,7 @@ const plans = {
       '75 análisis al mes',
       '30 comparaciones al mes',
       'PDF digital o Word (.docx) sin límite de páginas',
-      'OCR para PDF escaneados (primeras 7 páginas)',
+      'OCR para PDF escaneados (primeras 15 páginas)',
       'Alertas avanzadas',
       'Historial completo',
       'Exportación PDF',
