@@ -171,6 +171,13 @@ export function AdminPricingSection() {
             valor={latamAnual}
             onChange={setLatamAnual}
           />
+          {/* El panel no debe prometer lo que no puede cumplir: en PayPal
+              el precio vive dentro del plan, no en cada cobro. */}
+          <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+            Cambiar esto <strong>no</strong> cambia lo que cobra PayPal: sus
+            planes llevan el precio dentro y se editan en PayPal. Aquí solo
+            afecta a lo que se muestra en la web.
+          </p>
         </div>
       </div>
 

@@ -14,6 +14,7 @@ import { setUserPlan } from './subscription.service';
 import { AppError } from '../utils/errors';
 import { firestoreDateToDate } from '../utils/firestore-date';
 import { inicioDelNuevoPeriodo } from '../utils/billing-period';
+import { importeCobradoPorPayPal } from '../utils/paypal-amount';
 import { getAmountInCents } from '../config/pricing';
 import { logger } from '../utils/logger';
 
@@ -260,7 +261,9 @@ async function activateProFromPayment(
   subscriptionId: string,
   paymentRef: DocumentReference,
   payment: Record<string, unknown>,
-  saleId?: string
+  saleId?: string,
+  /** Lo que PayPal dice haber cobrado. Manda sobre lo que calculamos. */
+  cobrado?: { amountInCents: number; currency?: string } | null
 ): Promise<void> {
   if (payment.status === 'succeeded') {
     return;
@@ -280,12 +283,21 @@ async function activateProFromPayment(
     billingInterval: interval,
     cancelAtPeriodEnd: false,
     clearCancellation: true,
+    ...(cobrado ? { subscriptionAmountInCents: cobrado.amountInCents } : {}),
   });
 
   await paymentRef.update({
     status: 'succeeded',
     paypalSubscriptionId: subscriptionId,
     ...(saleId ? { paypalSaleId: saleId } : {}),
+    // El importe se corrige con el real si PayPal lo manda: el que habia
+    // es el que esperabamos cobrar cuando se creo la suscripcion.
+    ...(cobrado
+      ? {
+          amount: cobrado.amountInCents,
+          ...(cobrado.currency ? { currency: cobrado.currency } : {}),
+        }
+      : {}),
     paidAt: FieldValue.serverTimestamp(),
   });
 
@@ -298,26 +310,67 @@ async function activateProFromPayment(
 async function extendProPeriod(
   userId: string,
   interval: BillingInterval,
-  subscriptionId: string
+  subscriptionId: string,
+  cobrado?: { amountInCents: number; currency?: string } | null,
+  saleId?: string
 ): Promise<void> {
   const userDoc = await adminDb().collection(COLLECTIONS.users).doc(userId).get();
   const user = userDoc.data();
   if (!user || user.planId !== 'pro') return;
 
-  const periodEnd = addMonths(new Date(), interval === 'annual' ? 12 : 1);
+  // Misma regla que en todas partes: el periodo nuevo arranca donde
+  // termina el vigente. Contar desde hoy le quitaba a cada renovacion los
+  // dias que le quedaban al cliente.
+  const currentEnd = firestoreDateToDate(user.currentPeriodEnd);
+  const periodEnd = addMonths(
+    inicioDelNuevoPeriodo(currentEnd),
+    interval === 'annual' ? 12 : 1
+  );
 
   await setUserPlan(userId, 'pro', {
     subscriptionStatus: 'active',
     subscriptionId,
     currentPeriodEnd: periodEnd,
     billingProvider: 'paypal',
+    billingInterval: interval,
     cancelAtPeriodEnd: false,
     clearCancellation: true,
+    ...(cobrado ? { subscriptionAmountInCents: cobrado.amountInCents } : {}),
   });
+
+  // Cada renovacion es un pago NUEVO.
+  //
+  // Antes se reescribia el documento del primer pago con un paidAt nuevo,
+  // asi que una suscripcion de seis meses dejaba un unico pago con la
+  // fecha del ultimo cobro: los ingresos de los cinco meses anteriores no
+  // es que se borraran, es que nunca llegaban a existir.
+  const referencia = buildPaymentReference(userId, interval);
+  await adminDb()
+    .collection(COLLECTIONS.payments)
+    .doc(referencia)
+    .set({
+      userId,
+      provider: 'paypal',
+      reference: referencia,
+      paypalSubscriptionId: subscriptionId,
+      ...(saleId ? { paypalSaleId: saleId } : {}),
+      amount: cobrado?.amountInCents ?? (user.subscriptionAmountInCents as number | undefined) ?? 0,
+      currency: cobrado?.currency ?? BILLING_CURRENCY_LATAM,
+      status: 'succeeded',
+      planId: 'pro',
+      billingInterval: interval,
+      isRenewal: true,
+      description:
+        interval === 'annual'
+          ? 'Clausum Pro — renovación anual (LATAM)'
+          : 'Clausum Pro — renovación mensual (LATAM)',
+      createdAt: FieldValue.serverTimestamp(),
+      paidAt: FieldValue.serverTimestamp(),
+    });
 
   logger.info('paypal', 'Periodo Pro extendido vía PayPal', {
     userId,
-    metadata: { subscriptionId, interval },
+    metadata: { subscriptionId, interval, referencia },
   });
 }
 
@@ -363,6 +416,7 @@ async function handlePaymentCompleted(resource: Record<string, unknown>): Promis
 
   const userId = found.data.userId as string;
   const interval = (found.data.billingInterval as BillingInterval) ?? 'monthly';
+  const cobrado = importeCobradoPorPayPal(resource);
 
   if (found.data.status === 'pending') {
     await activateProFromPayment(
@@ -371,17 +425,14 @@ async function handlePaymentCompleted(resource: Record<string, unknown>): Promis
       billingAgreementId,
       found.ref,
       found.data,
-      saleId
+      saleId,
+      cobrado
     );
     return;
   }
 
-  await found.ref.update({
-    paypalSaleId: saleId,
-    paidAt: FieldValue.serverTimestamp(),
-  });
-
-  await extendProPeriod(userId, interval, billingAgreementId);
+  // Ya no se toca el pago original: la renovacion se registra aparte.
+  await extendProPeriod(userId, interval, billingAgreementId, cobrado, saleId);
 }
 
 async function handleSubscriptionEnded(

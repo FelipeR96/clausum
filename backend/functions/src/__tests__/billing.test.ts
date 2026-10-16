@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { inicioDelNuevoPeriodo } from '../utils/billing-period';
+import { importeCobradoPorPayPal } from '../utils/paypal-amount';
 import {
   BILLING_CURRENCY,
   PRO_BILLING,
@@ -209,5 +210,46 @@ describe('desde cuando cuenta el periodo pagado', () => {
   it('arranca hoy si el periodo anterior ya vencio', () => {
     const vencioHaceUnMes = new Date('2026-09-16T12:00:00Z');
     expect(inicioDelNuevoPeriodo(vencioHaceUnMes, AHORA)).toEqual(AHORA);
+  });
+});
+
+describe('importe cobrado por PayPal', () => {
+  // En PayPal el precio vive dentro del plan, no en cada cobro. Lo que
+  // calculamos nosotros es lo que ESPERABAMOS cobrar; esto es lo que se
+  // cobro, y es lo unico que puede ir a un informe de ingresos.
+  it('lee el total de un PAYMENT.SALE.COMPLETED', () => {
+    const r = importeCobradoPorPayPal({
+      amount: { total: '10.00', currency: 'USD' },
+    });
+    expect(r).toEqual({ amountInCents: 1000, currency: 'USD' });
+  });
+
+  it('acepta tambien la forma value/currency_code', () => {
+    const r = importeCobradoPorPayPal({
+      amount: { value: '100.00', currency_code: 'USD' },
+    });
+    expect(r).toEqual({ amountInCents: 10000, currency: 'USD' });
+  });
+
+  // Redondear y no truncar: 10.00 puede llegar como 9.999999 en coma
+  // flotante, y truncar convertiria 10 dolares en 9,99.
+  it('redondea en vez de truncar', () => {
+    expect(importeCobradoPorPayPal({ amount: { total: 9.999999 } })).toEqual({
+      amountInCents: 1000,
+      currency: undefined,
+    });
+    expect(importeCobradoPorPayPal({ amount: { total: '12.345' } })).toEqual({
+      amountInCents: 1235,
+      currency: undefined,
+    });
+  });
+
+  // Ante la duda, null y no cero: un cero en un informe de ingresos parece
+  // un dato, un hueco se ve.
+  it('devuelve null si no hay importe legible', () => {
+    expect(importeCobradoPorPayPal({})).toBeNull();
+    expect(importeCobradoPorPayPal({ amount: {} })).toBeNull();
+    expect(importeCobradoPorPayPal({ amount: { total: 'gratis' } })).toBeNull();
+    expect(importeCobradoPorPayPal({ amount: { total: '-5.00' } })).toBeNull();
   });
 });
