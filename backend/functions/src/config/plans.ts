@@ -33,6 +33,15 @@ function normalizeKnownEntitlements(
   };
 }
 
+/**
+ * Tras editar los limites de un plan desde administracion. Sin esto el
+ * cambio tarda hasta 60s en verse, y quien lo hizo creeria que no funciono.
+ */
+export function invalidatePlanCache(slug?: PlanSlug): void {
+  if (slug) planCache.delete(slug);
+  else planCache.clear();
+}
+
 export async function getPlanBySlug(slug: PlanSlug): Promise<Plan | null> {
   const cached = planCache.get(slug);
   if (cached && cached.expiresAt > Date.now()) {
