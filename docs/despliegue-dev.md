@@ -19,10 +19,17 @@ con Node 20 aparece aqui por primera vez.
 | Llaves de sandbox de Wompi (`pub_test_`, `prv_test_`) | Del panel de Wompi. El codigo detecta sandbox solo, por el `test` en la llave publica |
 | `frontend/.env.production.local` | Ya creado. Ver la seccion "La mina del .env" mas abajo |
 
+
+> **`pnpm exec` delante de todo.** `firebase-tools` es una dependencia del
+> repo, no un programa global: `firebase` a secas da
+> "no se reconoce como nombre de un cmdlet". Que viva en el repo es lo
+> correcto — fija la version para todas las maquinas — pero obliga al
+> prefijo.
+
 ```powershell
 cd C:\Users\User\repos\contratos
-firebase login
-firebase use dev --config backend/firebase/firebase.json
+pnpm exec firebase login
+pnpm exec firebase use dev --config backend/firebase/firebase.json
 ```
 
 `firebase use` debe responder `clausum-dev`. Si responde otra cosa, para.
@@ -46,12 +53,12 @@ Uno por uno; cada comando pide el valor por consola y no queda en el
 historial de PowerShell.
 
 ```powershell
-firebase functions:secrets:set DEEPSEEK_API_KEY       --project clausum-dev
-firebase functions:secrets:set WOMPI_PRIVATE_KEY      --project clausum-dev
-firebase functions:secrets:set WOMPI_INTEGRITY_SECRET --project clausum-dev
-firebase functions:secrets:set WOMPI_EVENTS_SECRET    --project clausum-dev
-firebase functions:secrets:set PAYPAL_CLIENT_SECRET   --project clausum-dev
-firebase functions:secrets:set PAYPAL_WEBHOOK_ID      --project clausum-dev
+pnpm exec firebase functions:secrets:set DEEPSEEK_API_KEY       --project clausum-dev
+pnpm exec firebase functions:secrets:set WOMPI_PRIVATE_KEY      --project clausum-dev
+pnpm exec firebase functions:secrets:set WOMPI_INTEGRITY_SECRET --project clausum-dev
+pnpm exec firebase functions:secrets:set WOMPI_EVENTS_SECRET    --project clausum-dev
+pnpm exec firebase functions:secrets:set PAYPAL_CLIENT_SECRET   --project clausum-dev
+pnpm exec firebase functions:secrets:set PAYPAL_WEBHOOK_ID      --project clausum-dev
 ```
 
 Para PayPal, si todavia no tienes cuenta de sandbox, pon un valor
@@ -64,7 +71,7 @@ aqui.
 Comprobar:
 
 ```powershell
-firebase functions:secrets:access DEEPSEEK_API_KEY --project clausum-dev
+pnpm exec firebase functions:secrets:access DEEPSEEK_API_KEY --project clausum-dev
 ```
 
 ---
@@ -163,7 +170,7 @@ Si encuentra algo, el build se llevo los emuladores. No despliegues.
 ## Volver atras
 
 ```powershell
-firebase hosting:rollback --project clausum-dev
+pnpm exec firebase hosting:rollback --project clausum-dev
 ```
 
 Functions no tiene rollback de un comando: se vuelve al commit anterior y se
