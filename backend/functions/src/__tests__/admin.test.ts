@@ -152,6 +152,17 @@ describe('cambio de plan', () => {
     expect(snap.get('planGrantedBy')).toBeUndefined();
   });
 
+  // El cambio se escribe en Firestore; Auth solo aporta el correo y la
+  // fecha de alta. Si la respuesta dependiera de Auth, un documento sin
+  // cuenta de Auth daria un 404 despues de haber movido el plan: el admin
+  // veria un error y el plan cambiado. Paso exactamente eso.
+  it('devuelve el estado aunque el usuario no exista en Auth', async () => {
+    const vista = await setUserPlanAsAdmin(ADMIN, TARGET, 'pro');
+    expect(vista.uid).toBe(TARGET);
+    expect(vista.planId).toBe('pro');
+    expect(vista.email).toBe('objetivo@ejemplo.com');
+  });
+
   it('falla si el usuario no existe en Firestore', async () => {
     await expect(
       setUserPlanAsAdmin(ADMIN, 'no-existe-este-uid', 'pro')

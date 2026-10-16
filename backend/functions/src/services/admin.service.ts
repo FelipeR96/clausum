@@ -60,6 +60,42 @@ function registrarAccion(
   });
 }
 
+/**
+ * Arma la vista de un usuario a partir de su uid.
+ *
+ * Auth es opcional a proposito. La cuenta de Auth puede no existir (se
+ * borro, o es un documento de prueba) y eso no debe impedir ver ni cambiar
+ * el plan: lo que cobra y lo que limita vive en Firestore. Si falta Auth se
+ * devuelve lo que hay en Firestore, no un error.
+ */
+async function buildUserView(uid: string): Promise<AdminUserView> {
+  const [record, doc] = await Promise.all([
+    adminAuth()
+      .getUser(uid)
+      .catch(() => null),
+    adminDb().collection(COLLECTIONS.users).doc(uid).get(),
+  ]);
+
+  const data = doc.data() ?? {};
+  const periodEnd = data.currentPeriodEnd as Timestamp | undefined;
+
+  return {
+    uid,
+    email: record?.email ?? (data.email as string | undefined),
+    displayName: record?.displayName ?? (data.displayName as string | undefined),
+    disabled: record?.disabled ?? false,
+    createdAt: record?.metadata.creationTime,
+    lastSignInAt: record?.metadata.lastSignInTime,
+    isAdmin: record?.customClaims?.admin === true,
+    planId: (data.planId as PlanSlug) ?? 'free',
+    subscriptionStatus: data.subscriptionStatus as string | undefined,
+    currentPeriodEnd: periodEnd?.toDate?.().toISOString(),
+    billingProvider: data.billingProvider as string | undefined,
+    subscriptionAmountInCents: data.subscriptionAmountInCents as number | undefined,
+    planGrantedBy: data.planGrantedBy as string | undefined,
+  };
+}
+
 /** Busca por correo exacto. No hay listado completo a proposito. */
 export async function findUserByEmail(email: string): Promise<AdminUserView> {
   let record;
@@ -69,26 +105,7 @@ export async function findUserByEmail(email: string): Promise<AdminUserView> {
     throw new AppError('No hay ningún usuario con ese correo', 404, 'USER_NOT_FOUND');
   }
 
-  const doc = await adminDb().collection(COLLECTIONS.users).doc(record.uid).get();
-  const data = doc.data() ?? {};
-
-  const periodEnd = data.currentPeriodEnd as Timestamp | undefined;
-
-  return {
-    uid: record.uid,
-    email: record.email,
-    displayName: record.displayName,
-    disabled: record.disabled,
-    createdAt: record.metadata.creationTime,
-    lastSignInAt: record.metadata.lastSignInTime,
-    isAdmin: record.customClaims?.admin === true,
-    planId: (data.planId as PlanSlug) ?? 'free',
-    subscriptionStatus: data.subscriptionStatus as string | undefined,
-    currentPeriodEnd: periodEnd?.toDate?.().toISOString(),
-    billingProvider: data.billingProvider as string | undefined,
-    subscriptionAmountInCents: data.subscriptionAmountInCents as number | undefined,
-    planGrantedBy: data.planGrantedBy as string | undefined,
-  };
+  return buildUserView(record.uid);
 }
 
 /**
@@ -154,8 +171,9 @@ export async function setUserPlanAsAdmin(
     });
   }
 
-  const email = (snap.get('email') as string | undefined) ?? '';
-  return email ? findUserByEmail(email) : ({ uid: targetUid, planId } as AdminUserView);
+  // Se relee por uid, no por correo: el cambio ya esta hecho y dar la
+  // vuelta por Auth haria fallar la respuesta de algo que si ocurrio.
+  return buildUserView(targetUid);
 }
 
 // ── Precios ──────────────────────────────────────────────────────────────
