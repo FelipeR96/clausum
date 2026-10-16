@@ -23,7 +23,7 @@ Actualizado: 2026-10-15.
 | F0-05 Build limpio | ✅ `pnpm build` y `pnpm typecheck` en verde en los tres paquetes |
 | F1-01 Proyecto Firebase prod | ⏸️ Aplazado a propósito: `clausum-dev` (Blaze) hace de staging. `.firebaserc` ya no apunta `prod` a dev |
 | F1-01b Despliegue a dev | ✅ Desplegado en `clausum-dev` (Node 22, 6 funciones, reglas, 22 índices, corpus de 151 artículos, hosting). Runbook en `docs/despliegue-dev.md` |
-| F1-02 Secretos de pago | ✅ Los 5 secretos creados en `clausum-dev` · ⏳ faltan llaves reales de Wompi sandbox (`pub_test_`, `prv_test_`) |
+| F1-02 Secretos de pago | ✅ Llaves de Wompi sandbox puestas y verificadas (prefijo y longitud) |
 | F1-02b Pagos probables en local | ✅ Simulador de webhooks (`sim:wompi`) + llaves ficticias en `.env.local` |
 | F1-03/04 Cloud Tasks | ✅ |
 | F1-05 onSnapshot | ✅ |
@@ -41,6 +41,8 @@ Actualizado: 2026-10-15.
 | F3-05 Accesibilidad | ⏳ |
 | F3-06 Partir el bundle | ✅ Primera carga de 279 a 142 kB gzip, medido en el navegador |
 | F3-07 Avisos de lint a cero | ⏳ 27 avisos, no bloquean el CI |
+| Pagos Wompi (sandbox) | ✅ Probado contra Wompi real, no contra el simulador: pago aprobado activa Pro con `billingProvider`/`subscriptionId`/`subscriptionAmountInCents`; evento repetido no extiende ni pisa la transacción; firma falsa → 401; monto alterado → `AMOUNT_MISMATCH` sin activar; rechazo → `failed` sin mover el plan |
+| Pagos PayPal | ⏳ 596 líneas sin una sola prueba. Requiere crear antes los planes de suscripción en el panel de PayPal |
 | Módulo de administración | ✅ Claim de admin (solo desde `scripts/set-admin.cjs`, nunca desde la web), precios en Firestore, cambio de plan por correo, 12 pruebas |
 | Precios como dato | ✅ `config/pricing` es la fuente de verdad para cobro y pantalla. Suscriptores existentes conservan su precio vía `subscriptionAmountInCents` |
 | Fase 4 Corpus legal | ⏳ trabajo de contenido |
@@ -62,11 +64,16 @@ desplegado**, no solo en pruebas:
 Verde en local: `pnpm typecheck`, `pnpm lint` (0 errores, 27 avisos) y
 155 pruebas contra emuladores.
 
-**Lo único que separa esto de cobrar** son las llaves de Wompi sandbox
-(`pub_test_`, `prv_test_`). El código del checkout, la firma de
-integridad, la verificación de monto y moneda, la idempotencia y las
-renovaciones están escritos y cubiertos por pruebas, pero nunca han hablado
-con Wompi de verdad: hasta hoy solo con el simulador (`sim:wompi`).
+**El cobro con Wompi funciona** en sandbox, verificado contra Wompi real
+(16-10-2026). Lo que queda antes de cobrar dinero de verdad:
+
+- Llaves de producción y aprobación de la cuenta de comercio.
+- Un tope de gasto en Google Cloud. Blaze es pago por uso sin techo.
+- Observabilidad (Sentry): hoy, si algo falla para un usuario, te enteras
+  si te lo cuenta.
+- Decidir si el precio lleva IVA incluido, y la facturación electrónica.
+- Las renovaciones automáticas (`wompiRenewalScheduler`) siguen sin
+  ejecutarse nunca contra un cobro real: el primer ciclo cae a 30 días.
 
 ### ESLint 10 y el override de `@eslint/eslintrc`
 
