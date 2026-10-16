@@ -7,7 +7,7 @@
     "node": "20"
   },
   "scripts": {
-    "build": "pnpm --filter @clausum/shared build && tsc",
+    "build": "pnpm --filter @clausum/shared build && node scripts/bundle.mjs",
     "build:watch": "tsc --watch",
     "serve": "pnpm build && firebase emulators:start --only functions --config ../firebase/firebase.json",
     "shell": "pnpm build && firebase functions:shell --config ../firebase/firebase.json",
@@ -19,10 +19,9 @@
     "import:co-corpus": "node scripts/import-co-corpus.cjs",
     "test:api": "node scripts/test-api-flow.cjs",
     "sim:wompi": "node scripts/wompi-webhook-sim.cjs",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clausum/shared": "workspace:*",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "firebase-admin": "^13.0.2",
@@ -36,11 +35,13 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@clausum/shared": "workspace:*",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.5",
     "@types/pdf-parse": "^1.1.4",
     "@types/pdfkit": "^0.17.6",
+    "esbuild": "^0.25.12",
     "typescript": "^5.7.3"
   }
 }
