@@ -45,6 +45,39 @@ export interface PlanLimits {
   ocrScannedPdf: boolean;
 }
 
+export interface AdminUserRow {
+  uid: string;
+  email?: string;
+  displayName?: string;
+  planId: PlanSlug;
+  subscriptionStatus?: string;
+  currentPeriodEnd?: string;
+  billingProvider?: string;
+  billingInterval?: string;
+  subscriptionId?: string;
+  subscriptionAmountInCents?: number;
+  planGrantedBy?: string;
+  createdAt?: string;
+}
+
+export interface ListaUsuarios {
+  usuarios: AdminUserRow[];
+  siguienteCursor?: string;
+}
+
+export function listUsers(params?: {
+  plan?: PlanSlug;
+  limit?: number;
+  cursor?: string;
+}): Promise<ListaUsuarios> {
+  const q = new URLSearchParams();
+  if (params?.plan) q.set('plan', params.plan);
+  if (params?.limit) q.set('limit', String(params.limit));
+  if (params?.cursor) q.set('cursor', params.cursor);
+  const sufijo = q.toString() ? `?${q}` : '';
+  return apiClient<ListaUsuarios>(`/admin/users${sufijo}`);
+}
+
 export function findUser(email: string): Promise<AdminUserView> {
   return apiClient<AdminUserView>(`/admin/users?email=${encodeURIComponent(email)}`);
 }

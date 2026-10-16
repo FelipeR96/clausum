@@ -6,6 +6,7 @@ import { asyncHandler } from '../middleware/asyncHandler';
 import { validateBody } from '../middleware/validateRequest';
 import {
   findUserByEmail,
+  listUsers,
   setUserPlanAsAdmin,
   updatePlanLimits,
   updatePricing,
@@ -40,11 +41,30 @@ adminRouter.get(
   '/admin/users',
   asyncHandler(async (req, res) => {
     const email = typeof req.query.email === 'string' ? req.query.email.trim() : '';
-    if (!email) {
-      res.status(400).json({ error: 'Falta el correo a buscar' });
+
+    // Con correo, busca uno concreto; sin el, lista paginada. Son dos
+    // formas de lo mismo y separarlas en dos rutas no aportaria nada.
+    if (email) {
+      res.json(await findUserByEmail(email));
       return;
     }
-    res.json(await findUserByEmail(email));
+
+    const planId =
+      req.query.plan === 'pro' || req.query.plan === 'free'
+        ? (req.query.plan as PlanSlug)
+        : undefined;
+    const limit =
+      typeof req.query.limit === 'string' ? Number(req.query.limit) : undefined;
+    const cursor =
+      typeof req.query.cursor === 'string' ? req.query.cursor : undefined;
+
+    res.json(
+      await listUsers({
+        planId,
+        limit: Number.isFinite(limit) ? limit : undefined,
+        cursor,
+      })
+    );
   })
 );
 

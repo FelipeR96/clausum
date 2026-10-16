@@ -176,6 +176,93 @@ export async function setUserPlanAsAdmin(
   return buildUserView(targetUid);
 }
 
+
+export interface AdminUserRow {
+  uid: string;
+  email?: string;
+  displayName?: string;
+  planId: PlanSlug;
+  subscriptionStatus?: string;
+  currentPeriodEnd?: string;
+  billingProvider?: string;
+  billingInterval?: string;
+  subscriptionId?: string;
+  subscriptionAmountInCents?: number;
+  /** Presente solo si el plan lo concedio un administrador, no un pago. */
+  planGrantedBy?: string;
+  createdAt?: string;
+}
+
+/**
+ * Lista usuarios, paginada.
+ *
+ * Lee de Firestore y no de Auth a proposito: todo lo que interesa aqui
+ * —plan, estado, vencimiento, proveedor— vive en el documento del usuario.
+ * Listar desde Auth obligaria a una lectura extra por persona y no
+ * permitiria filtrar por plan.
+ *
+ * El cursor es el id del ultimo documento devuelto. Paginar por numero de
+ * pagina seria mas comodo de programar y mentiria en cuanto alguien se
+ * registre entre dos consultas.
+ */
+export async function listUsers(options?: {
+  planId?: PlanSlug;
+  limit?: number;
+  cursor?: string;
+}): Promise<{ usuarios: AdminUserRow[]; siguienteCursor?: string }> {
+  const limite = Math.min(Math.max(options?.limit ?? 25, 1), 100);
+
+  let q = adminDb()
+    .collection(COLLECTIONS.users)
+    .orderBy('createdAt', 'desc')
+    .limit(limite + 1);
+
+  if (options?.planId) {
+    q = adminDb()
+      .collection(COLLECTIONS.users)
+      .where('planId', '==', options.planId)
+      .orderBy('createdAt', 'desc')
+      .limit(limite + 1);
+  }
+
+  if (options?.cursor) {
+    const ancla = await adminDb()
+      .collection(COLLECTIONS.users)
+      .doc(options.cursor)
+      .get();
+    if (ancla.exists) q = q.startAfter(ancla);
+  }
+
+  const snap = await q.get();
+  const docs = snap.docs.slice(0, limite);
+  const hayMas = snap.docs.length > limite;
+
+  const usuarios = docs.map((doc) => {
+    const d = doc.data();
+    const fin = d.currentPeriodEnd as Timestamp | undefined;
+    const alta = d.createdAt as Timestamp | undefined;
+    return {
+      uid: doc.id,
+      email: d.email as string | undefined,
+      displayName: d.displayName as string | undefined,
+      planId: (d.planId as PlanSlug) ?? 'free',
+      subscriptionStatus: d.subscriptionStatus as string | undefined,
+      currentPeriodEnd: fin?.toDate?.().toISOString(),
+      billingProvider: d.billingProvider as string | undefined,
+      billingInterval: d.billingInterval as string | undefined,
+      subscriptionId: d.subscriptionId as string | undefined,
+      subscriptionAmountInCents: d.subscriptionAmountInCents as number | undefined,
+      planGrantedBy: d.planGrantedBy as string | undefined,
+      createdAt: alta?.toDate?.().toISOString(),
+    };
+  });
+
+  return {
+    usuarios,
+    siguienteCursor: hayMas ? docs[docs.length - 1]?.id : undefined,
+  };
+}
+
 // ── Precios ──────────────────────────────────────────────────────────────
 
 function validarRegion(region: string, valor: unknown): RegionPricing {

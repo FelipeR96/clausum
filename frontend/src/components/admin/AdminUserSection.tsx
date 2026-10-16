@@ -80,7 +80,7 @@ export function AdminUserSection() {
     <section className="glass-panel rounded-2xl p-6 sm:p-8">
       <h2 className="font-display text-xl font-bold text-on-surface">Usuarios</h2>
       <p className="mt-1 text-sm text-on-surface-variant">
-        Buscar por correo exacto. No hay listado completo a propósito.
+        Buscar por correo exacto para cambiarle el plan. El listado completo está más abajo.
       </p>
 
       <form onSubmit={buscar} className="mt-5 flex flex-wrap gap-3">

@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthProvider';
 import { AppShell } from '@/components/app/AppShell';
 import { AdminUserSection } from '@/components/admin/AdminUserSection';
+import { AdminUsersListSection } from '@/components/admin/AdminUsersListSection';
 import { AdminPricingSection } from '@/components/admin/AdminPricingSection';
 import { AdminLimitsSection } from '@/components/admin/AdminLimitsSection';
 
@@ -34,6 +35,7 @@ export function AdminPage() {
         </header>
 
         <AdminUserSection />
+        <AdminUsersListSection />
         <AdminPricingSection />
         <AdminLimitsSection />
       </div>
