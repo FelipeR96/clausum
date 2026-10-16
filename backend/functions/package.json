@@ -19,7 +19,8 @@
     "import:co-corpus": "node scripts/import-co-corpus.cjs",
     "test:api": "node scripts/test-api-flow.cjs",
     "sim:wompi": "node scripts/wompi-webhook-sim.cjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "set-admin": "node scripts/set-admin.cjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

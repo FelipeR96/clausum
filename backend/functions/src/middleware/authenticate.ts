@@ -11,6 +11,12 @@ export interface AuthenticatedRequest extends Request {
    * servidor tenga que manejar contraseñas.
    */
   authTime?: number;
+  /**
+   * Viene del custom claim `admin` del token, que solo se concede desde el
+   * servidor (scripts/set-admin.cjs). El cliente no puede ponerselo: el
+   * token va firmado por Firebase y aqui se verifica esa firma.
+   */
+  isAdmin?: boolean;
 }
 
 export async function authenticate(
@@ -32,6 +38,7 @@ export async function authenticate(
     (req as AuthenticatedRequest).uid = decoded.uid;
     (req as AuthenticatedRequest).email = decoded.email;
     (req as AuthenticatedRequest).authTime = decoded.auth_time;
+    (req as AuthenticatedRequest).isAdmin = decoded.admin === true;
     next();
   } catch {
     res.status(401).json({ error: 'Token inválido o expirado' });
