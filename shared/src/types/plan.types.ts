@@ -1,4 +1,5 @@
 import type { FirestoreDate } from './common.types';
+import type { BillingInterval } from '../constants/billing';
 
 /** Slugs conocidos. Para añadir un plan nuevo: extender aquí + seed en Firestore. */
 export type KnownPlanSlug = 'free' | 'pro';
