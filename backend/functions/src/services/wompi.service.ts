@@ -17,6 +17,8 @@ import {
 import { setUserPlan } from './subscription.service';
 import { getAmountInCents } from '../config/pricing';
 import { AppError } from '../utils/errors';
+import { firestoreDateToDate } from '../utils/firestore-date';
+import { inicioDelNuevoPeriodo } from '../utils/billing-period';
 import { logger } from '../utils/logger';
 import {
   createWompiPaymentSource,
@@ -206,15 +208,6 @@ function periodEndFromInterval(interval: BillingInterval, base = new Date()): Da
   return addMonths(base, interval === 'annual' ? 12 : 1);
 }
 
-function firestoreDateToDate(value: unknown): Date | null {
-  if (!value) return null;
-  if (value instanceof Date) return value;
-  if (value instanceof Timestamp) return value.toDate();
-  if (typeof value === 'object' && value !== null && 'seconds' in value) {
-    return new Date((value as { seconds: number }).seconds * 1000);
-  }
-  return null;
-}
 
 async function createPendingPayment(input: {
   userId: string;
@@ -259,21 +252,22 @@ async function activateProFromPayment(
   payment: Record<string, unknown>,
   options?: {
     wompiPaymentSourceId?: number;
-    extendFromCurrent?: boolean;
   }
 ): Promise<void> {
   if (payment.status === 'succeeded') {
     return;
   }
 
-  let periodEnd = periodEndFromInterval(interval);
-  if (options?.extendFromCurrent) {
-    const userDoc = await adminDb().collection(COLLECTIONS.users).doc(userId).get();
-    const currentEnd = firestoreDateToDate(userDoc.data()?.currentPeriodEnd);
-    const base =
-      currentEnd && currentEnd.getTime() > Date.now() ? currentEnd : new Date();
-    periodEnd = periodEndFromInterval(interval, base);
-  }
+  // Regla general: a nadie se le quita tiempo que ya pago.
+  //
+  // El periodo nuevo arranca donde termina el que tenga vigente, no hoy.
+  // Antes esto solo se hacia en las renovaciones, asi que alguien con tres
+  // dias de mensual que se pasaba a anual perdia los 27 restantes sin que
+  // nadie se lo dijera. Para quien no tiene periodo vigente —cliente nuevo,
+  // o uno que dejo vencer— la base es hoy, que es lo mismo de siempre.
+  const userDoc = await adminDb().collection(COLLECTIONS.users).doc(userId).get();
+  const currentEnd = firestoreDateToDate(userDoc.data()?.currentPeriodEnd);
+  const periodEnd = periodEndFromInterval(interval, inicioDelNuevoPeriodo(currentEnd));
 
   // El monto que de verdad se cobro, no el precio vigente: a partir de aqui
   // las renovaciones de esta persona usan este.
@@ -285,6 +279,7 @@ async function activateProFromPayment(
     subscriptionId: transactionId,
     currentPeriodEnd: periodEnd,
     billingProvider: 'wompi',
+    billingInterval: interval,
     cancelAtPeriodEnd: false,
     clearCancellation: true,
     ...(paidAmount ? { subscriptionAmountInCents: paidAmount } : {}),
@@ -742,7 +737,6 @@ export async function handleWompiWebhook(event: WompiWebhookEvent): Promise<void
   if (transaction.status === 'APPROVED') {
     await activateProFromPayment(userId, interval, transaction.id, payment, {
       wompiPaymentSourceId: paymentSourceId,
-      extendFromCurrent: isRenewal,
     });
 
     await paymentRef.update({

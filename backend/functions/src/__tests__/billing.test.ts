@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
+import { inicioDelNuevoPeriodo } from '../utils/billing-period';
 import {
   BILLING_CURRENCY,
   PRO_BILLING,
@@ -187,5 +188,26 @@ describe('precios por región', () => {
 
   it('la moneda base del producto es COP', () => {
     expect(BILLING_CURRENCY).toBe('COP');
+  });
+});
+
+describe('desde cuando cuenta el periodo pagado', () => {
+  const AHORA = new Date('2026-10-16T12:00:00Z');
+
+  // El caso que motivo la regla: tres dias de mensual, se pasa a anual.
+  // Antes el periodo se reiniciaba y perdia los 27 dias restantes.
+  it('arranca donde termina el periodo que ya pago', () => {
+    const terminaEn27Dias = new Date('2026-11-12T12:00:00Z');
+    expect(inicioDelNuevoPeriodo(terminaEn27Dias, AHORA)).toEqual(terminaEn27Dias);
+  });
+
+  it('arranca hoy si es cliente nuevo', () => {
+    expect(inicioDelNuevoPeriodo(null, AHORA)).toEqual(AHORA);
+  });
+
+  // Dejo vencer y vuelve: no se le regalan los meses que estuvo fuera.
+  it('arranca hoy si el periodo anterior ya vencio', () => {
+    const vencioHaceUnMes = new Date('2026-09-16T12:00:00Z');
+    expect(inicioDelNuevoPeriodo(vencioHaceUnMes, AHORA)).toEqual(AHORA);
   });
 });

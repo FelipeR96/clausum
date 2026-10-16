@@ -24,6 +24,8 @@ export interface User extends WithTimestamps {
   currentPeriodEnd?: FirestoreDate;
   /** Proveedor de pago activo (Wompi Colombia, PayPal LATAM). */
   billingProvider?: 'wompi' | 'paypal';
+  /** Mensual o anual del periodo vigente. */
+  billingInterval?: 'monthly' | 'annual';
   /** Fuente de pago Wompi para renovaciones automáticas (tarjeta tokenizada). */
   wompiPaymentSourceId?: number;
   /** Intervalo de facturación Wompi activo. */

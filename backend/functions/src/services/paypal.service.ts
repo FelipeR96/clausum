@@ -12,6 +12,8 @@ import {
 } from '../config/env';
 import { setUserPlan } from './subscription.service';
 import { AppError } from '../utils/errors';
+import { firestoreDateToDate } from '../utils/firestore-date';
+import { inicioDelNuevoPeriodo } from '../utils/billing-period';
 import { getAmountInCents } from '../config/pricing';
 import { logger } from '../utils/logger';
 
@@ -264,13 +266,18 @@ async function activateProFromPayment(
     return;
   }
 
-  const periodEnd = addMonths(new Date(), interval === 'annual' ? 12 : 1);
+  // Misma regla que Wompi: a nadie se le quita tiempo que ya pago. Aqui
+  // era peor, porque reiniciaba el periodo incluso en las renovaciones.
+  const userDoc = await adminDb().collection(COLLECTIONS.users).doc(userId).get();
+  const currentEnd = firestoreDateToDate(userDoc.data()?.currentPeriodEnd);
+  const periodEnd = addMonths(inicioDelNuevoPeriodo(currentEnd), interval === 'annual' ? 12 : 1);
 
   await setUserPlan(userId, 'pro', {
     subscriptionStatus: 'active',
     subscriptionId,
     currentPeriodEnd: periodEnd,
     billingProvider: 'paypal',
+    billingInterval: interval,
     cancelAtPeriodEnd: false,
     clearCancellation: true,
   });

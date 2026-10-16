@@ -81,6 +81,10 @@ export function SettingsBillingTab() {
   const billingProvider =
     me?.subscription.billingProvider ?? (isColombia ? 'wompi' : 'paypal');
   const cancelAtPeriodEnd = me?.subscription.cancelAtPeriodEnd ?? false;
+  const billingInterval = me?.subscription.billingInterval;
+  // Solo tiene sentido ofrecer el cambio hacia arriba: de anual a mensual
+  // no, porque implicaria devolver dinero.
+  const puedePasarseAAnual = isPro && billingInterval === 'monthly';
 
   const dismissPaymentNotice = () => {
     const next = new URLSearchParams(searchParams);
@@ -241,6 +245,55 @@ export function SettingsBillingTab() {
                 ))}
               </ul>
             </div>
+
+            {puedePasarseAAnual && (
+              <div className="glass-panel rounded-2xl p-6">
+                <h3 className="font-display text-lg font-bold">Pasar a plan anual</h3>
+                <p className="mt-2 text-sm text-on-surface-variant">
+                  Pagas {formatProPrice(region, annualPrice)} y ahorras un{' '}
+                  {savingsPercent}% frente a pagar mes a mes.
+                </p>
+                {/* Lo que mas tranquiliza de un cambio de plan es saber que no
+                    se pierde lo pagado. Por eso se dice aqui y no en letra
+                    pequena. */}
+                <p className="mt-2 text-sm text-on-surface-variant">
+                  No pierdes los días que ya pagaste: el año empieza a contar
+                  {periodEnd ? ` el ${periodEnd}` : ' al terminar tu periodo actual'}.
+                </p>
+
+                {isColombia ? (
+                  wompiRecurrent ? (
+                    <div className="mt-4 space-y-3">
+                      <WompiSubscribeButton
+                        interval="annual"
+                        className="w-full rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-on-primary shadow-soft transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                        onSubscribed={() => invalidateSubscriptionCache()}
+                      />
+                      <WompiCheckoutButton
+                        interval="annual"
+                        className="w-full rounded-xl border border-outline-variant px-6 py-2.5 text-sm font-semibold text-on-surface-variant transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        Pago único (PSE / Nequi / tarjeta)
+                      </WompiCheckoutButton>
+                    </div>
+                  ) : (
+                    <WompiCheckoutButton
+                      interval="annual"
+                      className="mt-4 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-on-primary shadow-soft transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      Pasar a anual con Wompi
+                    </WompiCheckoutButton>
+                  )
+                ) : (
+                  <PayPalCheckoutButton
+                    interval="annual"
+                    className="mt-4 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-on-primary shadow-soft transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    Pasar a anual con PayPal
+                  </PayPalCheckoutButton>
+                )}
+              </div>
+            )}
 
             {!isPro && (
               <div className="glass-panel rounded-2xl p-6">

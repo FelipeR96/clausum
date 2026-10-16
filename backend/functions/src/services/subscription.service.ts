@@ -130,6 +130,7 @@ export async function getSubscriptionSummary(
     subscriptionStatus: user.subscriptionStatus,
     currentPeriodEnd: firestoreDateToIso(user.currentPeriodEnd),
     billingProvider: user.billingProvider,
+    billingInterval: user.billingInterval,
     cancelAtPeriodEnd: user.cancelAtPeriodEnd,
   };
 }
@@ -365,6 +366,7 @@ export async function setUserPlan(
     subscriptionStatus?: string;
     currentPeriodEnd?: Date;
     billingProvider?: 'wompi' | 'paypal';
+    billingInterval?: 'monthly' | 'annual';
     wompiPaymentSourceId?: number | null;
     wompiBillingInterval?: 'monthly' | 'annual' | null;
     cancelAtPeriodEnd?: boolean;
@@ -393,6 +395,9 @@ export async function setUserPlan(
   }
   if (options?.billingProvider !== undefined) {
     update.billingProvider = options.billingProvider;
+  }
+  if (options?.billingInterval !== undefined) {
+    update.billingInterval = options.billingInterval;
   }
   if (options?.subscriptionAmountInCents !== undefined) {
     if (options.subscriptionAmountInCents === null) {

@@ -60,5 +60,7 @@ export interface SubscriptionSummary {
   /** Fin del periodo pagado (ISO 8601). */
   currentPeriodEnd?: string;
   billingProvider?: 'wompi' | 'paypal';
+  /** Mensual o anual. Lo necesita la pantalla para ofrecer el paso a anual. */
+  billingInterval?: BillingInterval;
   cancelAtPeriodEnd?: boolean;
 }
