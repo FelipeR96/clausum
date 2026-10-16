@@ -9,8 +9,27 @@ const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 const projectId = process.env.GCLOUD_PROJECT ?? 'clausum-dev';
 
-if (process.env.FIRESTORE_EMULATOR_HOST === undefined) {
-  process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+// El destino se dice en voz alta, no se adivina.
+//
+// Antes, si FIRESTORE_EMULATOR_HOST venia vacio este script se apuntaba
+// solo al emulador. Eso tiene dos finales malos y ninguno avisa: con el
+// emulador apagado se queda colgado reintentando, y con el emulador
+// encendido escribe ahi cuando creias estar sembrando el proyecto real.
+// Ahora hay que pedir el emulador con --emulator (o con la variable ya
+// puesta); si no, va al proyecto, y se imprime cual antes de tocar nada.
+const usarEmulador =
+  process.argv.includes('--emulator') || process.env.FIRESTORE_EMULATOR_HOST !== undefined;
+
+if (usarEmulador) {
+  process.env.FIRESTORE_EMULATOR_HOST ??= '127.0.0.1:8080';
+  console.log(`🧪 Emulador: ${process.env.FIRESTORE_EMULATOR_HOST} (proyecto ${projectId})`);
+} else {
+  console.log(`☁️  Proyecto REAL: ${projectId}`);
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    console.log(
+      '   (sin GOOGLE_APPLICATION_CREDENTIALS: se usaran las credenciales de gcloud)'
+    );
+  }
 }
 
 initializeApp({ projectId });

@@ -14,6 +14,13 @@ execSync('node scripts/build-co-corpus.cjs', { cwd: root, stdio: 'inherit' });
 
 const corpusPath = path.join(root, 'data', 'co-mvp-corpus.json');
 console.log('📥 Importando a Firestore laws/…');
-execSync(`node scripts/import-laws.cjs "${corpusPath}"`, { cwd: root, stdio: 'inherit' });
+
+// Se reenvian las banderas (--emulator sobre todo): import-laws decide
+// el destino y aqui no se puede perder esa eleccion por el camino.
+const banderas = process.argv.slice(2).join(' ');
+execSync(`node scripts/import-laws.cjs "${corpusPath}" ${banderas}`.trim(), {
+  cwd: root,
+  stdio: 'inherit',
+});
 
 console.log('✅ Corpus legal Colombia importado.');

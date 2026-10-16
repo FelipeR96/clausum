@@ -30,7 +30,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:emulators": "firebase emulators:exec --only firestore,storage,auth --project clausum-test \"pnpm test\"",
-    "lint:strict": "eslint . --max-warnings 0"
+    "lint:strict": "eslint . --max-warnings 0",
+    "seed:emulator": "pnpm --filter @clausum/functions seed:emulator",
+    "seed:legal-catalog:emulator": "pnpm --filter @clausum/functions seed:legal-catalog:emulator"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
