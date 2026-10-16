@@ -8,7 +8,11 @@ packages:
 # dependencia con postinstall tiene que aparecer aqui.
 allowBuilds:
   '@firebase/util': true
-  canvas: false
+  # Se permite a proposito: canvas 3.x descarga un binario precompilado
+  # (prebuild-install + N-API) en vez de compilar con node-gyp. Con
+  # canvas: false el script no corria y en Windows el OCR nunca llego a
+  # funcionar: faltaba build/Release/canvas.node.
+  canvas: true
   esbuild: true
   protobufjs: true
   tesseract.js: true
@@ -28,3 +32,15 @@ allowBuilds:
 # Si no aparece nada, borra este bloque.
 overrides:
   '@eslint/eslintrc': '3.3.1'
+
+  # canvas 2.11.2 (via pdf-img-convert) no tiene binario para el ABI de
+  # Node 22 (node-v127): intenta compilar desde fuente y falla en Cloud
+  # Build, que no trae pangocairo. En Node 20 si existia el binario, por eso
+  # el fallo no aparecio hasta subir el runtime.
+  #
+  # La 3.x migro a N-API, asi que un solo binario sirve para cualquier
+  # version de Node y no hay que volver a pasar por esto en el proximo salto.
+  #
+  # pdf-img-convert pide ^2.11.2; la API que usamos (convert con scale y
+  # page_numbers) no cambio entre 2.x y 3.x.
+  canvas: '^3.2.3'
