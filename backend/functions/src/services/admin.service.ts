@@ -44,11 +44,16 @@ export interface AdminUserView {
   planGrantedBy?: string;
 }
 
-async function registrarAccion(
+/**
+ * Sincrona a proposito: logger.info escribe en consola y lanza la
+ * persistencia en Firestore sin esperarla. Marcarla async sugeriria que el
+ * registro esta guardado al volver, y no lo esta.
+ */
+function registrarAccion(
   adminUid: string,
   accion: string,
   metadata: Record<string, string | number | boolean>
-): Promise<void> {
+): void {
   logger.info('api', `[admin] ${accion}`, {
     userId: adminUid,
     metadata,
@@ -125,7 +130,7 @@ export async function setUserPlanAsAdmin(
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    await registrarAccion(adminUid, 'plan concedido', {
+    registrarAccion(adminUid, 'plan concedido', {
       usuario: targetUid,
       de: anterior,
       a: 'pro',
@@ -142,7 +147,7 @@ export async function setUserPlanAsAdmin(
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    await registrarAccion(adminUid, 'plan retirado', {
+    registrarAccion(adminUid, 'plan retirado', {
       usuario: targetUid,
       de: anterior,
       a: 'free',
@@ -222,7 +227,7 @@ export async function updatePricing(
   // su cache de 60s.
   invalidatePricingCache();
 
-  await registrarAccion(adminUid, 'precios actualizados', {
+  registrarAccion(adminUid, 'precios actualizados', {
     coMensualAntes: anterior.CO.monthlyAmountInCents,
     coMensualDespues: nuevo.CO.monthlyAmountInCents,
     coAnualAntes: anterior.CO.yearlyAmountInCents,
@@ -309,7 +314,7 @@ export async function updatePlanLimits(
 
   invalidatePlanCache(slug);
 
-  await registrarAccion(adminUid, 'límites actualizados', {
+  registrarAccion(adminUid, 'límites actualizados', {
     plan: slug,
     campos: Object.keys(limits).join(', '),
   });
