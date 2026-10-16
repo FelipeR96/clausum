@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthProvider';
+import { AppShell } from '@/components/app/AppShell';
 import { AdminUserSection } from '@/components/admin/AdminUserSection';
 import { AdminPricingSection } from '@/components/admin/AdminPricingSection';
 import { AdminLimitsSection } from '@/components/admin/AdminLimitsSection';
@@ -18,20 +19,24 @@ export function AdminPage() {
   if (loading) return null;
   if (!isAdmin) return <Navigate to="/panel" replace />;
 
+  // Dentro de AppShell como el resto de paginas: sin el, el menu lateral
+  // desaparece y la pagina no tiene salida salvo escribiendo la URL.
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-6">
-      <header>
-        <h1 className="font-display text-2xl font-bold text-on-surface sm:text-3xl">
-          Administración
-        </h1>
-        <p className="mt-1 text-sm text-on-surface-variant">
-          Cada cambio queda registrado con la cuenta que lo hizo.
-        </p>
-      </header>
+    <AppShell pageTitle="Administración" breadcrumb="Ajustes del servicio">
+      <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-6">
+        <header>
+          <h1 className="font-display text-2xl font-bold text-on-surface sm:text-3xl">
+            Administración
+          </h1>
+          <p className="mt-1 text-sm text-on-surface-variant">
+            Cada cambio queda registrado con la cuenta que lo hizo.
+          </p>
+        </header>
 
-      <AdminUserSection />
-      <AdminPricingSection />
-      <AdminLimitsSection />
-    </div>
+        <AdminUserSection />
+        <AdminPricingSection />
+        <AdminLimitsSection />
+      </div>
+    </AppShell>
   );
 }
