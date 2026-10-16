@@ -21,7 +21,8 @@ Actualizado: 2026-10-15.
 | F0-03 ESLint + Prettier | ✅ Configurado y primera pasada hecha: 66 errores arreglados |
 | F0-04 CI | ✅ Verde en la corrida #4 (`5584ef2`): build, typecheck, lint y 134 pruebas contra emuladores |
 | F0-05 Build limpio | ✅ `pnpm build` y `pnpm typecheck` en verde en los tres paquetes |
-| F1-01 Proyecto Firebase prod | ⏸️ Aplazado a propósito: seguimos en desarrollo sobre `clausum-dev` (ya en Blaze) |
+| F1-01 Proyecto Firebase prod | ⏸️ Aplazado a propósito: `clausum-dev` (Blaze) hace de staging. `.firebaserc` ya no apunta `prod` a dev |
+| F1-01b Despliegue a dev | 📋 Runbook en `docs/despliegue-dev.md` · ⏳ sin ejecutar |
 | F1-02 Secretos de pago | ✅ Código listo · ⏸️ `functions:secrets:set` va con F1-01 |
 | F1-02b Pagos probables en local | ✅ Simulador de webhooks (`sim:wompi`) + llaves ficticias en `.env.local` |
 | F1-03/04 Cloud Tasks | ✅ |
