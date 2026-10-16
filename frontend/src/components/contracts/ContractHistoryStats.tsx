@@ -1,8 +1,11 @@
+import { esIlimitado } from '@clausum/shared';
+
 type ContractHistoryStatsProps = {
   contractsTotal: number;
   contractsLimit: number;
   highRiskCount: number;
   historyLimit: number;
+  planName: string;
 };
 
 export function ContractHistoryStats({
@@ -10,6 +13,7 @@ export function ContractHistoryStats({
   contractsLimit,
   highRiskCount,
   historyLimit,
+  planName,
 }: ContractHistoryStatsProps) {
   return (
     <section className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -20,7 +24,9 @@ export function ContractHistoryStats({
         <div className="mt-2 flex items-baseline gap-2">
           <p className="font-display text-3xl font-bold">{contractsTotal}</p>
           <span className="text-sm font-medium text-primary">
-            de {contractsLimit} en Free
+            {esIlimitado(contractsLimit)
+              ? 'sin límite'
+              : `de ${contractsLimit} en ${planName}`}
           </span>
         </div>
       </div>
@@ -42,7 +48,9 @@ export function ContractHistoryStats({
         <div className="mt-2 flex items-baseline gap-2">
           <p className="font-display text-3xl font-bold">{contractsTotal}</p>
           <span className="text-sm text-on-surface-variant">
-            máx. {historyLimit} en Free
+            {esIlimitado(historyLimit)
+              ? 'sin límite'
+              : `máx. ${historyLimit} en ${planName}`}
           </span>
         </div>
       </div>

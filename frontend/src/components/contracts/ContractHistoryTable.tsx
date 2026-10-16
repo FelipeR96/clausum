@@ -1,3 +1,4 @@
+import { esIlimitado } from '@clausum/shared';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type {
@@ -288,9 +289,12 @@ export function ContractHistoryTable({
           </div>
         </div>
 
-        <p className="border-t border-outline-variant/40 px-5 py-3 text-xs text-on-surface-variant">
-          Historial limitado a {historyLimit} entradas en plan Free. Pro incluye historial completo.
-        </p>
+        {!esIlimitado(historyLimit) && (
+          <p className="border-t border-outline-variant/40 px-5 py-3 text-xs text-on-surface-variant">
+            Historial limitado a {historyLimit} entradas en plan Free. Pro incluye historial
+            completo.
+          </p>
+        )}
       </section>
 
       {menu && (
@@ -299,7 +303,10 @@ export function ContractHistoryTable({
           style={{ top: menu.top, right: menu.right }}
           onClick={(event) => event.stopPropagation()}
         >
-          {menu.row.status === 'uploaded' ? (
+          {/* Un contrato en error se reintenta desde aqui: el archivo sigue
+              en Storage, asi que no hay que volver a subirlo. Es el caso
+              normal despues de pasar a Pro con un escaneo que Free rechazo. */}
+          {menu.row.status === 'uploaded' || menu.row.status === 'error' ? (
             <button
               type="button"
               onClick={() => {
@@ -309,8 +316,14 @@ export function ContractHistoryTable({
               disabled={!onAnalyzeContract || analyzingContractId === menu.row.id}
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-on-surface transition hover:bg-surface-container disabled:cursor-wait disabled:opacity-60"
             >
-              <span className="material-symbols-outlined text-base">search_insights</span>
-              {analyzingContractId === menu.row.id ? 'Analizando…' : 'Analizar ahora'}
+              <span className="material-symbols-outlined text-base">
+                {menu.row.status === 'error' ? 'refresh' : 'search_insights'}
+              </span>
+              {analyzingContractId === menu.row.id
+                ? 'Analizando…'
+                : menu.row.status === 'error'
+                  ? 'Reintentar análisis'
+                  : 'Analizar ahora'}
             </button>
           ) : (
             <Link

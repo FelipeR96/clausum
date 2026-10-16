@@ -2,6 +2,19 @@ import type { Plan, PlanEntitlements } from '../types/plan.types';
 import { BILLING_CURRENCY, PRO_BILLING } from './billing';
 import { OCR_SCANNED_MAX_PAGES } from './document-limits';
 
+/**
+ * Valor que usan los limites para decir "sin limite".
+ *
+ * Es un numero porque PlanEntitlements declara numeros, pero NO es una
+ * cantidad: pintarlo tal cual produce cosas como "max. -1 en Free". Toda
+ * pantalla que muestre un limite tiene que preguntar por esIlimitado antes.
+ */
+export const SIN_LIMITE = -1;
+
+export function esIlimitado(limite: number): boolean {
+  return limite === SIN_LIMITE;
+}
+
 export const FREE_ENTITLEMENTS: PlanEntitlements = {
   analysesPerMonth: 3,
   comparisonsPerMonth: 1,
@@ -19,10 +32,10 @@ export const PRO_ENTITLEMENTS: PlanEntitlements = {
   analysesPerMonth: 75,
   comparisonsPerMonth: 30,
   maxFileSizeMb: 10,
-  maxContracts: -1,
+  maxContracts: SIN_LIMITE,
   exportPdf: true,
   fullHistory: true,
-  historyMaxEntries: -1,
+  historyMaxEntries: SIN_LIMITE,
   alertsAdvanced: true,
   apiAccess: true,
   ocrScannedPdf: true,

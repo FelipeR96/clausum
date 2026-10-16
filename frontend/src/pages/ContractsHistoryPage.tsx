@@ -238,6 +238,7 @@ export function ContractsHistoryPage() {
           contractsLimit={contractsLimit}
           highRiskCount={highRiskCount}
           historyLimit={historyLimit}
+          planName={isPro ? 'Pro' : 'Free'}
         />
 
         {quotaError && (
