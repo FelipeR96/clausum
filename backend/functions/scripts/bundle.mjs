@@ -65,6 +65,14 @@ function resolveCanvasVersion() {
 
 const canvasVersion = resolveCanvasVersion();
 
+// Externo: todo lo que Cloud Build va a instalar. Varios traen binarios
+// nativos y no se pueden empaquetar.
+// Interno (se inlinea): @clausum/shared, que nunca llega alli.
+const external = [
+  ...Object.keys(pkg.dependencies ?? {}),
+  ...Object.keys(pkg.peerDependencies ?? {}),
+];
+
 const result = await build({
   entryPoints: [join(root, 'src/index.ts')],
   bundle: true,
