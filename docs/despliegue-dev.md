@@ -85,6 +85,17 @@ ventana en la que funciones nuevas escriben contra reglas viejas.
 pnpm deploy:rules
 ```
 
+Y los indices, que `deploy:rules` NO incluye:
+
+```powershell
+pnpm exec firebase deploy --only firestore:indexes --config backend/firebase/firebase.json
+```
+
+Son 22 indices compuestos. Sin ellos, toda consulta con filtro + orden
+(historial, alertas, panel) falla en tiempo de ejecucion con "requires an
+index". Se construyen en segundo plano y tardan unos minutos, asi que
+conviene lanzarlos cuanto antes.
+
 ---
 
 ## 4. Los seeds
