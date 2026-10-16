@@ -138,6 +138,39 @@ dira que modulo o sintaxis no soporta.
 
 ---
 
+## 5b. Abrir la API a invocaciones publicas
+
+Tras el primer despliegue, `https://<host>/api/health` devuelve **403
+Forbidden**. No es un fallo del codigo: las funciones de 2a generacion
+corren sobre Cloud Run y el servicio nace cerrado a invocaciones sin
+autenticar.
+
+Hay que abrir **solo `api`**:
+
+```powershell
+gcloud run services add-iam-policy-binding api `
+  --region=us-east1 --member=allUsers `
+  --role=roles/run.invoker --project=clausum-dev
+```
+
+Sin gcloud, por consola: https://console.cloud.google.com/run?project=clausum-dev
+-> servicio `api` -> Security -> Allow unauthenticated invocations.
+
+Que la API sea publica es el diseno: quien filtra es el middleware
+`authenticate` con el token de Firebase, no la capa de Cloud Run.
+
+**`processAnalysisTask`, `processRisksTask` y `processComparisonTask` se
+quedan cerradas.** Las invoca Cloud Tasks con credenciales; abrirlas
+dejaria que cualquiera encolara trabajo de IA contra tu cuenta de DeepSeek.
+
+Comprobar:
+
+```powershell
+curl https://clausum-dev.web.app/api/health
+```
+
+Debe responder `{"status":"ok","service":"clausum-api","version":"0.2.0"}`.
+
 ## 6. Probar, en este orden
 
 El orden importa: cada paso descarta una causa antes de pasar al siguiente.
