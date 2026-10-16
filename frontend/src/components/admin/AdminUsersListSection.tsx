@@ -149,8 +149,11 @@ export function AdminUsersListSection() {
                       </span>
                     )}
                   </td>
+                  {/* El importe suscrito sigue escrito despues de pasar a
+                      Free, asi que mostrarlo ahi haria pensar que esa
+                      persona paga algo. */}
                   <td className="py-3 pr-4">
-                    {dinero(u.subscriptionAmountInCents)}
+                    {u.planId === 'pro' ? dinero(u.subscriptionAmountInCents) : '—'}
                   </td>
                   <td className="py-3 pr-4">{fecha(u.currentPeriodEnd)}</td>
                   <td className="py-3 pr-4">{fecha(u.createdAt)}</td>
