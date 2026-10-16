@@ -1,6 +1,7 @@
 import type { CorsOptions } from 'cors';
 import { isEmulator } from './env';
 import { AppError } from '../utils/errors';
+import { logger } from '../utils/logger';
 
 const DEFAULT_DEV_ORIGIN = 'http://localhost:5173';
 
@@ -32,7 +33,26 @@ export function isOriginAllowed(origin: string, allowed: Set<string>): boolean {
 }
 
 export function getCorsOptions(): CorsOptions {
-  const allowed = new Set(parseAllowedOrigins());
+  const origins = parseAllowedOrigins();
+  const allowed = new Set(origins);
+
+  // Desplegado y con la lista en el valor por defecto = nadie puede escribir
+  // desde el sitio real. Paso: el sitio de dev se rechazaba a si mismo con
+  // "Origen no permitido" al subir un contrato o borrar una cuenta, porque
+  // ni CORS_ORIGINS ni APP_URL estaban definidas en el entorno desplegado.
+  //
+  // Es un error de configuracion, no de codigo, y hasta ahora solo se
+  // manifestaba como un fallo del usuario. Que deje rastro al arrancar.
+  if (!isEmulator() && origins.length === 1 && origins[0] === DEFAULT_DEV_ORIGIN) {
+    logger.error(
+      'api',
+      'CORS sin configurar: el unico origen permitido es el de desarrollo. ' +
+        'Toda peticion que no sea GET desde el sitio desplegado sera rechazada. ' +
+        'Definir CORS_ORIGINS en el .env del proyecto.',
+      undefined,
+      { metadata: { origenPermitido: DEFAULT_DEV_ORIGIN } }
+    );
+  }
 
   return {
     origin(origin, callback) {

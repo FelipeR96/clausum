@@ -151,6 +151,25 @@ dira que modulo o sintaxis no soporta.
 
 ---
 
+## 5a. Variables de entorno del proyecto
+
+`backend/functions/.env.clausum-dev` se despliega con las functions (se
+llama igual que el project id). Lleva configuracion publica, no secretos.
+
+Lo critico es `CORS_ORIGINS`. Sin el, la lista de origenes permitidos cae a
+`http://localhost:5173` y **el sitio desplegado se rechaza a si mismo**:
+toda peticion que no sea GET responde "Origen no permitido". Engania mucho,
+porque navegar funciona y solo falla al escribir — subir un contrato,
+borrar la cuenta, pagar.
+
+Hosting sirve el sitio en dos dominios y los dos tienen que estar en la
+lista (`.web.app` y `.firebaseapp.com`). Al conectar un dominio propio,
+anadirlo.
+
+Desde el 16 de octubre, arrancar desplegado con la lista en el valor por
+defecto deja un error en `system_logs`, para que no vuelva a aparecer solo
+como un fallo del usuario.
+
 ## 5b. Abrir la API a invocaciones publicas
 
 Tras el primer despliegue, `https://<host>/api/health` devuelve **403
