@@ -29,6 +29,7 @@
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:emulators": "firebase emulators:exec --only firestore,storage,auth --config backend/firebase/firebase.json --project clausum-test \"pnpm test\"",
     "lint:strict": "eslint . --max-warnings 0"
   },
   "devDependencies": {
