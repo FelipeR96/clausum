@@ -23,6 +23,15 @@ import type { PlanSlug } from '@clausum/shared';
  */
 export const adminRouter = Router();
 
+/**
+ * @types/express v5 tipa los parametros de ruta como `string | string[]`,
+ * porque una ruta puede repetir un nombre. Aqui nunca pasa, pero el tipo
+ * obliga a decidirlo explicitamente en vez de confiar en que no ocurra.
+ */
+function routeParam(value: string | string[] | undefined): string {
+  return Array.isArray(value) ? (value[0] ?? '') : (value ?? '');
+}
+
 adminRouter.use('/admin', authenticate, requireAdmin);
 
 // ── Usuarios ─────────────────────────────────────────────────────────────
@@ -59,7 +68,7 @@ adminRouter.post(
       }
     ).validatedBody;
 
-    const target = req.params.uid;
+    const target = routeParam(req.params.uid);
     if (target === adminUid && planId === 'free') {
       // No es una restriccion de seguridad (el claim de admin no depende del
       // plan), pero quitarse Pro a uno mismo sin querer mientras se prueba
@@ -107,7 +116,7 @@ adminRouter.put(
 adminRouter.get(
   '/admin/plans/:slug',
   asyncHandler(async (req, res) => {
-    const slug = req.params.slug as PlanSlug;
+    const slug = routeParam(req.params.slug) as PlanSlug;
     if (slug !== 'free' && slug !== 'pro') {
       res.status(404).json({ error: 'Plan desconocido' });
       return;
@@ -121,7 +130,7 @@ adminRouter.put(
   '/admin/plans/:slug/limits',
   asyncHandler(async (req, res) => {
     const { uid } = req as AuthenticatedRequest;
-    const slug = req.params.slug as PlanSlug;
+    const slug = routeParam(req.params.slug) as PlanSlug;
     if (slug !== 'free' && slug !== 'pro') {
       res.status(404).json({ error: 'Plan desconocido' });
       return;
