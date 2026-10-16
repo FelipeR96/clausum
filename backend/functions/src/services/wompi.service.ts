@@ -1,5 +1,5 @@
 import { createHash, timingSafeEqual } from 'crypto';
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
 import {
   BILLING_CURRENCY,
   COLLECTIONS,
