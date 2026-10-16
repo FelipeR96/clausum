@@ -27,6 +27,30 @@ const root = join(here, '..');
 
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
+// Una sola fuente para el runtime: engines.node del package.json, que es lo
+// que lee Firebase. Tenerlo repetido aqui invitaba a que se desincronizaran.
+const NODE_TARGET = `node${pkg.engines?.node ?? '22'}`;
+
+// Version real de canvas tras aplicar el override de pnpm-workspace.yaml.
+// Va en el banner porque un cambio de binario nativo no altera el bundle.
+let canvasVersion = 'n/a';
+try {
+  canvasVersion = JSON.parse(
+    readFileSync(join(root, '../../node_modules/canvas/package.json'), 'utf8')
+  ).version;
+} catch {
+  try {
+    canvasVersion = JSON.parse(
+      readFileSync(
+        join(root, 'node_modules/canvas/package.json'),
+        'utf8'
+      )
+    ).version;
+  } catch {
+    /* no instalado: el banner lo dira */
+  }
+}
+
 // Externo: todo lo que Cloud Build va a instalar.
 // Interno (se inlinea): @clausum/shared, que nunca llega alli.
 const external = [
@@ -39,12 +63,25 @@ const result = await build({
   bundle: true,
   platform: 'node',
   // El runtime de Cloud Functions, no el Node de esta maquina.
-  // Tiene que coincidir con engines.node del package.json.
-  target: 'node22',
+  target: NODE_TARGET,
   format: 'cjs',
   outfile: join(root, 'lib/index.js'),
   // Explicito: de aqui salen los `paths`, y de ahi @clausum/shared.
   tsconfig: join(root, 'tsconfig.json'),
+  // firebase-tools decide si redesplegar comparando un hash del codigo
+  // subido. Un cambio que no toca el bundle -- subir el runtime, forzar una
+  // version de una dependencia nativa -- deja el hash igual, y el despliegue
+  // responde "Skipped (No changes detected)" y reporta exito sin haber
+  // cambiado nada. Paso de verdad: engines.node a 22 y las funciones
+  // siguieron en nodejs20.
+  //
+  // Meter el runtime y las versiones en el propio archivo hace que el hash
+  // cambie exactamente cuando debe cambiar.
+  banner: {
+    js:
+      `/* clausum functions | runtime ${NODE_TARGET} | ` +
+      `canvas ${canvasVersion} | ${pkg.version} */`,
+  },
   sourcemap: true,
   external,
   logLevel: 'info',
@@ -56,5 +93,7 @@ const [, out] = Object.entries(result.metafile.outputs).find(([name]) =>
   name.endsWith('index.js')
 );
 console.log(`\n✅ lib/index.js — ${(out.bytes / 1024).toFixed(0)} kB`);
+console.log(`   runtime   : ${NODE_TARGET} (de engines.node)`);
+console.log(`   canvas    : ${canvasVersion}`);
 console.log(`   externos: ${external.length} paquetes npm`);
 console.log(`   inlineado: @clausum/shared`);
