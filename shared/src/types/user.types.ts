@@ -28,6 +28,12 @@ export interface User extends WithTimestamps {
   wompiPaymentSourceId?: number;
   /** Intervalo de facturación Wompi activo. */
   wompiBillingInterval?: 'monthly' | 'annual';
+  /**
+   * Monto al que se suscribio, en centavos. La renovacion cobra este y no
+   * el precio vigente: subir el precio no afecta a quien ya pagaba.
+   * Ausente en quien se suscribio antes de que existiera el campo.
+   */
+  subscriptionAmountInCents?: number;
   /** Último intento de renovación automática Wompi. */
   wompiLastRenewalAttemptAt?: FirestoreDate;
   /** El usuario canceló renovación pero conserva Pro hasta currentPeriodEnd. */

@@ -369,6 +369,12 @@ export async function setUserPlan(
     wompiBillingInterval?: 'monthly' | 'annual' | null;
     cancelAtPeriodEnd?: boolean;
     clearCancellation?: boolean;
+    /**
+     * Monto al que se suscribio, en centavos. Lo lee la renovacion para
+     * cobrar siempre lo mismo aunque el precio de la plataforma cambie.
+     * `null` lo borra, al cancelar.
+     */
+    subscriptionAmountInCents?: number | null;
   }
 ): Promise<void> {
   const update: Record<string, unknown> = {
@@ -387,6 +393,13 @@ export async function setUserPlan(
   }
   if (options?.billingProvider !== undefined) {
     update.billingProvider = options.billingProvider;
+  }
+  if (options?.subscriptionAmountInCents !== undefined) {
+    if (options.subscriptionAmountInCents === null) {
+      update.subscriptionAmountInCents = FieldValue.delete();
+    } else {
+      update.subscriptionAmountInCents = options.subscriptionAmountInCents;
+    }
   }
   if (options?.wompiPaymentSourceId !== undefined) {
     if (options.wompiPaymentSourceId === null) {

@@ -2,7 +2,6 @@ import { FieldValue, type DocumentReference } from 'firebase-admin/firestore';
 import {
   BILLING_CURRENCY_LATAM,
   COLLECTIONS,
-  getProAmountForRegion,
   type BillingInterval,
 } from '@clausum/shared';
 import { adminDb } from '../firebase/admin';
@@ -13,6 +12,7 @@ import {
 } from '../config/env';
 import { setUserPlan } from './subscription.service';
 import { AppError } from '../utils/errors';
+import { getAmountInCents } from '../config/pricing';
 import { logger } from '../utils/logger';
 
 export interface PayPalConfig {
@@ -155,7 +155,7 @@ export async function createPayPalSubscription(
     );
   }
 
-  const amountInCents = getProAmountForRegion('LATAM', interval);
+  const amountInCents = await getAmountInCents('LATAM', interval);
   const reference = buildPaymentReference(userId, interval);
   const token = await getPayPalAccessToken(config);
   const baseUrl = getPayPalBaseUrl(config.mode);

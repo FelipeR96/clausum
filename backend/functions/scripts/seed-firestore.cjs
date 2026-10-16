@@ -96,6 +96,26 @@ const config = {
   limits: {
     updatedAt: FieldValue.serverTimestamp(),
   },
+  // Fuente de verdad de los precios: la leen tanto el cobro (Wompi, PayPal)
+  // como la pantalla. Editable desde el modulo de administracion.
+  //
+  // Se siembra con merge, asi que volver a correr el seed NO pisa un precio
+  // cambiado desde el panel. Para reponer los de aqui hay que borrar el
+  // documento config/pricing primero.
+  pricing: {
+    CO: {
+      monthlyAmountInCents: 3500000,
+      yearlyAmountInCents: 35000000,
+      currency: 'COP',
+    },
+    LATAM: {
+      monthlyAmountInCents: 1000,
+      yearlyAmountInCents: 10000,
+      currency: 'USD',
+    },
+    updatedAt: FieldValue.serverTimestamp(),
+    updatedBy: 'seed',
+  },
 };
 
 async function seed() {
@@ -110,7 +130,7 @@ async function seed() {
   }
 
   await batch.commit();
-  console.log('✅ Seed completado: plans (free, pro) + config (app, features, limits)');
+  console.log('✅ Seed completado: plans (free, pro) + config (app, features, limits, pricing)');
 }
 
 seed().catch((err) => {

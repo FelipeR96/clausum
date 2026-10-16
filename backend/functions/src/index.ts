@@ -16,6 +16,7 @@ import { alertsRouter } from './routes/alerts.routes';
 import { billingRouter } from './routes/billing.routes';
 import { accountRouter } from './routes/account.routes';
 import { getSubscriptionSummary } from './services/subscription.service';
+import { getPricing } from './config/pricing';
 
 const app = express();
 
@@ -32,6 +33,24 @@ app.use(express.json({ limit: '100kb' }));
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'clausum-api', version: '0.2.0' });
 });
+
+/**
+ * Precios vigentes. Publico y sin autenticar: la pagina de precios la ve
+ * cualquiera, y es la misma fuente que usa el cobro. Si esto y el checkout
+ * dijeran cosas distintas, estariamos mostrando un precio y cobrando otro.
+ */
+app.get(
+  '/api/pricing',
+  asyncHandler(async (_req, res) => {
+    const pricing = await getPricing();
+    res.set('Cache-Control', 'public, max-age=60');
+    res.json({
+      CO: pricing.CO,
+      LATAM: pricing.LATAM,
+      updatedAt: pricing.updatedAt?.toDate?.().toISOString(),
+    });
+  })
+);
 
 app.get(
   '/api/me',

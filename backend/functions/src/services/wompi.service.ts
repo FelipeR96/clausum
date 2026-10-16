@@ -4,7 +4,6 @@ import {
   BILLING_CURRENCY,
   COLLECTIONS,
   WOMPI_CHECKOUT_URL,
-  getProAmountInCents,
   type BillingInterval,
 } from '@clausum/shared';
 import type { User } from '@clausum/shared';
@@ -16,6 +15,7 @@ import {
   wompiPrivateKeySecret,
 } from '../config/env';
 import { setUserPlan } from './subscription.service';
+import { getAmountInCents } from '../config/pricing';
 import { AppError } from '../utils/errors';
 import { logger } from '../utils/logger';
 import {
@@ -275,6 +275,11 @@ async function activateProFromPayment(
     periodEnd = periodEndFromInterval(interval, base);
   }
 
+  // El monto que de verdad se cobro, no el precio vigente: a partir de aqui
+  // las renovaciones de esta persona usan este.
+  const paidAmount =
+    typeof payment.amount === 'number' ? payment.amount : undefined;
+
   await setUserPlan(userId, 'pro', {
     subscriptionStatus: 'active',
     subscriptionId: transactionId,
@@ -282,6 +287,7 @@ async function activateProFromPayment(
     billingProvider: 'wompi',
     cancelAtPeriodEnd: false,
     clearCancellation: true,
+    ...(paidAmount ? { subscriptionAmountInCents: paidAmount } : {}),
     ...(options?.wompiPaymentSourceId
       ? {
           wompiPaymentSourceId: options.wompiPaymentSourceId,
@@ -302,7 +308,7 @@ export async function createWompiCheckout(
     throw new AppError('Los pagos con Wompi no están configurados en el servidor', 503);
   }
 
-  const amountInCents = getProAmountInCents(interval);
+  const amountInCents = await getAmountInCents('CO', interval);
   const reference = buildPaymentReference(userId, interval, 'checkout');
   const integritySignature = buildIntegritySignature(
     reference,
@@ -353,7 +359,7 @@ export async function getWompiSubscribeConfig(
     );
   }
 
-  const amountInCents = getProAmountInCents(interval);
+  const amountInCents = await getAmountInCents('CO', interval);
   const reference = buildPaymentReference(userId, interval, 'subscribe');
   const acceptance = await fetchWompiAcceptanceTokens(toApiConfig(config));
 
@@ -541,7 +547,14 @@ async function chargeWompiRenewal(
   if (!paymentSourceId || !email) return;
 
   const apiConfig = toApiConfig(config);
-  const amountInCents = getProAmountInCents(interval);
+
+  // El precio al que esta persona se suscribio, no el vigente. Si se sube
+  // el precio, quien ya pagaba sigue pagando lo suyo; el precio nuevo solo
+  // alcanza a cobros nuevos. `subscriptionAmountInCents` se guarda al
+  // suscribirse; quien se suscribio antes de que existiera ese campo
+  // renueva al precio actual, que es lo que venia pasando.
+  const amountInCents =
+    user.subscriptionAmountInCents ?? (await getAmountInCents('CO', interval));
   const reference = buildPaymentReference(userId, interval, 'renew');
 
   await createPendingPayment({
