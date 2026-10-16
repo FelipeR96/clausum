@@ -48,7 +48,10 @@ const result = await build({
   metafile: true,
 });
 
-const out = result.metafile.outputs[Object.keys(result.metafile.outputs)[0]];
+// El metafile incluye el .map; nos interesa el .js.
+const [, out] = Object.entries(result.metafile.outputs).find(([name]) =>
+  name.endsWith('index.js')
+);
 console.log(`\n✅ lib/index.js — ${(out.bytes / 1024).toFixed(0)} kB`);
 console.log(`   externos: ${external.length} paquetes npm`);
 console.log(`   inlineado: @clausum/shared`);
