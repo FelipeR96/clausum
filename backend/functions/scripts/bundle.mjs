@@ -18,9 +18,10 @@
  * nativos que no se pueden empaquetar.
  */
 import { build } from 'esbuild';
-import { readFileSync, readdirSync } from 'fs';
+import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'node:module';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');
@@ -31,36 +32,27 @@ const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 // que lee Firebase. Tenerlo repetido aqui invitaba a que se desincronizaran.
 const NODE_TARGET = `node${pkg.engines?.node ?? '22'}`;
 
-// Version real de canvas tras los overrides. Va en el banner porque un
-// cambio de binario nativo no altera el bundle, y porque es la unica forma
-// de ver desde el build si el override se aplico de verdad.
+// Version de canvas que pdf-img-convert carga de verdad.
 //
-// pnpm no deja el paquete en node_modules/canvas sino en
-// node_modules/.pnpm/canvas@<version>/node_modules/canvas.
+// Va en el banner por dos motivos: un cambio de binario nativo no altera el
+// bundle (y entonces firebase se salta el despliegue), y es la unica forma
+// de ver desde el build si el override se aplico.
+//
+// Se resuelve como lo hace Node, desde pdf-img-convert, no buscando
+// carpetas: el store de pnpm conserva versiones viejas y un `find` por
+// prefijo devuelve la primera por orden alfabetico, que fue exactamente
+// como este script acabo reportando 2.11.2 con la 3.2.3 instalada.
 function resolveCanvasVersion() {
-  const candidates = [
-    join(root, 'node_modules/canvas/package.json'),
-    join(root, '../../node_modules/canvas/package.json'),
-  ];
-  for (const file of candidates) {
-    try {
-      return JSON.parse(readFileSync(file, 'utf8')).version;
-    } catch {
-      /* siguiente */
-    }
-  }
   try {
-    const store = join(root, '../../node_modules/.pnpm');
-    const dir = readdirSync(store).find((d) => d.startsWith('canvas@'));
-    if (dir) {
-      return JSON.parse(
-        readFileSync(join(store, dir, 'node_modules/canvas/package.json'), 'utf8')
-      ).version;
-    }
-  } catch {
-    /* no instalado */
+    const here = createRequire(import.meta.url);
+    const consumidor = here.resolve('pdf-img-convert', { paths: [root] });
+    const desdeAhi = createRequire(consumidor);
+    return JSON.parse(
+      readFileSync(desdeAhi.resolve('canvas/package.json'), 'utf8')
+    ).version;
+  } catch (error) {
+    return `no resuelto (${error.code ?? 'error'})`;
   }
-  return 'no encontrado';
 }
 
 const canvasVersion = resolveCanvasVersion();
