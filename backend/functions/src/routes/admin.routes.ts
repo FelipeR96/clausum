@@ -12,6 +12,10 @@ import {
   updatePlanLimits,
   updatePricing,
 } from '../services/admin.service';
+import {
+  cambiarEstadoBugReport,
+  listarBugReports,
+} from '../services/bug-report.service';
 import { getPricing } from '../config/pricing';
 import { getPlanBySlug } from '../config/plans';
 import type { PlanSlug } from '@clausum/shared';
@@ -96,6 +100,37 @@ adminRouter.post(
     const target = routeParam(req.params.uid);
 
     res.json(await setUserPlanAsAdmin(adminUid, target, planId, { days }));
+  })
+);
+
+// ── Reportes de errores ──────────────────────────────────────────────────
+
+adminRouter.get(
+  '/admin/bugs',
+  asyncHandler(async (req, res) => {
+    const estado =
+      req.query.estado === 'abierto' || req.query.estado === 'resuelto'
+        ? req.query.estado
+        : undefined;
+    res.json(await listarBugReports({ estado }));
+  })
+);
+
+const bugEstadoSchema = z.object({ estado: z.enum(['abierto', 'resuelto']) });
+
+adminRouter.post(
+  '/admin/bugs/:id/estado',
+  validateBody(bugEstadoSchema),
+  asyncHandler(async (req, res) => {
+    const { uid: adminUid } = req as AuthenticatedRequest;
+    const { estado } = (
+      req as AuthenticatedRequest & {
+        validatedBody: { estado: 'abierto' | 'resuelto' };
+      }
+    ).validatedBody;
+
+    await cambiarEstadoBugReport(adminUid, routeParam(req.params.id), estado);
+    res.json({ ok: true });
   })
 );
 

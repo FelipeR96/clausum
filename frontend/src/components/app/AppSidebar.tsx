@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ReportBugDialog } from '@/components/support/ReportBugDialog';
 import { useEffect, useState } from 'react';
 import { Logo } from '@/components/ui/Logo';
 import { SidebarUsageLimit } from '@/components/app/SidebarUsageLimit';
@@ -53,6 +54,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
   const subscription = useSubscriptionSummary();
+  const [reportando, setReportando] = useState(false);
   const [displayName, setDisplayName] = useState('Cuenta Clausum');
   const [photoURL, setPhotoURL] = useState<string | null>(null);
 
@@ -188,6 +190,15 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
         >
           Gestionar plan
         </Link>
+        <button
+          type="button"
+          onClick={() => setReportando(true)}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-on-surface-variant transition hover:bg-surface-container"
+        >
+          <span className="material-symbols-outlined text-base">bug_report</span>
+          Reportar un problema
+        </button>
+        {reportando && <ReportBugDialog onClose={() => setReportando(false)} />}
         <button
           type="button"
           onClick={() => void handleSignOut()}

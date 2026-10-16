@@ -15,6 +15,7 @@ import { legalRouter } from './routes/legal.routes';
 import { alertsRouter } from './routes/alerts.routes';
 import { billingRouter } from './routes/billing.routes';
 import { accountRouter } from './routes/account.routes';
+import { bugReportRouter } from './routes/bug-report.routes';
 import { adminRouter } from './routes/admin.routes';
 import { getSubscriptionSummary } from './services/subscription.service';
 import { getPricing } from './config/pricing';
@@ -82,6 +83,7 @@ app.use('/api', contractRouter);
 app.use('/api', legalRouter);
 app.use('/api', alertsRouter);
 app.use('/api', accountRouter);
+app.use('/api', bugReportRouter);
 app.use('/api', adminRouter);
 
 app.use(errorHandler);

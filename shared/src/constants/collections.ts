@@ -12,6 +12,7 @@ export const COLLECTIONS = {
   laws: 'laws',
   contractTypes: 'contract_types',
   legalTopics: 'legal_topics',
+  bugReports: 'bug_reports',
 } as const;
 
 export const USER_SUBCOLLECTIONS = {

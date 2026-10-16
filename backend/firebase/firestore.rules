@@ -188,6 +188,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ─── Reportes de errores ───────────────────────────────────
+    // Se escriben SOLO desde la API, que pone el uid real del token y no
+    // el que diga el navegador. Dejar escribir desde el cliente permitiria
+    // reportar a nombre de otro y llenar la coleccion sin limite.
+    // Se leen solo desde Administracion, tambien por la API.
+    match /bug_reports/{reportId} {
+      allow read, write: if false;
+    }
+
     // ─── Logs de sistema ───────────────────────────────────────
     match /system_logs/{logId} {
       allow read, write: if false;
