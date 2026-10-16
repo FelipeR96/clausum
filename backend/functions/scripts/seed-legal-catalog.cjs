@@ -66,7 +66,15 @@ async function seed() {
   console.log(
     `✅ Catálogo legal: ${CONTRACT_TYPE_CATALOG.length} tipos de contrato, ${LEGAL_TOPIC_CATALOG.length} temas`
   );
-  console.log('ℹ️  Colección laws/ vacía — agregar artículos cuando el corpus esté listo');
+  // Se cuenta de verdad. Antes esta linea era texto fijo y decia que
+  // laws/ estaba vacia aunque tuviera el corpus entero dentro: un aviso
+  // que miente es peor que no tener aviso.
+  const { count } = (await db.collection('laws').count().get()).data();
+  console.log(
+    count === 0
+      ? 'ℹ️  Colección laws/ vacía — correr `pnpm import:co-corpus`'
+      : `ℹ️  Colección laws/: ${count} artículos`
+  );
 }
 
 seed().catch((err) => {
