@@ -133,6 +133,19 @@ pnpm build
 pnpm deploy
 ```
 
+`pnpm deploy` pasa por `scripts/deploy.mjs`, que sube
+`FUNCTIONS_DISCOVERY_TIMEOUT` a 120s. Sin eso, firebase-tools falla al
+analizar que funciones exporta el codigo:
+
+```
+Error: User code failed to load. Cannot determine backend specification.
+Timeout after 10000.
+```
+
+El limite por defecto son 10 segundos y la carga de tesseract.js, pdfkit y
+mammoth no entra. Es un limite de ANALISIS, no de ejecucion: no dice nada
+sobre lo que tardan las funciones ya desplegadas.
+
 Si el despliegue de functions falla, lo mas probable es Node 20. El error
 dira que modulo o sintaxis no soporta.
 
