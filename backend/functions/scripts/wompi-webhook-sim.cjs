@@ -59,9 +59,12 @@ const status = (args.status ?? 'APPROVED').toUpperCase();
 const isRenewal = args.renewal === 'true';
 const currency = args.currency ?? 'COP';
 
-const REAL_AMOUNTS = { monthly: 3_500_000, annual: 35_000_000 };
-const realAmount = REAL_AMOUNTS[interval];
-const sentAmount = args.amount ? Number(args.amount) : realAmount;
+// Los montos NO se escriben aqui. El precio vive en config/pricing y se
+// cambia desde el panel de administracion; un valor fijo en este script
+// envejece en silencio y produce un AMOUNT_MISMATCH que parece un fallo
+// del backend cuando en realidad es el simulador mintiendo.
+let realAmount = null;
+let sentAmount = null;
 
 if (!args.uid && !args.reference) {
   console.error('Falta --uid=<uid> (o --reference=<referencia existente>).');
@@ -95,8 +98,16 @@ if (!eventsSecret) {
 
 // --- firestore (emulador) -------------------------------------------------
 
-if (process.env.FIRESTORE_EMULATOR_HOST === undefined) {
-  process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+// Mismo criterio que los seeds: el destino se dice, no se adivina. Con la
+// variable vacia este script se colgaba contra un emulador apagado.
+const usarEmulador =
+  process.argv.includes('--emulator') || process.env.FIRESTORE_EMULATOR_HOST !== undefined;
+
+if (usarEmulador) {
+  process.env.FIRESTORE_EMULATOR_HOST ??= '127.0.0.1:8080';
+  console.log(`🧪 Emulador: ${process.env.FIRESTORE_EMULATOR_HOST}`);
+} else {
+  console.log(`☁️  Proyecto REAL: ${projectId}`);
 }
 initializeApp({ projectId });
 const db = getFirestore();
@@ -133,8 +144,23 @@ async function ensurePendingPayment() {
     console.log(
       `Pago existente: ${args.reference} (estado actual: ${data.status}, usuario: ${data.userId})`
     );
+    // El monto sale del propio pago: es el que el backend va a esperar.
+    realAmount = data.amount;
+    sentAmount = args.amount ? Number(args.amount) : realAmount;
     return { reference: args.reference, userId: data.userId };
   }
+
+  // Pago nuevo: el precio se lee de config/pricing, la misma fuente que
+  // usa el backend para firmar y cobrar.
+  const pricingSnap = await db.collection('config').doc('pricing').get();
+  const co = pricingSnap.exists ? pricingSnap.data().CO : null;
+  if (!co) {
+    console.error('No existe config/pricing en ' + projectId + '. Correr `pnpm seed:firestore`.');
+    process.exit(1);
+  }
+  realAmount = interval === 'annual' ? co.yearlyAmountInCents : co.monthlyAmountInCents;
+  sentAmount = args.amount ? Number(args.amount) : realAmount;
+  console.log(`Precio vigente (${interval}): ${realAmount} centavos`);
 
   const suffix = Math.random().toString(36).slice(2, 10);
   const reference = `clausum_${args.uid.slice(0, 8)}_${Date.now()}_${interval}_${suffix}`;

@@ -679,6 +679,25 @@ export async function handleWompiWebhook(event: WompiWebhookEvent): Promise<void
     (payment.wompiPaymentSourceId as number | undefined) ??
     transaction.payment_source_id;
 
+  // Un pago ya cobrado es terminal: ningun evento posterior lo toca.
+  //
+  // Wompi reenvia el mismo evento si tardamos en responder. Las
+  // comprobaciones de monto y moneda de abajo ESCRIBEN status:'failed',
+  // asi que un reenvio con un monto distinto convertiria un cobro real en
+  // un pago fallido: el usuario en Pro y el registro diciendo que no pago.
+  // Por eso la idempotencia va antes que cualquier escritura, no dentro
+  // de la rama de APPROVED.
+  if (payment.status === 'succeeded') {
+    logger.info('wompi', 'Evento repetido de un pago ya cobrado; se ignora', {
+      userId,
+      metadata: {
+        reference: transaction.reference,
+        transactionId: transaction.id,
+      },
+    });
+    return;
+  }
+
   if (
     typeof expectedAmount === 'number' &&
     transaction.amount_in_cents !== expectedAmount
@@ -721,10 +740,6 @@ export async function handleWompiWebhook(event: WompiWebhookEvent): Promise<void
   }
 
   if (transaction.status === 'APPROVED') {
-    if (payment.status === 'succeeded') {
-      return;
-    }
-
     await activateProFromPayment(userId, interval, transaction.id, payment, {
       wompiPaymentSourceId: paymentSourceId,
       extendFromCurrent: isRenewal,
