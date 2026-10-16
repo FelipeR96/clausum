@@ -74,7 +74,7 @@ const command = existsSync(firebaseBin) ? `"${firebaseBin}"` : 'npx firebase';
 const importPath = JSON.stringify(EMULATOR_DATA_DIR);
 
 const child = spawn(
-  `${command} emulators:start --config backend/firebase/firebase.json --import=${importPath} --export-on-exit=${importPath}`,
+  `${command} emulators:start --import=${importPath} --export-on-exit=${importPath}`,
   [],
   { stdio: 'inherit', shell: true, env }
 );

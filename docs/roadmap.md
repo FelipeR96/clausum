@@ -76,7 +76,7 @@ Los errores más probables, por orden:
 Después, las pruebas (necesitan Java para el emulador de Firestore):
 
 ```powershell
-pnpm exec firebase emulators:exec --only firestore,storage,auth --config backend/firebase/firebase.json --project clausum-test "pnpm test"
+pnpm exec firebase emulators:exec --only firestore,storage,auth --project clausum-test "pnpm test"
 ```
 
 ### ESLint 10 y el override de `@eslint/eslintrc`
@@ -417,10 +417,10 @@ secretos:
 
 ```bash
 firebase use prod
-firebase functions:secrets:set DEEPSEEK_API_KEY --config backend/firebase/firebase.json
-firebase functions:secrets:set WOMPI_PRIVATE_KEY --config backend/firebase/firebase.json
+firebase functions:secrets:set DEEPSEEK_API_KEY
+firebase functions:secrets:set WOMPI_PRIVATE_KEY
 # ...uno por uno
-firebase functions:secrets:access DEEPSEEK_API_KEY --config backend/firebase/firebase.json  # verificar
+firebase functions:secrets:access DEEPSEEK_API_KEY  # verificar
 ```
 
 Añadir también al esquema Zod de `env.ts` las variables que hoy se leen pero no

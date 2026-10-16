@@ -196,7 +196,7 @@ En producción, las claves sensibles van como **secretos de Firebase**, no en
 un `.env` desplegado:
 
 ```bash
-firebase functions:secrets:set DEEPSEEK_API_KEY --config backend/firebase/firebase.json
+firebase functions:secrets:set DEEPSEEK_API_KEY
 ```
 
 ---

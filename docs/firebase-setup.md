@@ -132,7 +132,7 @@ pnpm install
 pnpm firebase:login
 
 # Seleccionar proyecto
-firebase use clausum-dev --config backend/firebase/firebase.json
+firebase use clausum-dev
 ```
 
 ### Copiar variables de entorno
@@ -333,7 +333,7 @@ const data = await apiClient('/me');
 **Nunca** subas `.env` a git. En producción usa Firebase Secret Manager:
 
 ```bash
-firebase functions:secrets:set DEEPSEEK_API_KEY --config backend/firebase/firebase.json
+firebase functions:secrets:set DEEPSEEK_API_KEY
 # Wompi / PayPal: configurar también como secrets o params según el entorno
 ```
 
@@ -356,7 +356,7 @@ Hosting sirve archivos estáticos (tu React compilado) desde la CDN de Google.
 2. `firebase deploy --only hosting` sube esos archivos
 3. Usuarios visitan `https://TU-PROYECTO.web.app`
 
-### Configuración (`backend/firebase/firebase.json`)
+### Configuración (`firebase.json`, en la raíz del repo)
 
 | Setting | Qué hace |
 |---------|----------|
@@ -422,7 +422,7 @@ Principios Clausum:
 ### Probar rules localmente
 
 ```bash
-firebase emulators:start --only firestore,storage --config backend/firebase/firebase.json
+firebase emulators:start --only firestore,storage
 ```
 
 Firebase Emulator UI en `http://localhost:4000` → pestaña Firestore → simular lecturas/escrituras.
@@ -482,8 +482,8 @@ Los archivos `frontend/src/firebase/*.ts` conectan automáticamente a emuladores
 ### Importar/exportar datos de prueba
 
 ```bash
-firebase emulators:export ./backend/emulators/data --config backend/firebase/firebase.json
-firebase emulators:start --import=./backend/emulators/data --config backend/firebase/firebase.json
+firebase emulators:export ./backend/emulators/data
+firebase emulators:start --import=./backend/emulators/data
 ```
 
 ---
@@ -512,16 +512,16 @@ pnpm deploy:rules        # Solo firestore.rules + storage.rules
 
 1. `pnpm install`
 2. `pnpm build`
-3. `firebase deploy --only firestore:rules,storage --config backend/firebase/firebase.json`
-4. `firebase deploy --only functions --config backend/firebase/firebase.json`
-5. `firebase deploy --only hosting --config backend/firebase/firebase.json`
+3. `firebase deploy --only firestore:rules,storage`
+4. `firebase deploy --only functions`
+5. `firebase deploy --only hosting`
 
 Desplegar rules **antes** que el código que depende de ellas.
 
 ### Ver logs de Functions
 
 ```bash
-firebase functions:log --config backend/firebase/firebase.json
+firebase functions:log
 ```
 
 O en Firebase Console → Functions → Logs.
@@ -543,10 +543,10 @@ O en Firebase Console → Functions → Logs.
 
 ```bash
 # Desarrollo
-firebase use dev --config backend/firebase/firebase.json
+firebase use dev
 
 # Producción
-firebase use prod --config backend/firebase/firebase.json
+firebase use prod
 ```
 
 Usa proyectos Firebase **separados** para dev y prod. Nunca desarrolles contra producción.

@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "../../frontend/dist",
+    "public": "frontend/dist",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -49,15 +49,15 @@
     ]
   },
   "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "rules": "backend/firebase/firestore.rules",
+    "indexes": "backend/firebase/firestore.indexes.json"
   },
   "storage": {
-    "rules": "storage.rules"
+    "rules": "backend/firebase/storage.rules"
   },
   "functions": [
     {
-      "source": "../functions",
+      "source": "backend/functions",
       "codebase": "default",
       "ignore": [
         "node_modules",
@@ -93,7 +93,7 @@
     },
     "singleProjectMode": true,
     "export": {
-      "path": "../../emulator-data"
+      "path": "emulator-data"
     }
   }
 }

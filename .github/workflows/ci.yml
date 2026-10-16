@@ -69,6 +69,5 @@ jobs:
         run: |
           pnpm exec firebase emulators:exec \
             --only firestore,storage,auth \
-            --config backend/firebase/firebase.json \
             --project clausum-test \
             "pnpm test"

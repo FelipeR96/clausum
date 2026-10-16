@@ -11,6 +11,15 @@ con Node 20 aparece aqui por primera vez.
 
 ---
 
+> **Dónde vive `firebase.json`.** En la raíz del repo, no en
+> `backend/firebase/`. firebase-tools toma como raíz del proyecto la carpeta
+> donde está ese archivo y exige que el código de las functions quede
+> dentro: con el config en `backend/firebase/`, el despliegue moría con
+> `../functions is outside of project directory`. Las reglas sí se
+> desplegaban, porque son archivos de esa misma carpeta — por eso el fallo
+> no apareció hasta el despliegue completo. Como ahora está en la raíz, los
+> comandos ya no llevan `--config`.
+
 ## 0. Antes de empezar
 
 | Que | Por que |
@@ -29,7 +38,7 @@ con Node 20 aparece aqui por primera vez.
 ```powershell
 cd C:\Users\User\repos\contratos
 pnpm exec firebase login
-pnpm exec firebase use dev --config backend/firebase/firebase.json
+pnpm exec firebase use dev
 ```
 
 `firebase use` debe responder `clausum-dev`. Si responde otra cosa, para.
@@ -88,7 +97,7 @@ pnpm deploy:rules
 Y los indices, que `deploy:rules` NO incluye:
 
 ```powershell
-pnpm exec firebase deploy --only firestore:indexes --config backend/firebase/firebase.json
+pnpm exec firebase deploy --only firestore:indexes
 ```
 
 Son 22 indices compuestos. Sin ellos, toda consulta con filtro + orden

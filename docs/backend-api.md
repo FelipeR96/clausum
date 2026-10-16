@@ -185,7 +185,7 @@ es sensible y puede vivir en un `.env` desplegado junto a la función.
 En producción:
 
 ```bash
-firebase functions:secrets:set DEEPSEEK_API_KEY --config backend/firebase/firebase.json
+firebase functions:secrets:set DEEPSEEK_API_KEY
 ```
 
 ## Seeds y corpus legal
