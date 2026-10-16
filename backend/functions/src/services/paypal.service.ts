@@ -418,7 +418,22 @@ async function handlePaymentCompleted(resource: Record<string, unknown>): Promis
   const interval = (found.data.billingInterval as BillingInterval) ?? 'monthly';
   const cobrado = importeCobradoPorPayPal(resource);
 
-  if (found.data.status === 'pending') {
+  // Quien decide si esto es el primer cobro o una renovacion es el id de
+  // venta, no el estado del pago.
+  //
+  // Al suscribirse, PayPal manda DOS eventos: BILLING.SUBSCRIPTION.ACTIVATED
+  // y PAYMENT.SALE.COMPLETED. El primero ya deja el pago en 'succeeded', asi
+  // que mirar el estado hacia que el segundo pareciera una renovacion y el
+  // primer cobro se contara dos veces.
+  const ventaYaRegistrada = found.data.paypalSaleId as string | undefined;
+
+  // El mismo evento otra vez: PayPal reintenta si tardamos en responder.
+  if (ventaYaRegistrada && ventaYaRegistrada === saleId) return;
+
+  if (!ventaYaRegistrada) {
+    // Primer cobro. activateProFromPayment no hace nada si ACTIVATED ya
+    // activo el plan, asi que el importe real se escribe aqui en cualquier
+    // caso.
     await activateProFromPayment(
       userId,
       interval,
@@ -428,10 +443,29 @@ async function handlePaymentCompleted(resource: Record<string, unknown>): Promis
       saleId,
       cobrado
     );
+
+    await found.ref.update({
+      status: 'succeeded',
+      paypalSaleId: saleId,
+      ...(cobrado
+        ? {
+            amount: cobrado.amountInCents,
+            ...(cobrado.currency ? { currency: cobrado.currency } : {}),
+          }
+        : {}),
+      paidAt: FieldValue.serverTimestamp(),
+    });
+
+    if (cobrado) {
+      await setUserPlan(userId, 'pro', {
+        subscriptionAmountInCents: cobrado.amountInCents,
+      });
+    }
     return;
   }
 
-  // Ya no se toca el pago original: la renovacion se registra aparte.
+  // Venta distinta a la ya registrada: es una renovacion de verdad. Se
+  // registra como pago aparte y no se toca el original.
   await extendProPeriod(userId, interval, billingAgreementId, cobrado, saleId);
 }
 
