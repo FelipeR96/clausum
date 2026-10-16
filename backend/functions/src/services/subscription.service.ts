@@ -431,7 +431,15 @@ export async function setUserPlan(
     .doc(userId)
     .set(update, { merge: true });
 
-  await adminAuth().setCustomUserClaims(userId, { planId });
+  // setCustomUserClaims REEMPLAZA el objeto entero, no fusiona. Escribir
+  // solo { planId } borraba cualquier otro claim del usuario — en
+  // particular `admin`, que se perdia en cuanto esa persona pagaba, se le
+  // renovaba la suscripcion o se le cambiaba el plan desde el panel. El
+  // sintoma llegaba separado de la causa: el menu de administracion seguia
+  // dibujandose (el frontend lee un token cacheado) y la API respondia 404
+  // a todo.
+  const actuales = (await adminAuth().getUser(userId)).customClaims ?? {};
+  await adminAuth().setCustomUserClaims(userId, { ...actuales, planId });
 
   logger.info('api', 'Plan de usuario actualizado', {
     userId,

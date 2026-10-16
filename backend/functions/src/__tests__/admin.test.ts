@@ -8,6 +8,8 @@ import {
   PRICING_DOC,
 } from '../config/pricing';
 import { setUserPlanAsAdmin, updatePricing } from '../services/admin.service';
+import { setUserPlan } from '../services/subscription.service';
+import { adminAuth } from '../firebase/admin';
 
 // ─────────────────────────────────────────────────────────────────────────
 // El modulo de administracion mueve precios y planes. Un error aqui no se
@@ -167,5 +169,38 @@ describe('cambio de plan', () => {
     await expect(
       setUserPlanAsAdmin(ADMIN, 'no-existe-este-uid', 'pro')
     ).rejects.toThrow();
+  });
+});
+
+describe('claims', () => {
+  // setCustomUserClaims reemplaza el objeto entero. Escribir solo
+  // { planId } borraba el claim de administrador en cuanto esa persona
+  // pagaba: paso de verdad, y el sintoma aparecia lejos de la causa —
+  // el menu seguia ahi y la API respondia 404 a todo.
+  it('cambiar el plan no borra el claim de administrador', async () => {
+    const uid = 'claims-test-uid';
+    const auth = adminAuth();
+
+    try {
+      await auth.deleteUser(uid);
+    } catch {
+      // no existia
+    }
+    await auth.createUser({ uid, email: 'claims@ejemplo.com' });
+    await auth.setCustomUserClaims(uid, { admin: true });
+
+    await adminDb()
+      .collection(COLLECTIONS.users)
+      .doc(uid)
+      .set({ email: 'claims@ejemplo.com', planId: 'free' });
+
+    await setUserPlan(uid, 'pro', { subscriptionStatus: 'active' });
+
+    const claims = (await auth.getUser(uid)).customClaims ?? {};
+    expect(claims.admin).toBe(true);
+    expect(claims.planId).toBe('pro');
+
+    await auth.deleteUser(uid);
+    await adminDb().collection(COLLECTIONS.users).doc(uid).delete();
   });
 });
