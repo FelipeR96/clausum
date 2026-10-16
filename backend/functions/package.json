@@ -34,6 +34,9 @@
     "word-extractor": "^1.0.4",
     "zod": "^3.24.1"
   },
+  "overrides": {
+    "canvas": "^3.2.3"
+  },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",

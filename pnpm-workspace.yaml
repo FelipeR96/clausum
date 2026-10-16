@@ -43,4 +43,9 @@ overrides:
   #
   # pdf-img-convert pide ^2.11.2; la API que usamos (convert con scale y
   # page_numbers) no cambio entre 2.x y 3.x.
+  #
+  # OJO: esto SOLO vale en local. Cloud Build instala con npm leyendo
+  # backend/functions/package.json, que no sabe nada de este archivo. El
+  # mismo override esta duplicado alli como campo "overrides" de npm, y los
+  # dos tienen que moverse juntos.
   canvas: '^3.2.3'

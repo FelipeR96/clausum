@@ -18,7 +18,7 @@
  * nativos que no se pueden empaquetar.
  */
 import { build } from 'esbuild';
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -31,32 +31,39 @@ const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 // que lee Firebase. Tenerlo repetido aqui invitaba a que se desincronizaran.
 const NODE_TARGET = `node${pkg.engines?.node ?? '22'}`;
 
-// Version real de canvas tras aplicar el override de pnpm-workspace.yaml.
-// Va en el banner porque un cambio de binario nativo no altera el bundle.
-let canvasVersion = 'n/a';
-try {
-  canvasVersion = JSON.parse(
-    readFileSync(join(root, '../../node_modules/canvas/package.json'), 'utf8')
-  ).version;
-} catch {
-  try {
-    canvasVersion = JSON.parse(
-      readFileSync(
-        join(root, 'node_modules/canvas/package.json'),
-        'utf8'
-      )
-    ).version;
-  } catch {
-    /* no instalado: el banner lo dira */
+// Version real de canvas tras los overrides. Va en el banner porque un
+// cambio de binario nativo no altera el bundle, y porque es la unica forma
+// de ver desde el build si el override se aplico de verdad.
+//
+// pnpm no deja el paquete en node_modules/canvas sino en
+// node_modules/.pnpm/canvas@<version>/node_modules/canvas.
+function resolveCanvasVersion() {
+  const candidates = [
+    join(root, 'node_modules/canvas/package.json'),
+    join(root, '../../node_modules/canvas/package.json'),
+  ];
+  for (const file of candidates) {
+    try {
+      return JSON.parse(readFileSync(file, 'utf8')).version;
+    } catch {
+      /* siguiente */
+    }
   }
+  try {
+    const store = join(root, '../../node_modules/.pnpm');
+    const dir = readdirSync(store).find((d) => d.startsWith('canvas@'));
+    if (dir) {
+      return JSON.parse(
+        readFileSync(join(store, dir, 'node_modules/canvas/package.json'), 'utf8')
+      ).version;
+    }
+  } catch {
+    /* no instalado */
+  }
+  return 'no encontrado';
 }
 
-// Externo: todo lo que Cloud Build va a instalar.
-// Interno (se inlinea): @clausum/shared, que nunca llega alli.
-const external = [
-  ...Object.keys(pkg.dependencies ?? {}),
-  ...Object.keys(pkg.peerDependencies ?? {}),
-];
+const canvasVersion = resolveCanvasVersion();
 
 const result = await build({
   entryPoints: [join(root, 'src/index.ts')],
