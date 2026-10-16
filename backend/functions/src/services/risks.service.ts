@@ -22,7 +22,7 @@ import type { AnalysisOptions, JobExecutionOptions } from './analysis.service';
 import { setAnalysisProgress } from './processing-progress.service';
 import { assertEntitlement } from './subscription.service';
 import { persistRisksAnalysis } from './risks-persist.service';
-import { AppError } from '../utils/errors';
+import { AppError, esReintentable } from '../utils/errors';
 import { logger } from '../utils/logger';
 
 export type RiskDetectionOptions = AnalysisOptions & {
@@ -191,7 +191,9 @@ export async function executeDetectRisks(
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
 
-    if (execOptions?.markErrorOnFailure === false) {
+    // Un error de plan o de archivo ya es definitivo en el primer
+    // intento: reintentarlo solo retrasa el motivo real.
+    if (execOptions?.markErrorOnFailure === false && esReintentable(error)) {
       await reportProgress({ stage: 'queued', message: 'Reintentando…' });
       logger.warn('deepseek', 'Fallo en intento de riesgos; se reintentará', {
         userId,

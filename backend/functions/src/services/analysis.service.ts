@@ -22,7 +22,7 @@ import { createAnalysisDoneAlert } from './alerts.service';
 import { persistRisksAnalysis } from './risks-persist.service';
 import { resolveEffectivePlanId } from './subscription.service';
 import { setAnalysisProgress } from './processing-progress.service';
-import { AppError } from '../utils/errors';
+import { AppError, esReintentable } from '../utils/errors';
 import { logger } from '../utils/logger';
 
 export interface AnalysisOptions {
@@ -302,7 +302,10 @@ export async function executeAnalyzeContract(
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
-    const isFinal = execOptions?.markErrorOnFailure !== false;
+    // Un error de plan o de archivo ya es definitivo en el primer intento:
+    // reintentarlo solo retrasa el momento en que el usuario ve el motivo.
+    const isFinal =
+      execOptions?.markErrorOnFailure !== false || !esReintentable(error);
 
     if (!isFinal) {
       // Intento intermedio: se conserva la cuota reservada y el estado

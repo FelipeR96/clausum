@@ -24,7 +24,7 @@ import {
 } from './legal-context.service';
 import type { AnalysisOptions, JobExecutionOptions } from './analysis.service';
 import { setComparisonProgress } from './processing-progress.service';
-import { AppError } from '../utils/errors';
+import { AppError, esReintentable } from '../utils/errors';
 import { logger } from '../utils/logger';
 
 export async function getOwnedComparison(
@@ -231,7 +231,9 @@ export async function executeCompareContracts(
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
 
-    if (execOptions?.markErrorOnFailure === false) {
+    // Un error de plan o de archivo ya es definitivo en el primer
+    // intento: reintentarlo solo retrasa el motivo real.
+    if (execOptions?.markErrorOnFailure === false && esReintentable(error)) {
       await reportProgress({ stage: 'queued', message: 'Reintentando…' });
       logger.warn('deepseek', 'Fallo en intento de comparación; se reintentará', {
         userId,
