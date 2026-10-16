@@ -78,6 +78,24 @@ export function listUsers(params?: {
   return apiClient<ListaUsuarios>(`/admin/users${sufijo}`);
 }
 
+export interface IngresosResumen {
+  desde: string;
+  hasta: string;
+  totalEnCentavos: number;
+  moneda: string;
+  pagos: number;
+  clientes: number;
+  porProveedor: Record<string, { pagos: number; totalEnCentavos: number }>;
+  porIntervalo: Record<string, { pagos: number; totalEnCentavos: number }>;
+  renovaciones: { pagos: number; totalEnCentavos: number };
+  primeros: { pagos: number; totalEnCentavos: number };
+}
+
+export function fetchIngresos(desde: string, hasta: string): Promise<IngresosResumen> {
+  const q = new URLSearchParams({ desde, hasta });
+  return apiClient<IngresosResumen>(`/admin/ingresos?${q}`);
+}
+
 export function findUser(email: string): Promise<AdminUserView> {
   return apiClient<AdminUserView>(`/admin/users?email=${encodeURIComponent(email)}`);
 }

@@ -7,7 +7,7 @@ import {
   FALLBACK_PRICING,
   PRICING_DOC,
 } from '../config/pricing';
-import { setUserPlanAsAdmin, updatePricing } from '../services/admin.service';
+import { getIngresos, setUserPlanAsAdmin, updatePricing } from '../services/admin.service';
 import { setUserPlan } from '../services/subscription.service';
 import { adminAuth } from '../firebase/admin';
 import { expirarPagosPendientes } from '../schedulers/storage-cleanup.scheduler';
@@ -237,5 +237,72 @@ describe('pagos pendientes abandonados', () => {
     expect((await pagos().doc(VIEJO).get()).get('status')).toBe('expired');
     expect((await pagos().doc(NUEVO).get()).get('status')).toBe('pending');
     expect((await pagos().doc(COBRADO).get()).get('status')).toBe('succeeded');
+  });
+});
+
+describe('ingresos', () => {
+  const pagos = () => adminDb().collection(COLLECTIONS.payments);
+  const IDS = ['ing-cobrado', 'ing-fallido', 'ing-pendiente', 'ing-fuera'];
+
+  const DESDE = new Date('2026-10-01T00:00:00Z');
+  const HASTA = new Date('2026-10-31T23:59:59Z');
+
+  afterEach(async () => {
+    await Promise.all(IDS.map((id) => pagos().doc(id).delete()));
+  });
+
+  it('suma solo lo cobrado, dentro del periodo', async () => {
+    await pagos().doc('ing-cobrado').set({
+      status: 'succeeded',
+      amount: 3_300_000,
+      currency: 'COP',
+      provider: 'wompi',
+      billingInterval: 'monthly',
+      userId: 'cliente-1',
+      paidAt: Timestamp.fromDate(new Date('2026-10-16T12:00:00Z')),
+    });
+    // Un intento fallido no es un ingreso.
+    await pagos().doc('ing-fallido').set({
+      status: 'failed',
+      amount: 3_300_000,
+      currency: 'COP',
+      userId: 'cliente-2',
+      paidAt: Timestamp.fromDate(new Date('2026-10-17T12:00:00Z')),
+    });
+    // Uno a medias tampoco.
+    await pagos().doc('ing-pendiente').set({
+      status: 'pending',
+      amount: 3_300_000,
+      currency: 'COP',
+      userId: 'cliente-3',
+      paidAt: Timestamp.fromDate(new Date('2026-10-18T12:00:00Z')),
+    });
+    // Cobrado, pero en otro mes: es ingreso de ese mes, no de este.
+    await pagos().doc('ing-fuera').set({
+      status: 'succeeded',
+      amount: 9_900_000,
+      currency: 'COP',
+      provider: 'wompi',
+      userId: 'cliente-4',
+      paidAt: Timestamp.fromDate(new Date('2026-09-16T12:00:00Z')),
+    });
+
+    const r = await getIngresos({ desde: DESDE, hasta: HASTA });
+
+    expect(r.totalEnCentavos).toBe(3_300_000);
+    expect(r.pagos).toBe(1);
+    expect(r.clientes).toBe(1);
+    expect(r.moneda).toBe('COP');
+    expect(r.porProveedor.wompi.totalEnCentavos).toBe(3_300_000);
+    expect(r.porIntervalo.monthly.pagos).toBe(1);
+  });
+
+  // Una concesion manual no crea documento en payments, asi que no puede
+  // colarse en los ingresos. Esta prueba fija esa garantia.
+  it('una cortesia no aparece como ingreso', async () => {
+    await setUserPlanAsAdmin(ADMIN, TARGET, 'pro');
+    const r = await getIngresos({ desde: DESDE, hasta: HASTA });
+    expect(r.totalEnCentavos).toBe(0);
+    expect(r.pagos).toBe(0);
   });
 });

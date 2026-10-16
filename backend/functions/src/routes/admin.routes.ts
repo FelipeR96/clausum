@@ -6,6 +6,7 @@ import { asyncHandler } from '../middleware/asyncHandler';
 import { validateBody } from '../middleware/validateRequest';
 import {
   findUserByEmail,
+  getIngresos,
   listUsers,
   setUserPlanAsAdmin,
   updatePlanLimits,
@@ -95,6 +96,33 @@ adminRouter.post(
     const target = routeParam(req.params.uid);
 
     res.json(await setUserPlanAsAdmin(adminUid, target, planId, { days }));
+  })
+);
+
+// ── Ingresos ─────────────────────────────────────────────────────────────
+
+adminRouter.get(
+  '/admin/ingresos',
+  asyncHandler(async (req, res) => {
+    // Por defecto, el mes en curso: es lo que uno quiere mirar al entrar.
+    const ahora = new Date();
+    const pordefectoDesde = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+
+    const desde =
+      typeof req.query.desde === 'string' ? new Date(req.query.desde) : pordefectoDesde;
+    const hasta =
+      typeof req.query.hasta === 'string' ? new Date(req.query.hasta) : ahora;
+
+    if (Number.isNaN(desde.getTime()) || Number.isNaN(hasta.getTime())) {
+      res.status(400).json({ error: 'Fechas inválidas' });
+      return;
+    }
+    if (desde.getTime() > hasta.getTime()) {
+      res.status(400).json({ error: 'La fecha de inicio es posterior a la de fin' });
+      return;
+    }
+
+    res.json(await getIngresos({ desde, hasta }));
   })
 );
 
