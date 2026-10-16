@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { reportarBug } from '@/services/bug-report.service';
 import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
@@ -35,7 +36,13 @@ export function ReportBugDialog({ onClose }: { onClose: () => void }) {
     }
   }
 
-  return (
+  // Se monta en <body> con un portal, no donde esta escrito.
+  //
+  // El menu lateral usa backdrop-blur, y un ancestro con backdrop-filter
+  // (o transform, o filter) deja de ser transparente para el posicionado:
+  // position:fixed pasa a medirse contra ese ancestro en vez de contra la
+  // ventana. El dialogo salia recortado dentro del menu.
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       role="dialog"
@@ -111,6 +118,7 @@ export function ReportBugDialog({ onClose }: { onClose: () => void }) {
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
