@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { listUsers, type AdminUserRow, type PlanSlug } from '@/services/admin.service';
+import {
+  listUsers,
+  type AdminUserRow,
+  type OrdenUsuarios,
+  type PlanSlug,
+} from '@/services/admin.service';
 import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
 
 function fecha(iso?: string): string {
@@ -30,27 +35,54 @@ function origen(u: AdminUserRow): { texto: string; clase: string } {
   return { texto: 'Sin origen', clase: 'text-red-600 dark:text-red-400' };
 }
 
-const FILTROS: { valor: PlanSlug | 'todos'; etiqueta: string }[] = [
+/**
+ * Lo que de verdad paga esa persona.
+ *
+ * `subscriptionAmountInCents` sobrevive a un cambio de plan y a una
+ * concesión manual, así que mostrarlo sin más haría que una cortesía
+ * pareciera un cliente de pago — justo lo que la columna Origen intenta
+ * evitar.
+ */
+function importe(u: AdminUserRow): string {
+  if (u.planId !== 'pro' || u.planGrantedBy) return '—';
+  return dinero(u.subscriptionAmountInCents);
+}
+
+const PLANES: { valor: PlanSlug | 'todos'; etiqueta: string }[] = [
   { valor: 'todos', etiqueta: 'Todos' },
   { valor: 'pro', etiqueta: 'Pro' },
   { valor: 'free', etiqueta: 'Free' },
 ];
 
+const ESTADOS = [
+  { valor: '', etiqueta: 'Cualquier estado' },
+  { valor: 'active', etiqueta: 'Activos' },
+  { valor: 'canceled', etiqueta: 'Cancelados' },
+  { valor: 'past_due', etiqueta: 'En mora' },
+];
+
 export function AdminUsersListSection() {
   const [filas, setFilas] = useState<AdminUserRow[]>([]);
-  const [filtro, setFiltro] = useState<PlanSlug | 'todos'>('todos');
+  const [plan, setPlan] = useState<PlanSlug | 'todos'>('todos');
+  const [estado, setEstado] = useState('');
+  const [orden, setOrden] = useState<OrdenUsuarios>('recientes');
+  const [buscar, setBuscar] = useState('');
+  const [buscado, setBuscado] = useState('');
   const [cursores, setCursores] = useState<string[]>([]);
   const [siguiente, setSiguiente] = useState<string | undefined>();
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const cargar = useCallback(
-    async (cursor?: string, plan: PlanSlug | 'todos' = filtro) => {
+    async (cursor?: string) => {
       setCargando(true);
       setError(null);
       try {
         const r = await listUsers({
           plan: plan === 'todos' ? undefined : plan,
+          estado: estado || undefined,
+          buscar: buscado || undefined,
+          orden,
           cursor,
           limit: 25,
         });
@@ -62,17 +94,15 @@ export function AdminUsersListSection() {
         setCargando(false);
       }
     },
-    [filtro]
+    [plan, estado, orden, buscado]
   );
 
   useEffect(() => {
-    void cargar(undefined, filtro);
     setCursores([]);
-    // El filtro reinicia la paginación: mantener el cursor daría una página
-    // intermedia de otra lista.
-  }, [filtro, cargar]);
-
-  const paginaActual = cursores.length + 1;
+    void cargar(undefined);
+    // Cualquier cambio de filtro reinicia la paginación: mantener el cursor
+    // daría una página intermedia de otra lista.
+  }, [cargar]);
 
   return (
     <section className="glass-panel rounded-2xl p-6 sm:p-8">
@@ -80,25 +110,95 @@ export function AdminUsersListSection() {
         Todos los usuarios
       </h2>
       <p className="mt-1 text-sm text-on-surface-variant">
-        Los más recientes primero.
+        Buscar por correo ignora los demás filtros.
       </p>
 
-      <div className="mt-4 inline-flex rounded-full border border-outline-variant bg-surface p-1">
-        {FILTROS.map((f) => (
+      <form
+        className="mt-4 flex flex-wrap items-end gap-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setBuscado(buscar.trim());
+        }}
+      >
+        <label className="text-xs text-on-surface-variant">
+          Correo (empieza por)
+          <input
+            type="search"
+            value={buscar}
+            onChange={(e) => setBuscar(e.target.value)}
+            placeholder="maria@"
+            className="mt-1 block w-56 rounded-lg border border-outline-variant bg-surface px-3 py-1.5 text-sm text-on-surface"
+          />
+        </label>
+        <button
+          type="submit"
+          className="rounded-lg border border-outline-variant px-3 py-1.5 text-sm transition hover:bg-surface-container"
+        >
+          Buscar
+        </button>
+        {buscado && (
           <button
-            key={f.valor}
             type="button"
-            onClick={() => setFiltro(f.valor)}
-            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-              filtro === f.valor
-                ? 'bg-primary text-on-primary'
-                : 'text-on-surface-variant hover:bg-surface-container'
-            }`}
+            onClick={() => {
+              setBuscar('');
+              setBuscado('');
+            }}
+            className="rounded-lg px-3 py-1.5 text-sm text-primary hover:underline"
           >
-            {f.etiqueta}
+            Quitar búsqueda
           </button>
-        ))}
+        )}
+      </form>
+
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <div className="inline-flex rounded-full border border-outline-variant bg-surface p-1">
+          {PLANES.map((f) => (
+            <button
+              key={f.valor}
+              type="button"
+              disabled={!!buscado}
+              onClick={() => setPlan(f.valor)}
+              className={`rounded-full px-4 py-1.5 text-xs font-semibold transition disabled:opacity-40 ${
+                plan === f.valor
+                  ? 'bg-primary text-on-primary'
+                  : 'text-on-surface-variant hover:bg-surface-container'
+              }`}
+            >
+              {f.etiqueta}
+            </button>
+          ))}
+        </div>
+
+        <select
+          value={estado}
+          disabled={!!buscado}
+          onChange={(e) => setEstado(e.target.value)}
+          className="rounded-lg border border-outline-variant bg-surface px-3 py-1.5 text-sm text-on-surface disabled:opacity-40"
+        >
+          {ESTADOS.map((e) => (
+            <option key={e.valor} value={e.valor}>
+              {e.etiqueta}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={orden}
+          disabled={!!buscado}
+          onChange={(e) => setOrden(e.target.value as OrdenUsuarios)}
+          className="rounded-lg border border-outline-variant bg-surface px-3 py-1.5 text-sm text-on-surface disabled:opacity-40"
+        >
+          <option value="recientes">Más recientes primero</option>
+          <option value="vencimiento">Vencen antes primero</option>
+        </select>
       </div>
+
+      {orden === 'vencimiento' && !buscado && (
+        <p className="mt-2 text-xs text-on-surface-variant">
+          Con este orden solo salen quienes tienen periodo de pago; los demás
+          no vencen.
+        </p>
+      )}
 
       {error && (
         <p className="mt-4 text-sm text-red-600 dark:text-red-400">{error}</p>
@@ -143,18 +243,13 @@ export function AdminUsersListSection() {
                   <td className="py-3 pr-4">{u.subscriptionStatus ?? '—'}</td>
                   <td className={`py-3 pr-4 ${o.clase}`}>
                     {o.texto}
-                    {u.billingInterval && (
+                    {u.billingInterval && !u.planGrantedBy && (
                       <span className="block text-xs text-on-surface-variant">
                         {u.billingInterval === 'annual' ? 'anual' : 'mensual'}
                       </span>
                     )}
                   </td>
-                  {/* El importe suscrito sigue escrito despues de pasar a
-                      Free, asi que mostrarlo ahi haria pensar que esa
-                      persona paga algo. */}
-                  <td className="py-3 pr-4">
-                    {u.planId === 'pro' ? dinero(u.subscriptionAmountInCents) : '—'}
-                  </td>
+                  <td className="py-3 pr-4">{importe(u)}</td>
                   <td className="py-3 pr-4">{fecha(u.currentPeriodEnd)}</td>
                   <td className="py-3 pr-4">{fecha(u.createdAt)}</td>
                 </tr>
@@ -166,7 +261,9 @@ export function AdminUsersListSection() {
                   colSpan={7}
                   className="py-6 text-center text-on-surface-variant"
                 >
-                  No hay usuarios con ese filtro.
+                  {buscado
+                    ? `Ningún correo empieza por «${buscado}».`
+                    : 'No hay usuarios con esos filtros.'}
                 </td>
               </tr>
             )}
@@ -176,7 +273,7 @@ export function AdminUsersListSection() {
 
       <div className="mt-4 flex items-center justify-between">
         <span className="text-xs text-on-surface-variant">
-          {cargando ? 'Cargando…' : `Página ${paginaActual}`}
+          {cargando ? 'Cargando…' : `Página ${cursores.length + 1}`}
         </span>
         <div className="flex gap-2">
           <button

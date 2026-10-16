@@ -65,13 +65,21 @@ export interface ListaUsuarios {
   siguienteCursor?: string;
 }
 
+export type OrdenUsuarios = 'recientes' | 'vencimiento';
+
 export function listUsers(params?: {
   plan?: PlanSlug;
+  estado?: string;
+  buscar?: string;
+  orden?: OrdenUsuarios;
   limit?: number;
   cursor?: string;
 }): Promise<ListaUsuarios> {
   const q = new URLSearchParams();
   if (params?.plan) q.set('plan', params.plan);
+  if (params?.estado) q.set('estado', params.estado);
+  if (params?.buscar) q.set('buscar', params.buscar);
+  if (params?.orden) q.set('orden', params.orden);
   if (params?.limit) q.set('limit', String(params.limit));
   if (params?.cursor) q.set('cursor', params.cursor);
   const sufijo = q.toString() ? `?${q}` : '';

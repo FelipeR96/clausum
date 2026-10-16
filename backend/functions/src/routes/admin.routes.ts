@@ -62,10 +62,22 @@ adminRouter.get(
       typeof req.query.limit === 'string' ? Number(req.query.limit) : undefined;
     const cursor =
       typeof req.query.cursor === 'string' ? req.query.cursor : undefined;
+    const estado =
+      typeof req.query.estado === 'string' && req.query.estado
+        ? req.query.estado
+        : undefined;
+    const orden = req.query.orden === 'vencimiento' ? 'vencimiento' : 'recientes';
+    const buscar =
+      typeof req.query.buscar === 'string' && req.query.buscar.trim()
+        ? req.query.buscar.trim()
+        : undefined;
 
     res.json(
       await listUsers({
         planId,
+        estado,
+        email: buscar,
+        orden,
         limit: Number.isFinite(limit) ? limit : undefined,
         cursor,
       })

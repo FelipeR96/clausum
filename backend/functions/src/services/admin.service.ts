@@ -205,31 +205,59 @@ export interface AdminUserRow {
  * pagina seria mas comodo de programar y mentiria en cuanto alguien se
  * registre entre dos consultas.
  */
+export type OrdenUsuarios = 'recientes' | 'vencimiento';
+
+/**
+ * Lista usuarios, paginada y filtrada.
+ *
+ * Lee de Firestore y no de Auth a proposito: todo lo que interesa aqui
+ * —plan, estado, vencimiento, proveedor— vive en el documento del usuario.
+ *
+ * Sobre el orden: cada combinacion de filtro y orden necesita su indice en
+ * Firestore, asi que la lista de combinaciones es deliberadamente corta.
+ * Buscar por correo IGNORA el resto de filtros: cuando buscas a alguien
+ * concreto no quieres que no aparezca por estar en otro plan del que
+ * tenias seleccionado.
+ *
+ * El cursor es el id del ultimo documento devuelto. Paginar por numero de
+ * pagina seria mas comodo de programar y mentiria en cuanto alguien se
+ * registre entre dos consultas.
+ */
 export async function listUsers(options?: {
   planId?: PlanSlug;
+  estado?: string;
+  /** Prefijo de correo. Firestore no busca "contiene", solo "empieza por". */
+  email?: string;
+  orden?: OrdenUsuarios;
   limit?: number;
   cursor?: string;
 }): Promise<{ usuarios: AdminUserRow[]; siguienteCursor?: string }> {
   const limite = Math.min(Math.max(options?.limit ?? 25, 1), 100);
+  const col = adminDb().collection(COLLECTIONS.users);
+  const busqueda = options?.email?.trim().toLowerCase();
 
-  let q = adminDb()
-    .collection(COLLECTIONS.users)
-    .orderBy('createdAt', 'desc')
-    .limit(limite + 1);
+  let q: FirebaseFirestore.Query = col;
 
-  if (options?.planId) {
-    q = adminDb()
-      .collection(COLLECTIONS.users)
-      .where('planId', '==', options.planId)
-      .orderBy('createdAt', 'desc')
-      .limit(limite + 1);
+  if (busqueda) {
+    // \uf8ff es el ultimo carácter del rango Unicode usable: delimita el
+    // "empieza por" sin tener que guardar un campo aparte.
+    q = col.orderBy('email').startAt(busqueda).endAt(busqueda + '\uf8ff');
+  } else {
+    if (options?.planId) q = q.where('planId', '==', options.planId);
+    if (options?.estado) q = q.where('subscriptionStatus', '==', options.estado);
+
+    q =
+      options?.orden === 'vencimiento'
+        ? // Ascendente: lo que vence antes, primero. Los que no tienen
+          // periodo quedan fuera, que es lo correcto — no vencen.
+          q.orderBy('currentPeriodEnd', 'asc')
+        : q.orderBy('createdAt', 'desc');
   }
 
+  q = q.limit(limite + 1);
+
   if (options?.cursor) {
-    const ancla = await adminDb()
-      .collection(COLLECTIONS.users)
-      .doc(options.cursor)
-      .get();
+    const ancla = await col.doc(options.cursor).get();
     if (ancla.exists) q = q.startAfter(ancla);
   }
 
@@ -260,102 +288,6 @@ export async function listUsers(options?: {
   return {
     usuarios,
     siguienteCursor: hayMas ? docs[docs.length - 1]?.id : undefined,
-  };
-}
-
-
-export interface IngresosResumen {
-  desde: string;
-  hasta: string;
-  /** Suma en centavos de los pagos realmente cobrados en el periodo. */
-  totalEnCentavos: number;
-  moneda: string;
-  pagos: number;
-  /** Clientes distintos que pagaron en el periodo. */
-  clientes: number;
-  porProveedor: Record<string, { pagos: number; totalEnCentavos: number }>;
-  porIntervalo: Record<string, { pagos: number; totalEnCentavos: number }>;
-  renovaciones: { pagos: number; totalEnCentavos: number };
-  primeros: { pagos: number; totalEnCentavos: number };
-}
-
-/**
- * Ingresos de un periodo.
- *
- * Cuenta SOLO pagos en 'succeeded' y por su fecha de cobro (paidAt), no
- * por cuando se creo la referencia: un pago creado el 31 y cobrado el 1 es
- * ingreso del mes nuevo.
- *
- * Lo que deliberadamente NO entra aqui: las concesiones manuales de Pro.
- * No generan un documento en 'payments', asi que no pueden colarse — y por
- * eso se concedieron sin inventar un subscriptionId ni un billingProvider.
- * Si algun dia estos numeros incluyeran cortesias, los informes de
- * ingresos mentirian sin que nada lo delatara.
- *
- * La moneda se asume unica porque hoy todo el cobro real es en COP. Si
- * algun dia se cobra en dos monedas, sumarlas seria un error silencioso:
- * por eso se devuelve cual es y se avisa si hay mezcla.
- */
-export async function getIngresos(options: {
-  desde: Date;
-  hasta: Date;
-}): Promise<IngresosResumen> {
-  const snap = await adminDb()
-    .collection(COLLECTIONS.payments)
-    .where('status', '==', 'succeeded')
-    .where('paidAt', '>=', Timestamp.fromDate(options.desde))
-    .where('paidAt', '<=', Timestamp.fromDate(options.hasta))
-    .get();
-
-  const porProveedor: Record<string, { pagos: number; totalEnCentavos: number }> = {};
-  const porIntervalo: Record<string, { pagos: number; totalEnCentavos: number }> = {};
-  const renovaciones = { pagos: 0, totalEnCentavos: 0 };
-  const primeros = { pagos: 0, totalEnCentavos: 0 };
-  const clientes = new Set<string>();
-  const monedas = new Set<string>();
-
-  let totalEnCentavos = 0;
-
-  for (const doc of snap.docs) {
-    const d = doc.data();
-    const importe = typeof d.amount === 'number' ? d.amount : 0;
-    totalEnCentavos += importe;
-
-    if (typeof d.userId === 'string') clientes.add(d.userId);
-    if (typeof d.currency === 'string') monedas.add(d.currency);
-
-    const proveedor = (d.provider as string) ?? 'desconocido';
-    porProveedor[proveedor] ??= { pagos: 0, totalEnCentavos: 0 };
-    porProveedor[proveedor].pagos += 1;
-    porProveedor[proveedor].totalEnCentavos += importe;
-
-    const intervalo = (d.billingInterval as string) ?? 'desconocido';
-    porIntervalo[intervalo] ??= { pagos: 0, totalEnCentavos: 0 };
-    porIntervalo[intervalo].pagos += 1;
-    porIntervalo[intervalo].totalEnCentavos += importe;
-
-    const destino = d.isRenewal ? renovaciones : primeros;
-    destino.pagos += 1;
-    destino.totalEnCentavos += importe;
-  }
-
-  if (monedas.size > 1) {
-    logger.warn('api', '[admin] ingresos con monedas mezcladas', {
-      metadata: { monedas: [...monedas].join(', ') },
-    });
-  }
-
-  return {
-    desde: options.desde.toISOString(),
-    hasta: options.hasta.toISOString(),
-    totalEnCentavos,
-    moneda: monedas.size === 1 ? [...monedas][0] : 'MIXTA',
-    pagos: snap.size,
-    clientes: clientes.size,
-    porProveedor,
-    porIntervalo,
-    renovaciones,
-    primeros,
   };
 }
 
