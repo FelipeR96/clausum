@@ -10,6 +10,8 @@ import {
 import { setUserPlanAsAdmin, updatePricing } from '../services/admin.service';
 import { setUserPlan } from '../services/subscription.service';
 import { adminAuth } from '../firebase/admin';
+import { expirarPagosPendientes } from '../schedulers/storage-cleanup.scheduler';
+import { Timestamp } from 'firebase-admin/firestore';
 
 // ─────────────────────────────────────────────────────────────────────────
 // El modulo de administracion mueve precios y planes. Un error aqui no se
@@ -202,5 +204,38 @@ describe('claims', () => {
 
     await auth.deleteUser(uid);
     await adminDb().collection(COLLECTIONS.users).doc(uid).delete();
+  });
+});
+
+describe('pagos pendientes abandonados', () => {
+  const VIEJO = 'pago-pendiente-viejo';
+  const NUEVO = 'pago-pendiente-nuevo';
+  const COBRADO = 'pago-ya-cobrado';
+
+  const pagos = () => adminDb().collection(COLLECTIONS.payments);
+
+  afterEach(async () => {
+    await Promise.all([
+      pagos().doc(VIEJO).delete(),
+      pagos().doc(NUEVO).delete(),
+      pagos().doc(COBRADO).delete(),
+    ]);
+  });
+
+  it('caduca los pendientes viejos y no toca los demas', async () => {
+    const hace30h = Timestamp.fromMillis(Date.now() - 30 * 60 * 60 * 1000);
+    const haceUnaHora = Timestamp.fromMillis(Date.now() - 60 * 60 * 1000);
+
+    await pagos().doc(VIEJO).set({ status: 'pending', createdAt: hace30h });
+    // Recien creado: puede estar pagandose ahora mismo.
+    await pagos().doc(NUEVO).set({ status: 'pending', createdAt: haceUnaHora });
+    // Un cobro real de hace meses no se toca jamas.
+    await pagos().doc(COBRADO).set({ status: 'succeeded', createdAt: hace30h });
+
+    await expirarPagosPendientes();
+
+    expect((await pagos().doc(VIEJO).get()).get('status')).toBe('expired');
+    expect((await pagos().doc(NUEVO).get()).get('status')).toBe('pending');
+    expect((await pagos().doc(COBRADO).get()).get('status')).toBe('succeeded');
   });
 });
