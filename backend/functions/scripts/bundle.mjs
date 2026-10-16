@@ -39,7 +39,8 @@ const result = await build({
   bundle: true,
   platform: 'node',
   // El runtime de Cloud Functions, no el Node de esta maquina.
-  target: 'node20',
+  // Tiene que coincidir con engines.node del package.json.
+  target: 'node22',
   format: 'cjs',
   outfile: join(root, 'lib/index.js'),
   // Explicito: de aqui salen los `paths`, y de ahi @clausum/shared.

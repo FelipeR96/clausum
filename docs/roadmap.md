@@ -779,6 +779,22 @@ produccion:
 |---|---|---|
 | Local (Windows) | 24.5 | La que tiene instalada el desarrollador |
 | CI | 22 | pnpm 11 exige ≥22.13; en Node 20 falla al cargar `node:sqlite` |
+
+**Resuelto el 15 de octubre de 2026.** Google anunció que Node 20 se
+decomisiona el **30 de octubre de 2026**: después de esa fecha el despliegue
+se rechaza. Se subió el runtime de Functions de 20 a **22** (GA, soportado
+hasta abril de 2027), que es lo que ya usaba el CI. Con eso el CI y
+producción corren la misma versión y una incompatibilidad deja de ser
+invisible hasta el despliegue.
+
+Local sigue en 24 para las herramientas. Se añadió un `.nvmrc` con 22 para
+quien quiera alinearlo del todo (`nvm use`); el aviso de "Unsupported
+engine" de pnpm es cosmético y ahora solo hay un major de diferencia.
+
+Node 24 también es GA y llega hasta 2028, pero `firebase-tools` está en la
+13.29 y es dudoso que conozca ese runtime. Saltar a 24 implica subir también
+el CLI: vale la pena, pero como tarea aparte y no en la misma tanda.
+
 | **Cloud Functions** | **20** | `engines.node` en `backend/functions/package.json` |
 
 La consecuencia es concreta: **una incompatibilidad específica de Node 20
