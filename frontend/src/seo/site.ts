@@ -23,6 +23,31 @@ export const SITE_URL = (
  */
 export const ES_SITIO_PUBLICO = SITE_URL === DOMINIO_PUBLICO;
 
+/** El dominio publico sin protocolo, para comparar contra location.host. */
+const HOST_PUBLICO = DOMINIO_PUBLICO.replace(/^https?:\/\//, '').toLowerCase();
+
+/**
+ * ¿La pagina que el VISITANTE tiene delante es el sitio publico?
+ *
+ * ES_SITIO_PUBLICO sola no basta, y conviene entender por que. Compara la
+ * URL con la que se COMPILO, que es una, cuando el mismo build puede
+ * servirse bajo varios nombres: clausumlegal.com y clausum-dev.web.app
+ * apuntan al mismo Hosting y entregan los mismos archivos. Mirando solo el
+ * build, la URL de desarrollo se declaraba publica y volvia a ser
+ * indexable, que era justo lo que esto venia a impedir.
+ *
+ * La pregunta correcta se responde en el navegador: por que nombre entro
+ * esta visita. Sin navegador no hay host que mirar, asi que se confia en
+ * el build.
+ */
+export function esVisitaAlSitioPublico(): boolean {
+  if (!ES_SITIO_PUBLICO) return false;
+  if (typeof window === 'undefined') return true;
+
+  const host = window.location.host.toLowerCase();
+  return host === HOST_PUBLICO || host === `www.${HOST_PUBLICO}`;
+}
+
 export const SITE_NAME = 'Clausum';
 
 export const SITE_TAGLINE =

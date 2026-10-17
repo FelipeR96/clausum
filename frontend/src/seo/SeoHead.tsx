@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import {
   DEFAULT_OG_IMAGE,
   SITE_NAME,
-  ES_SITIO_PUBLICO,
+  esVisitaAlSitioPublico,
   SITE_URL,
   TWITTER_HANDLE,
   type SeoPageConfig,
@@ -41,9 +41,12 @@ export function SeoHead(page: SeoHeadProps) {
   const ogTitle = page.ogTitle ?? page.title;
   const ogDescription = page.ogDescription ?? page.description;
   // Fuera del dominio publico, nada se indexa: da igual lo que pida la
-  // pagina. Es la unica forma de que el sitio de desarrollo no acabe en
-  // Google compitiendo contra el real.
-  const robots = ES_SITIO_PUBLICO ? (page.robots ?? 'index, follow') : 'noindex, nofollow';
+  // pagina. Se evalua aqui, en cada render, y no en el modulo: lo que
+  // decide es el nombre por el que entro ESTA visita, no con que URL se
+  // compilo el bundle. El mismo build se sirve bajo varios dominios.
+  const robots = esVisitaAlSitioPublico()
+    ? (page.robots ?? 'index, follow')
+    : 'noindex, nofollow';
 
   useEffect(() => {
     document.title = page.title;

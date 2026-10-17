@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://clausum-dev.web.app</loc>
+    <loc>https://clausumlegal.com</loc>
     <lastmod>2026-10-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://clausum-dev.web.app/analizar-contratos</loc>
+    <loc>https://clausumlegal.com/analizar-contratos</loc>
     <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://clausum-dev.web.app/comparar-contratos</loc>
+    <loc>https://clausumlegal.com/comparar-contratos</loc>
     <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://clausum-dev.web.app/detectar-riesgos</loc>
+    <loc>https://clausumlegal.com/detectar-riesgos</loc>
     <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://clausum-dev.web.app/pricing</loc>
+    <loc>https://clausumlegal.com/pricing</loc>
     <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

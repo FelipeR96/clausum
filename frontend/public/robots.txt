@@ -1,4 +1,6 @@
-# Despliegue que no es el sitio publico (https://clausum-dev.web.app).
-# Cerrado a buscadores para no competir contra https://clausumlegal.com.
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /panel/
+Disallow: /panel
+
+Sitemap: https://clausumlegal.com/sitemap.xml
