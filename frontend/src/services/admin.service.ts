@@ -86,22 +86,61 @@ export function listUsers(params?: {
   return apiClient<ListaUsuarios>(`/admin/users${sufijo}`);
 }
 
-export interface IngresosResumen {
-  desde: string;
-  hasta: string;
-  totalEnCentavos: number;
+export interface DesgloseProveedor {
+  pagos: number;
+  brutoEnCentavos: number;
+  comisionEnCentavos: number;
+  netoEnCentavos: number;
+  sinTarifa: boolean;
+}
+
+export interface IngresosPorMoneda {
   moneda: string;
   pagos: number;
   clientes: number;
-  porProveedor: Record<string, { pagos: number; totalEnCentavos: number }>;
-  porIntervalo: Record<string, { pagos: number; totalEnCentavos: number }>;
-  renovaciones: { pagos: number; totalEnCentavos: number };
-  primeros: { pagos: number; totalEnCentavos: number };
+  brutoEnCentavos: number;
+  comisionEnCentavos: number;
+  netoEnCentavos: number;
+  comisionIncompleta: boolean;
+  porProveedor: Record<string, DesgloseProveedor>;
+  porIntervalo: Record<string, { pagos: number; brutoEnCentavos: number }>;
+  renovaciones: { pagos: number; brutoEnCentavos: number };
+  primeros: { pagos: number; brutoEnCentavos: number };
+}
+
+export interface IngresosResumen {
+  desde: string;
+  hasta: string;
+  monedas: IngresosPorMoneda[];
 }
 
 export function fetchIngresos(desde: string, hasta: string): Promise<IngresosResumen> {
   const q = new URLSearchParams({ desde, hasta });
   return apiClient<IngresosResumen>(`/admin/ingresos?${q}`);
+}
+
+export interface Tarifa {
+  porcentaje: number;
+  fijoEnCentavos: number;
+}
+
+export interface Comisiones {
+  wompi: { tarjeta: Tarifa; pse: Tarifa; nequi: Tarifa; otro: Tarifa };
+  paypal: Tarifa | null;
+  ivaSobreComision: number;
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
+export function fetchComisiones(): Promise<Comisiones> {
+  return apiClient<Comisiones>('/admin/comisiones');
+}
+
+export function saveComisiones(c: Omit<Comisiones, 'updatedAt' | 'updatedBy'>): Promise<Comisiones> {
+  return apiClient<Comisiones>('/admin/comisiones', {
+    method: 'POST',
+    body: JSON.stringify(c),
+  });
 }
 
 export function findUser(email: string): Promise<AdminUserView> {

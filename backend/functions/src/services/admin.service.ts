@@ -5,6 +5,15 @@ import { AppError } from '../utils/errors';
 import { logger } from '../utils/logger';
 import { invalidatePlanCache } from '../config/plans';
 import {
+  comisionDe,
+  COMISIONES_DOC,
+  getComisiones,
+  invalidarCacheComisiones,
+  tarifaPara,
+  type Comisiones,
+  type Tarifa,
+} from '../config/comisiones';
+import {
   getPricing,
   invalidatePricingCache,
   PRICING_DOC,
@@ -292,99 +301,235 @@ export async function listUsers(options?: {
 }
 
 
+export interface DesgloseProveedor {
+  pagos: number;
+  brutoEnCentavos: number;
+  comisionEnCentavos: number;
+  netoEnCentavos: number;
+  /** true si falta configurar la tarifa de este proveedor. */
+  sinTarifa: boolean;
+}
+
+export interface IngresosPorMoneda {
+  moneda: string;
+  pagos: number;
+  clientes: number;
+  brutoEnCentavos: number;
+  comisionEnCentavos: number;
+  netoEnCentavos: number;
+  /** true si algun pago de esta moneda no tenia tarifa configurada. */
+  comisionIncompleta: boolean;
+  porProveedor: Record<string, DesgloseProveedor>;
+  porIntervalo: Record<string, { pagos: number; brutoEnCentavos: number }>;
+  renovaciones: { pagos: number; brutoEnCentavos: number };
+  primeros: { pagos: number; brutoEnCentavos: number };
+}
+
 export interface IngresosResumen {
   desde: string;
   hasta: string;
-  /** Suma en centavos de los pagos realmente cobrados en el periodo. */
-  totalEnCentavos: number;
-  moneda: string;
-  pagos: number;
-  /** Clientes distintos que pagaron en el periodo. */
-  clientes: number;
-  porProveedor: Record<string, { pagos: number; totalEnCentavos: number }>;
-  porIntervalo: Record<string, { pagos: number; totalEnCentavos: number }>;
-  renovaciones: { pagos: number; totalEnCentavos: number };
-  primeros: { pagos: number; totalEnCentavos: number };
+  /** Una entrada por moneda. Nunca se suman entre si. */
+  monedas: IngresosPorMoneda[];
 }
 
 /**
- * Ingresos de un periodo.
+ * Ingresos de un periodo, por moneda y netos de comisiones.
  *
- * Cuenta SOLO pagos en 'succeeded' y por su fecha de cobro (paidAt), no
- * por cuando se creo la referencia: un pago creado el 31 y cobrado el 1 es
- * ingreso del mes nuevo.
+ * Tres decisiones que determinan si el numero es verdad:
  *
- * Lo que deliberadamente NO entra aqui: las concesiones manuales de Pro.
- * No generan un documento en 'payments', asi que no pueden colarse — y por
- * eso se concedieron sin inventar un subscriptionId ni un billingProvider.
- * Si algun dia estos numeros incluyeran cortesias, los informes de
- * ingresos mentirian sin que nada lo delatara.
+ * 1. Solo pagos en 'succeeded'. Un intento fallido no es un ingreso.
+ * 2. Por paidAt, no por createdAt: un pago creado el 31 y cobrado el 1 es
+ *    ingreso del mes nuevo.
+ * 3. Las cortesias no entran. No generan documento en 'payments', y por eso
+ *    se concedieron sin inventar subscriptionId ni billingProvider.
  *
- * La moneda se asume unica porque hoy todo el cobro real es en COP. Si
- * algun dia se cobra en dos monedas, sumarlas seria un error silencioso:
- * por eso se devuelve cual es y se avisa si hay mezcla.
+ * Y una cuarta sobre la forma: los importes NO se suman entre monedas.
+ * Sumar pesos con dolares da un numero que no significa nada; antes se
+ * hacia y se avisaba, que es menos malo pero sigue siendo un numero falso
+ * en pantalla. Ahora cada moneda va por su lado.
+ *
+ * La comision es una ESTIMACION con las tarifas configuradas, no lo que la
+ * pasarela cobro de verdad: ellas no lo informan en el webhook. Sirve para
+ * saber con que te quedas, no para cuadrar con su extracto al centavo.
  */
 export async function getIngresos(options: {
   desde: Date;
   hasta: Date;
 }): Promise<IngresosResumen> {
-  const snap = await adminDb()
-    .collection(COLLECTIONS.payments)
-    .where('status', '==', 'succeeded')
-    .where('paidAt', '>=', Timestamp.fromDate(options.desde))
-    .where('paidAt', '<=', Timestamp.fromDate(options.hasta))
-    .get();
+  const [snap, comisiones] = await Promise.all([
+    adminDb()
+      .collection(COLLECTIONS.payments)
+      .where('status', '==', 'succeeded')
+      .where('paidAt', '>=', Timestamp.fromDate(options.desde))
+      .where('paidAt', '<=', Timestamp.fromDate(options.hasta))
+      .get(),
+    getComisiones(),
+  ]);
 
-  const porProveedor: Record<string, { pagos: number; totalEnCentavos: number }> = {};
-  const porIntervalo: Record<string, { pagos: number; totalEnCentavos: number }> = {};
-  const renovaciones = { pagos: 0, totalEnCentavos: 0 };
-  const primeros = { pagos: 0, totalEnCentavos: 0 };
-  const clientes = new Set<string>();
-  const monedas = new Set<string>();
+  const porMoneda = new Map<
+    string,
+    IngresosPorMoneda & { clientesSet: Set<string> }
+  >();
 
-  let totalEnCentavos = 0;
+  const vacia = (moneda: string) => ({
+    moneda,
+    pagos: 0,
+    clientes: 0,
+    clientesSet: new Set<string>(),
+    brutoEnCentavos: 0,
+    comisionEnCentavos: 0,
+    netoEnCentavos: 0,
+    comisionIncompleta: false,
+    porProveedor: {} as Record<string, DesgloseProveedor>,
+    porIntervalo: {} as Record<string, { pagos: number; brutoEnCentavos: number }>,
+    renovaciones: { pagos: 0, brutoEnCentavos: 0 },
+    primeros: { pagos: 0, brutoEnCentavos: 0 },
+  });
 
   for (const doc of snap.docs) {
     const d = doc.data();
-    const importe = typeof d.amount === 'number' ? d.amount : 0;
-    totalEnCentavos += importe;
-
-    if (typeof d.userId === 'string') clientes.add(d.userId);
-    if (typeof d.currency === 'string') monedas.add(d.currency);
-
+    const moneda = (d.currency as string) ?? 'COP';
+    const bruto = typeof d.amount === 'number' ? d.amount : 0;
     const proveedor = (d.provider as string) ?? 'desconocido';
-    porProveedor[proveedor] ??= { pagos: 0, totalEnCentavos: 0 };
-    porProveedor[proveedor].pagos += 1;
-    porProveedor[proveedor].totalEnCentavos += importe;
+
+    if (!porMoneda.has(moneda)) porMoneda.set(moneda, vacia(moneda));
+    const m = porMoneda.get(moneda)!;
+
+    const tarifa = tarifaPara(comisiones, proveedor, d.paymentMethodType as string | undefined);
+    const comision = tarifa
+      ? comisionDe(bruto, tarifa, comisiones.ivaSobreComision)
+      : 0;
+
+    m.pagos += 1;
+    m.brutoEnCentavos += bruto;
+    m.comisionEnCentavos += comision;
+    if (!tarifa) m.comisionIncompleta = true;
+    if (typeof d.userId === 'string') m.clientesSet.add(d.userId);
+
+    m.porProveedor[proveedor] ??= {
+      pagos: 0,
+      brutoEnCentavos: 0,
+      comisionEnCentavos: 0,
+      netoEnCentavos: 0,
+      sinTarifa: false,
+    };
+    const prov = m.porProveedor[proveedor];
+    prov.pagos += 1;
+    prov.brutoEnCentavos += bruto;
+    prov.comisionEnCentavos += comision;
+    if (!tarifa) prov.sinTarifa = true;
 
     const intervalo = (d.billingInterval as string) ?? 'desconocido';
-    porIntervalo[intervalo] ??= { pagos: 0, totalEnCentavos: 0 };
-    porIntervalo[intervalo].pagos += 1;
-    porIntervalo[intervalo].totalEnCentavos += importe;
+    m.porIntervalo[intervalo] ??= { pagos: 0, brutoEnCentavos: 0 };
+    m.porIntervalo[intervalo].pagos += 1;
+    m.porIntervalo[intervalo].brutoEnCentavos += bruto;
 
-    const destino = d.isRenewal ? renovaciones : primeros;
+    const destino = d.isRenewal ? m.renovaciones : m.primeros;
     destino.pagos += 1;
-    destino.totalEnCentavos += importe;
+    destino.brutoEnCentavos += bruto;
   }
 
-  if (monedas.size > 1) {
-    logger.warn('api', '[admin] ingresos con monedas mezcladas', {
-      metadata: { monedas: [...monedas].join(', ') },
-    });
-  }
+  const monedas = [...porMoneda.values()]
+    .map(({ clientesSet, ...m }) => {
+      for (const prov of Object.values(m.porProveedor)) {
+        prov.netoEnCentavos = prov.brutoEnCentavos - prov.comisionEnCentavos;
+      }
+      return {
+        ...m,
+        clientes: clientesSet.size,
+        netoEnCentavos: m.brutoEnCentavos - m.comisionEnCentavos,
+      };
+    })
+    // La moneda con mas ingreso primero: es la que uno mira.
+    .sort((a, b) => b.brutoEnCentavos - a.brutoEnCentavos);
 
   return {
     desde: options.desde.toISOString(),
     hasta: options.hasta.toISOString(),
-    totalEnCentavos,
-    moneda: monedas.size === 1 ? [...monedas][0] : 'MIXTA',
-    pagos: snap.size,
-    clientes: clientes.size,
-    porProveedor,
-    porIntervalo,
-    renovaciones,
-    primeros,
+    monedas,
   };
+}
+
+
+function validarTarifa(nombre: string, v: unknown): Tarifa {
+  if (typeof v !== 'object' || v === null) {
+    throw new AppError(`Falta la tarifa de ${nombre}`, 400, 'COMISION_INVALIDA');
+  }
+  const t = v as Record<string, unknown>;
+
+  if (
+    typeof t.porcentaje !== 'number' ||
+    !Number.isFinite(t.porcentaje) ||
+    t.porcentaje < 0 ||
+    t.porcentaje > 100
+  ) {
+    throw new AppError(
+      `El porcentaje de ${nombre} debe estar entre 0 y 100`,
+      400,
+      'COMISION_INVALIDA'
+    );
+  }
+
+  // En centavos y entero, igual que los precios: un fijo con decimales
+  // produce comisiones que no cuadran con ningun extracto.
+  if (
+    typeof t.fijoEnCentavos !== 'number' ||
+    !Number.isInteger(t.fijoEnCentavos) ||
+    t.fijoEnCentavos < 0
+  ) {
+    throw new AppError(
+      `El monto fijo de ${nombre} debe ser un entero de centavos`,
+      400,
+      'COMISION_INVALIDA'
+    );
+  }
+
+  return { porcentaje: t.porcentaje, fijoEnCentavos: t.fijoEnCentavos };
+}
+
+export async function updateComisiones(
+  adminUid: string,
+  entrada: unknown
+): Promise<Comisiones> {
+  if (typeof entrada !== 'object' || entrada === null) {
+    throw new AppError('Comisiones inválidas', 400, 'COMISION_INVALIDA');
+  }
+  const e = entrada as Record<string, unknown>;
+  const w = (e.wompi ?? {}) as Record<string, unknown>;
+
+  const iva = e.ivaSobreComision;
+  if (typeof iva !== 'number' || !Number.isFinite(iva) || iva < 0 || iva > 100) {
+    throw new AppError('El IVA debe estar entre 0 y 100', 400, 'COMISION_INVALIDA');
+  }
+
+  const valor: Comisiones = {
+    wompi: {
+      tarjeta: validarTarifa('tarjeta', w.tarjeta),
+      pse: validarTarifa('PSE', w.pse),
+      nequi: validarTarifa('Nequi', w.nequi),
+      otro: validarTarifa('otros medios', w.otro),
+    },
+    // PayPal puede quedarse sin configurar: mejor decirlo que restar una
+    // comision inventada.
+    paypal: e.paypal == null ? null : validarTarifa('PayPal', e.paypal),
+    ivaSobreComision: iva,
+  };
+
+  await adminDb()
+    .collection(COLLECTIONS.config)
+    .doc(COMISIONES_DOC)
+    .set(
+      { ...valor, updatedAt: FieldValue.serverTimestamp(), updatedBy: adminUid },
+      { merge: false }
+    );
+
+  invalidarCacheComisiones();
+  registrarAccion(adminUid, 'comisiones actualizadas', {
+    paypalConfigurado: valor.paypal !== null,
+    iva: valor.ivaSobreComision,
+  });
+
+  return valor;
 }
 
 // ── Precios ──────────────────────────────────────────────────────────────

@@ -7,6 +7,7 @@ import { validateBody } from '../middleware/validateRequest';
 import {
   findUserByEmail,
   getIngresos,
+  updateComisiones,
   listUsers,
   setUserPlanAsAdmin,
   updatePlanLimits,
@@ -17,6 +18,7 @@ import {
   listarBugReports,
 } from '../services/bug-report.service';
 import { getPricing } from '../config/pricing';
+import { getComisiones, type Comisiones } from '../config/comisiones';
 import { getPlanBySlug } from '../config/plans';
 import type { PlanSlug } from '@clausum/shared';
 
@@ -143,6 +145,35 @@ adminRouter.post(
 
     await cambiarEstadoBugReport(adminUid, routeParam(req.params.id), estado);
     res.json({ ok: true });
+  })
+);
+
+// ── Comisiones de las pasarelas ──────────────────────────────────────────
+
+/**
+ * updatedAt es un Timestamp de Firestore. Serializado tal cual llega al
+ * navegador como {_seconds, _nanoseconds} y `new Date(...)` de eso da
+ * "Invalid Date". Va como texto ISO.
+ */
+function paraElNavegador(c: Comisiones) {
+  return { ...c, updatedAt: c.updatedAt?.toDate().toISOString() };
+}
+
+adminRouter.get(
+  '/admin/comisiones',
+  asyncHandler(async (_req, res) => {
+    res.json(paraElNavegador(await getComisiones()));
+  })
+);
+
+adminRouter.post(
+  '/admin/comisiones',
+  asyncHandler(async (req, res) => {
+    const { uid: adminUid } = req as AuthenticatedRequest;
+    await updateComisiones(adminUid, req.body);
+    // Releido para devolver el updatedAt real: updateComisiones escribe un
+    // serverTimestamp que no conoce hasta que Firestore lo resuelve.
+    res.json(paraElNavegador(await getComisiones()));
   })
 );
 

@@ -23,7 +23,8 @@
     "set-admin": "node scripts/set-admin.cjs",
     "seed:emulator": "node scripts/seed-firestore.cjs --emulator",
     "seed:legal-catalog:emulator": "node scripts/seed-legal-catalog.cjs --emulator",
-    "import:co-corpus:emulator": "node scripts/import-co-corpus.cjs --emulator"
+    "import:co-corpus:emulator": "node scripts/import-co-corpus.cjs --emulator",
+    "seed:ingresos-demo": "node scripts/seed-ingresos-demo.cjs --emulator"
   },
   "dependencies": {
     "cors": "^2.8.5",

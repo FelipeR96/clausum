@@ -38,7 +38,15 @@ export function AppShell({
         </div>
       )}
 
-      <div className="flex min-h-screen flex-1 flex-col lg:pl-72">
+      {/*
+        min-w-0 no es decorativo. Un hijo flex trae min-width:auto, que le
+        prohibe encoger por debajo del ancho minimo de su contenido: la tabla
+        de usuarios pedia 978px y estiraba esta columna entera, desbordando
+        la pagina en pantallas estrechas. Con min-w-0 la columna encoge y el
+        overflow-x-auto de la tabla por fin sirve para algo: la tabla se
+        desplaza dentro de su caja en vez de empujar todo el panel.
+      */}
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col lg:pl-72">
         <AppTopBar
           onMenuClick={() => setSidebarOpen(true)}
           onUploadClick={onUploadClick}

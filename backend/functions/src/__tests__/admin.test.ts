@@ -7,7 +7,18 @@ import {
   FALLBACK_PRICING,
   PRICING_DOC,
 } from '../config/pricing';
-import { getIngresos, setUserPlanAsAdmin, updatePricing } from '../services/admin.service';
+import {
+  getIngresos,
+  setUserPlanAsAdmin,
+  updateComisiones,
+  updatePricing,
+} from '../services/admin.service';
+import {
+  COMISIONES_DOC,
+  comisionDe,
+  COMISIONES_POR_DEFECTO,
+  invalidarCacheComisiones,
+} from '../config/comisiones';
 import { setUserPlan } from '../services/subscription.service';
 import { adminAuth } from '../firebase/admin';
 import { expirarPagosPendientes } from '../schedulers/storage-cleanup.scheduler';
@@ -242,21 +253,49 @@ describe('pagos pendientes abandonados', () => {
 
 describe('ingresos', () => {
   const pagos = () => adminDb().collection(COLLECTIONS.payments);
-  const IDS = ['ing-cobrado', 'ing-fallido', 'ing-pendiente', 'ing-fuera'];
+  const IDS = [
+    'ing-cobrado',
+    'ing-fallido',
+    'ing-pendiente',
+    'ing-fuera',
+    'ing-usd',
+    'ing-pse',
+    'ing-renovacion',
+  ];
 
   const DESDE = new Date('2026-10-01T00:00:00Z');
   const HASTA = new Date('2026-10-31T23:59:59Z');
 
-  afterEach(async () => {
-    await Promise.all(IDS.map((id) => pagos().doc(id).delete()));
+  function comisionesRef() {
+    return adminDb().collection(COLLECTIONS.config).doc(COMISIONES_DOC);
+  }
+
+  /** Sin esto cada prueba heredaria la cache de la anterior. */
+  beforeEach(async () => {
+    invalidarCacheComisiones();
+    await comisionesRef().set(COMISIONES_POR_DEFECTO);
+    invalidarCacheComisiones();
   });
 
-  it('suma solo lo cobrado, dentro del periodo', async () => {
+  afterEach(async () => {
+    await Promise.all(IDS.map((id) => pagos().doc(id).delete()));
+    await comisionesRef().delete();
+    invalidarCacheComisiones();
+  });
+
+  function moneda(r: Awaited<ReturnType<typeof getIngresos>>, cual: string) {
+    const m = r.monedas.find((x) => x.moneda === cual);
+    if (!m) throw new Error(`no hay bloque de ${cual}: ${JSON.stringify(r.monedas)}`);
+    return m;
+  }
+
+  it('cuenta solo lo cobrado, dentro del periodo', async () => {
     await pagos().doc('ing-cobrado').set({
       status: 'succeeded',
       amount: 3_300_000,
       currency: 'COP',
       provider: 'wompi',
+      paymentMethodType: 'CARD',
       billingInterval: 'monthly',
       userId: 'cliente-1',
       paidAt: Timestamp.fromDate(new Date('2026-10-16T12:00:00Z')),
@@ -283,18 +322,160 @@ describe('ingresos', () => {
       amount: 9_900_000,
       currency: 'COP',
       provider: 'wompi',
+      paymentMethodType: 'CARD',
       userId: 'cliente-4',
       paidAt: Timestamp.fromDate(new Date('2026-09-16T12:00:00Z')),
     });
 
     const r = await getIngresos({ desde: DESDE, hasta: HASTA });
+    const cop = moneda(r, 'COP');
 
-    expect(r.totalEnCentavos).toBe(3_300_000);
-    expect(r.pagos).toBe(1);
-    expect(r.clientes).toBe(1);
-    expect(r.moneda).toBe('COP');
-    expect(r.porProveedor.wompi.totalEnCentavos).toBe(3_300_000);
-    expect(r.porIntervalo.monthly.pagos).toBe(1);
+    expect(cop.brutoEnCentavos).toBe(3_300_000);
+    expect(cop.pagos).toBe(1);
+    expect(cop.clientes).toBe(1);
+    expect(cop.porProveedor.wompi.brutoEnCentavos).toBe(3_300_000);
+    expect(cop.porIntervalo.monthly.pagos).toBe(1);
+  });
+
+  // La razon de ser de todo este bloque: 33.000 pesos y 10 dolares no se
+  // suman. Antes salia "33.001.000" y eso no es plata de nadie.
+  it('no mezcla monedas: un bloque por cada una', async () => {
+    await pagos().doc('ing-cobrado').set({
+      status: 'succeeded',
+      amount: 3_300_000,
+      currency: 'COP',
+      provider: 'wompi',
+      paymentMethodType: 'CARD',
+      billingInterval: 'monthly',
+      userId: 'cliente-1',
+      paidAt: Timestamp.fromDate(new Date('2026-10-16T12:00:00Z')),
+    });
+    await pagos().doc('ing-usd').set({
+      status: 'succeeded',
+      amount: 1_000,
+      currency: 'USD',
+      provider: 'paypal',
+      billingInterval: 'monthly',
+      userId: 'cliente-9',
+      paidAt: Timestamp.fromDate(new Date('2026-10-17T12:00:00Z')),
+    });
+
+    const r = await getIngresos({ desde: DESDE, hasta: HASTA });
+
+    expect(r.monedas).toHaveLength(2);
+    expect(moneda(r, 'COP').brutoEnCentavos).toBe(3_300_000);
+    expect(moneda(r, 'USD').brutoEnCentavos).toBe(1_000);
+    // Y la mas grande primero, que es la que uno mira.
+    expect(r.monedas[0].moneda).toBe('COP');
+  });
+
+  it('resta la comision de cada medio de pago, con IVA', async () => {
+    await pagos().doc('ing-cobrado').set({
+      status: 'succeeded',
+      amount: 3_300_000,
+      currency: 'COP',
+      provider: 'wompi',
+      paymentMethodType: 'CARD',
+      userId: 'cliente-1',
+      paidAt: Timestamp.fromDate(new Date('2026-10-16T12:00:00Z')),
+    });
+    await pagos().doc('ing-pse').set({
+      status: 'succeeded',
+      amount: 3_300_000,
+      currency: 'COP',
+      provider: 'wompi',
+      paymentMethodType: 'PSE',
+      userId: 'cliente-2',
+      paidAt: Timestamp.fromDate(new Date('2026-10-17T12:00:00Z')),
+    });
+
+    const r = await getIngresos({ desde: DESDE, hasta: HASTA });
+    const cop = moneda(r, 'COP');
+
+    const tarjeta = comisionDe(3_300_000, COMISIONES_POR_DEFECTO.wompi.tarjeta, 19);
+    const pse = comisionDe(3_300_000, COMISIONES_POR_DEFECTO.wompi.pse, 19);
+
+    // PSE cobra menos que tarjeta: si estos dos salieran iguales, el medio
+    // de pago no se estaria leyendo.
+    expect(pse).toBeLessThan(tarjeta);
+    expect(cop.comisionEnCentavos).toBe(tarjeta + pse);
+    expect(cop.netoEnCentavos).toBe(6_600_000 - tarjeta - pse);
+    expect(cop.comisionIncompleta).toBe(false);
+  });
+
+  // Mentir hacia arriba es peor que no saber: si PayPal no tiene tarifa, el
+  // neto sale inflado y hay que decirlo en pantalla.
+  it('avisa cuando un proveedor no tiene tarifa configurada', async () => {
+    await pagos().doc('ing-usd').set({
+      status: 'succeeded',
+      amount: 1_000,
+      currency: 'USD',
+      provider: 'paypal',
+      userId: 'cliente-9',
+      paidAt: Timestamp.fromDate(new Date('2026-10-17T12:00:00Z')),
+    });
+
+    const r = await getIngresos({ desde: DESDE, hasta: HASTA });
+    const usd = moneda(r, 'USD');
+
+    expect(usd.comisionEnCentavos).toBe(0);
+    expect(usd.netoEnCentavos).toBe(1_000);
+    expect(usd.comisionIncompleta).toBe(true);
+    expect(usd.porProveedor.paypal.sinTarifa).toBe(true);
+  });
+
+  it('usa la tarifa guardada, no la de por defecto', async () => {
+    await updateComisiones(ADMIN, {
+      ...COMISIONES_POR_DEFECTO,
+      paypal: { porcentaje: 5, fijoEnCentavos: 49 },
+      ivaSobreComision: 0,
+    });
+
+    await pagos().doc('ing-usd').set({
+      status: 'succeeded',
+      amount: 1_000,
+      currency: 'USD',
+      provider: 'paypal',
+      userId: 'cliente-9',
+      paidAt: Timestamp.fromDate(new Date('2026-10-17T12:00:00Z')),
+    });
+
+    const r = await getIngresos({ desde: DESDE, hasta: HASTA });
+    const usd = moneda(r, 'USD');
+
+    // 5 % de 10,00 USD = 0,50 + 0,49 fijo = 0,99, sin IVA.
+    expect(usd.comisionEnCentavos).toBe(99);
+    expect(usd.netoEnCentavos).toBe(901);
+    expect(usd.comisionIncompleta).toBe(false);
+  });
+
+  it('separa primeros pagos de renovaciones', async () => {
+    await pagos().doc('ing-cobrado').set({
+      status: 'succeeded',
+      amount: 3_300_000,
+      currency: 'COP',
+      provider: 'wompi',
+      paymentMethodType: 'CARD',
+      userId: 'cliente-1',
+      paidAt: Timestamp.fromDate(new Date('2026-10-02T12:00:00Z')),
+    });
+    await pagos().doc('ing-renovacion').set({
+      status: 'succeeded',
+      amount: 3_300_000,
+      currency: 'COP',
+      provider: 'wompi',
+      paymentMethodType: 'CARD',
+      isRenewal: true,
+      userId: 'cliente-1',
+      paidAt: Timestamp.fromDate(new Date('2026-10-20T12:00:00Z')),
+    });
+
+    const cop = moneda(await getIngresos({ desde: DESDE, hasta: HASTA }), 'COP');
+
+    expect(cop.primeros).toEqual({ pagos: 1, brutoEnCentavos: 3_300_000 });
+    expect(cop.renovaciones).toEqual({ pagos: 1, brutoEnCentavos: 3_300_000 });
+    // El mismo usuario pagando dos veces es un cliente, no dos.
+    expect(cop.clientes).toBe(1);
   });
 
   // Una concesion manual no crea documento en payments, asi que no puede
@@ -302,7 +483,6 @@ describe('ingresos', () => {
   it('una cortesia no aparece como ingreso', async () => {
     await setUserPlanAsAdmin(ADMIN, TARGET, 'pro');
     const r = await getIngresos({ desde: DESDE, hasta: HASTA });
-    expect(r.totalEnCentavos).toBe(0);
-    expect(r.pagos).toBe(0);
+    expect(r.monedas).toHaveLength(0);
   });
 });

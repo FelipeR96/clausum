@@ -74,6 +74,8 @@ interface WompiTransaction {
   currency: string;
   status: string;
   payment_source_id?: number;
+  /** CARD, PSE, NEQUI, BANCOLOMBIA_TRANSFER… Wompi cobra distinto segun cual. */
+  payment_method_type?: string;
 }
 
 export interface WompiWebhookEvent {
@@ -743,6 +745,12 @@ export async function handleWompiWebhook(event: WompiWebhookEvent): Promise<void
       status: 'succeeded',
       wompiTransactionId: transaction.id,
       paidAt: FieldValue.serverTimestamp(),
+      // El medio de pago decide la comision de Wompi: tarjeta y PSE no
+      // cuestan lo mismo. Sin guardarlo, cualquier calculo de comisiones
+      // tendria que suponer una tarifa unica y se equivocaria siempre.
+      ...(transaction.payment_method_type
+        ? { paymentMethodType: transaction.payment_method_type }
+        : {}),
       ...(paymentSourceId ? { wompiPaymentSourceId: paymentSourceId } : {}),
     });
 
