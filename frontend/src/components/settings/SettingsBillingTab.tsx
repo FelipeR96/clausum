@@ -13,6 +13,7 @@ import { invalidateSubscriptionCache } from '@/hooks/useSubscriptionSummary';
 import { WompiSubscribeButton } from '@/components/billing/WompiSubscribeButton';
 import { WompiCheckoutButton } from '@/components/billing/WompiCheckoutButton';
 import { PayPalCheckoutButton } from '@/components/billing/PayPalCheckoutButton';
+import { AvisoAntesDePagar } from '@/components/billing/AvisoAntesDePagar';
 import { BillingRegionSelector } from '@/components/billing/BillingRegionSelector';
 import { useBillingRegion } from '@/hooks/useBillingRegion';
 import { usePricing, amountFor } from '@/hooks/usePricing';
@@ -292,6 +293,8 @@ export function SettingsBillingTab() {
                     Pasar a anual con PayPal
                   </PayPalCheckoutButton>
                 )}
+
+                <AvisoAntesDePagar />
               </div>
             )}
 
@@ -362,6 +365,8 @@ export function SettingsBillingTab() {
                     Pagar con PayPal
                   </PayPalCheckoutButton>
                 )}
+
+                <AvisoAntesDePagar />
               </div>
             )}
 

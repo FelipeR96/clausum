@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SETTINGS_BILLING_PATH } from '@/constants/app-paths';
+import { LEGAL_CONTACT_EMAIL } from '@/content/legal/constants';
 import { AppShell } from '@/components/app/AppShell';
 import { DashboardStats } from '@/components/panel/DashboardStats';
 import { QuickActions } from '@/components/panel/QuickActions';
@@ -136,7 +137,7 @@ export function PanelPage() {
                 Planes
               </Link>
               <a
-                href="mailto:soporte@clausum.com"
+                href={`mailto:${LEGAL_CONTACT_EMAIL}`}
                 className="hover:text-primary"
               >
                 Soporte

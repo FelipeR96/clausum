@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import {
   DEFAULT_OG_IMAGE,
   SITE_NAME,
+  ES_SITIO_PUBLICO,
   SITE_URL,
   TWITTER_HANDLE,
   type SeoPageConfig,
@@ -39,7 +40,10 @@ export function SeoHead(page: SeoHeadProps) {
   const ogImage = page.ogImage ?? defaultOgImageForPath(page.path);
   const ogTitle = page.ogTitle ?? page.title;
   const ogDescription = page.ogDescription ?? page.description;
-  const robots = page.robots ?? 'index, follow';
+  // Fuera del dominio publico, nada se indexa: da igual lo que pida la
+  // pagina. Es la unica forma de que el sitio de desarrollo no acabe en
+  // Google compitiendo contra el real.
+  const robots = ES_SITIO_PUBLICO ? (page.robots ?? 'index, follow') : 'noindex, nofollow';
 
   useEffect(() => {
     document.title = page.title;

@@ -1,21 +1,46 @@
-/** URL canónica del sitio (un solo dominio). */
+/**
+ * El único dominio que debe aparecer en Google.
+ *
+ * Está escrito aquí y no en una variable de entorno a propósito: es la
+ * referencia contra la que se compara cada despliegue para decidir si
+ * puede indexarse. Si viviera en el entorno, cada despliegue se declararía
+ * canónico a sí mismo y el chequeo no serviría de nada.
+ */
+export const DOMINIO_PUBLICO = 'https://clausumlegal.com';
+
+/** URL canónica de ESTE despliegue. */
 export const SITE_URL = (
-  import.meta.env.VITE_SITE_URL ?? 'https://clausum.com'
+  import.meta.env.VITE_SITE_URL ?? DOMINIO_PUBLICO
 ).replace(/\/$/, '');
+
+/**
+ * ¿Este despliegue es el sitio público?
+ *
+ * Cualquier otro —el de desarrollo, una vista previa, un dominio
+ * provisional— debe salir con noindex. Si no, el sitio de pruebas compite
+ * en Google contra el real por las mismas palabras, y a veces gana el
+ * equivocado.
+ */
+export const ES_SITIO_PUBLICO = SITE_URL === DOMINIO_PUBLICO;
 
 export const SITE_NAME = 'Clausum';
 
 export const SITE_TAGLINE =
   'Análisis de contratos con IA y contexto jurídico colombiano';
 
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og/clausum-og.svg`;
+/**
+ * PNG y no SVG a proposito: WhatsApp, Facebook, LinkedIn y X no renderizan
+ * SVG en las vistas previas de enlaces. Con el SVG, compartir el sitio
+ * mostraba un recuadro vacio. El SVG se conserva como fuente editable.
+ */
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og/clausum-og.png`;
 
 export const TWITTER_HANDLE = '@clausum';
 
 export const ORGANIZATION = {
   name: SITE_NAME,
   url: SITE_URL,
-  logo: `${SITE_URL}/og/clausum-og.svg`,
+  logo: `${SITE_URL}/og/clausum-og.png`,
   description: SITE_TAGLINE,
   areaServed: 'CO',
   availableLanguage: 'es',

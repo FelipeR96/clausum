@@ -124,8 +124,8 @@ export function buildPageSchemas(page: SeoPageConfig, faq?: FaqItem[]) {
 }
 
 export function defaultOgImageForPath(path: string) {
-  if (path.includes('analizar')) return `${SITE_URL}/og/clausum-og.svg`;
-  if (path.includes('comparar')) return `${SITE_URL}/og/clausum-og.svg`;
-  if (path.includes('riesgos')) return `${SITE_URL}/og/clausum-og.svg`;
+  if (path.includes('analizar')) return `${SITE_URL}/og/clausum-og.png`;
+  if (path.includes('comparar')) return `${SITE_URL}/og/clausum-og.png`;
+  if (path.includes('riesgos')) return `${SITE_URL}/og/clausum-og.png`;
   return DEFAULT_OG_IMAGE;
 }

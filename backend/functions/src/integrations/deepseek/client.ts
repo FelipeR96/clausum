@@ -3,6 +3,7 @@ import { AppError } from '../../utils/errors';
 import { logger } from '../../utils/logger';
 import { withRetry } from '../../utils/retry';
 import { SYSTEM_BASE } from './prompts';
+import { redactar, restaurar } from '../../privacidad/redaccion';
 
 export interface DeepSeekMessage {
   role: 'system' | 'user';
@@ -28,10 +29,34 @@ export async function callDeepSeek(
   const env = getEnv();
   const apiKey = getDeepSeekApiKey();
 
+  // Los datos personales se sustituyen por marcadores ANTES de construir
+  // el mensaje. Va aqui y no en cada servicio a proposito: este es el unico
+  // punto por el que el texto sale del pais, asi que nadie puede añadir una
+  // quinta ruta de analisis que se salte la proteccion sin darse cuenta.
+  //
+  // Si redactar() fallara, la llamada falla con ella. Es deliberado: un
+  // try/catch que siguiera adelante con el texto original convertiria un
+  // error en una fuga silenciosa, que es mucho peor que un analisis caido.
+  const { texto: promptRedactado, mapa, conteo } = redactar(userPrompt);
+
   const messages: DeepSeekMessage[] = [
     { role: 'system', content: context.systemPrompt ?? SYSTEM_BASE },
-    { role: 'user', content: userPrompt },
+    { role: 'user', content: promptRedactado },
   ];
+
+  // Solo el recuento por tipo, aplanado a texto: metadata no admite
+  // objetos anidados. Los valores ocultados no se registran NUNCA; un log
+  // con el nombre y la cedula dentro anularia el sentido de todo esto.
+  const resumenOcultados = Object.entries(conteo)
+    .map(([tipo, n]) => `${tipo}=${n}`)
+    .join(' ');
+
+  if (resumenOcultados) {
+    logger.info('deepseek', 'Datos personales ocultados antes de enviar', {
+      userId: context.userId,
+      metadata: { operation: context.operation, ocultados: resumenOcultados },
+    });
+  }
 
   const call = async (): Promise<DeepSeekResult> => {
     const controller = new AbortController();
@@ -72,7 +97,10 @@ export async function callDeepSeek(
       }
 
       return {
-        content,
+        // La respuesta llega como documento JSON y los marcadores viven
+        // dentro de sus cadenas: hay que reinsertar escapando, o un nombre
+        // con comillas rompe el JSON y tumba el analisis.
+        content: restaurar(content, mapa, { enJson: true }),
         tokensUsed: data.usage?.total_tokens ?? 0,
         model: env.DEEPSEEK_MODEL,
       };

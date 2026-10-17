@@ -19,7 +19,7 @@ export const HOME_FAQ: FaqItem[] = [
   {
     question: '¿Mis documentos están seguros?',
     answer:
-      'Los archivos se almacenan en Firebase Storage con reglas por usuario. Solo tú puedes acceder a tus contratos. No usamos tus documentos para entrenar modelos de terceros.',
+      'Tus archivos se guardan cifrados, con reglas de acceso verificadas en el servidor: ningún otro usuario puede leerlos. Para analizarlos, el texto del documento se envía a un proveedor internacional de inteligencia artificial, sin tu nombre ni tus datos de pago; lo explicamos en detalle en la Política de Privacidad. No vendemos tus contratos ni los usamos para entrenar modelos.',
   },
   {
     question: '¿Qué formatos acepta?',
