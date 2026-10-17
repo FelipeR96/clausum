@@ -39,20 +39,26 @@ const valor = (nombre, pordefecto) =>
 const projectId = valor('project', process.env.GCLOUD_PROJECT ?? 'clausum-dev');
 const email = valor('email', 'felipereinaleso96@gmail.com');
 
-/** Campos de facturacion que se van a borrar del documento del usuario. */
-const CAMPOS = [
-  'subscriptionId',
-  'subscriptionStatus',
-  'currentPeriodEnd',
-  'billingProvider',
-  'billingInterval',
-  'subscriptionAmountInCents',
-  'cancelAtPeriodEnd',
-  'canceledAt',
-  'wompiPaymentSourceId',
-  'wompiBillingInterval',
-  'wompiLastRenewalAttemptAt',
-];
+/**
+ * Campos de facturacion que se borran del documento del usuario.
+ *
+ * Se leen del paquete compartido a proposito: el panel de administracion
+ * borra la misma lista al retirar un plan, y tener dos copias a mano
+ * garantiza que un dia se separen.
+ */
+const CAMPOS = (() => {
+  const rutaShared = path.join(__dirname, '..', '..', '..', 'shared', 'dist', 'index.js');
+  let compartido;
+  try {
+    compartido = require(rutaShared);
+  } catch {
+    console.error('\nFalta el paquete compartido compilado.');
+    console.error('   Compilalo y repite:');
+    console.error('   pnpm --filter @clausum/shared build\n');
+    process.exit(1);
+  }
+  return [...compartido.BILLING_GATEWAY_FIELDS, ...compartido.BILLING_PERIOD_FIELDS];
+})();
 
 function buscarClave() {
   if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {

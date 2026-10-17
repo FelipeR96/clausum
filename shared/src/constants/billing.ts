@@ -46,6 +46,41 @@ export function getProAmountInCents(interval: BillingInterval): number {
   return getProAmountForRegion('CO', interval);
 }
 
+/**
+ * Campos del documento de usuario que lo atan a una pasarela de pago.
+ *
+ * Estan aqui, en un solo sitio, porque hay mas de un lugar que tiene que
+ * borrarlos a la vez, y dos listas escritas a mano se separan el dia que se
+ * añada un campo nuevo.
+ *
+ * Y no es solo higiene. El cobro automatico de Wompi busca a quien renovar
+ * por `billingProvider` y `wompiPaymentSourceId`. Si estos campos
+ * sobreviven a un retiro de plan, una concesion manual de Pro posterior
+ * vuelve a cumplir todas las condiciones del programador de renovaciones, y
+ * a esa persona le cobran la tarjeta sin haberse vuelto a suscribir.
+ */
+export const BILLING_GATEWAY_FIELDS = [
+  'subscriptionId',
+  'billingProvider',
+  'billingInterval',
+  'subscriptionAmountInCents',
+  'wompiPaymentSourceId',
+  'wompiBillingInterval',
+  'wompiLastRenewalAttemptAt',
+] as const;
+
+/**
+ * Estado del periodo vigente. Se borran al limpiar un usuario de pruebas,
+ * pero NO al retirar un plan: ahi `subscriptionStatus` pasa a 'canceled' a
+ * proposito, porque es el registro de que hubo algo y se retiro.
+ */
+export const BILLING_PERIOD_FIELDS = [
+  'subscriptionStatus',
+  'currentPeriodEnd',
+  'cancelAtPeriodEnd',
+  'canceledAt',
+] as const;
+
 /** URL del Web Checkout de Wompi. */
 export const WOMPI_CHECKOUT_URL = 'https://checkout.wompi.co/p/';
 

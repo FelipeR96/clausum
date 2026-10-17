@@ -1,5 +1,5 @@
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
-import { COLLECTIONS, type PlanSlug } from '@clausum/shared';
+import { BILLING_GATEWAY_FIELDS, COLLECTIONS, type PlanSlug } from '@clausum/shared';
 import { adminAuth, adminDb } from '../firebase/admin';
 import { AppError } from '../utils/errors';
 import { logger } from '../utils/logger';
@@ -163,6 +163,16 @@ export async function setUserPlanAsAdmin(
       days,
     });
   } else {
+    // Se desata tambien de la pasarela. Dejar `billingProvider` y
+    // `wompiPaymentSourceId` colgando no era solo desorden en la tabla de
+    // admin: bastaba con volver a conceder Pro a mano para que el
+    // programador de renovaciones tomara a esa persona por cliente de pago
+    // y le cobrara la tarjeta guardada. Ver BILLING_GATEWAY_FIELDS.
+    const desligar: Record<string, FieldValue> = {};
+    for (const campo of BILLING_GATEWAY_FIELDS) {
+      desligar[campo] = FieldValue.delete();
+    }
+
     await ref.update({
       planId: 'free',
       subscriptionStatus: 'canceled',
@@ -170,6 +180,7 @@ export async function setUserPlanAsAdmin(
       currentPeriodEnd: FieldValue.delete(),
       planGrantedBy: FieldValue.delete(),
       planGrantedAt: FieldValue.delete(),
+      ...desligar,
       updatedAt: FieldValue.serverTimestamp(),
     });
 
