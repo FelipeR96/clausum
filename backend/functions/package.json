@@ -21,6 +21,8 @@
     "sim:wompi": "node scripts/wompi-webhook-sim.cjs",
     "typecheck": "tsc --noEmit",
     "set-admin": "node scripts/set-admin.cjs",
+    "limpiar:suscripcion": "node scripts/limpiar-suscripcion-sandbox.cjs",
+    "verificar:paypal": "node scripts/verificar-paypal.cjs",
     "seed:emulator": "node scripts/seed-firestore.cjs --emulator",
     "seed:legal-catalog:emulator": "node scripts/seed-legal-catalog.cjs --emulator",
     "import:co-corpus:emulator": "node scripts/import-co-corpus.cjs --emulator",
