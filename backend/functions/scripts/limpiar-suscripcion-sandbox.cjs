@@ -22,6 +22,10 @@
  *   node scripts/limpiar-suscripcion-sandbox.cjs --aplicar  # escribe
  *   node scripts/limpiar-suscripcion-sandbox.cjs --email=otro@dominio.com
  *
+ *   --forzar                    permite limpiar a un usuario con suscripcion
+ *                               activa y vigente. No se usa salvo que sepas
+ *                               exactamente por que.
+ *
  *   --borrar-pagos-pendientes   borra tambien los payments en pending de ese
  *                               usuario (nunca los succeeded). Requiere --aplicar.
  *   --project=<id>   por defecto clausum-dev
@@ -33,6 +37,7 @@ const path = require('node:path');
 const args = process.argv.slice(2);
 const aplicar = args.includes('--aplicar');
 const borrarPendientes = args.includes('--borrar-pagos-pendientes');
+const forzar = args.includes('--forzar');
 const valor = (nombre, pordefecto) =>
   args.find((a) => a.startsWith(`--${nombre}=`))?.split('=').slice(1).join('=') ?? pordefecto;
 
@@ -94,6 +99,16 @@ const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 initializeApp({ credential: applicationDefault(), projectId });
 const db = getFirestore();
 
+/** Un campo de fecha de Firestore puede llegar de cuatro formas distintas. */
+function fechaDe(valor) {
+  if (!valor) return null;
+  if (typeof valor.toDate === 'function') return valor.toDate();
+  if (valor instanceof Date) return valor;
+  if (typeof valor === 'string') return new Date(valor);
+  if (typeof valor.seconds === 'number') return new Date(valor.seconds * 1000);
+  return null;
+}
+
 /** Convierte Timestamps a texto legible para poder imprimir y respaldar. */
 function plano(valor) {
   if (valor === null || valor === undefined) return valor;
@@ -126,6 +141,36 @@ async function main() {
   const datos = doc.data();
   console.log(`uid: ${doc.id}`);
   console.log(`planId actual: ${datos.planId ?? '(sin plan)'}\n`);
+
+  // Una suscripcion viva no se limpia desde aqui. Este script existe para
+  // borrar restos de pruebas; borrarle los campos a quien paga le retira el
+  // plan sin avisar a la pasarela, que seguiria cobrandole igual.
+  const fin = fechaDe(datos.currentPeriodEnd);
+  const periodoVigente = fin !== null && fin.getTime() > Date.now();
+
+  // Ojo con el criterio: NO basta con mirar si subscriptionStatus es
+  // 'active'. Quien cancela la renovacion queda en 'canceled' con
+  // cancelAtPeriodEnd y conserva Pro hasta que vence el periodo; asi lo
+  // resuelve resolveEffectivePlanId. Mirar solo el estado dejaria
+  // desprotegido justo a ese usuario, que es el caso mas comun de todos:
+  // alguien que pago, no quiere renovar, y todavia tiene lo que compro.
+  // Por eso manda la fecha.
+  const suscripcionViva = (datos.planId ?? 'free') === 'pro' && periodoVigente;
+
+  if (suscripcionViva) {
+    const dia = fin.toISOString().slice(0, 10);
+    const via = datos.billingProvider ?? 'sin proveedor';
+    if (aplicar && !forzar) {
+      console.error(`PRO VIGENTE (${via}, ${datos.subscriptionStatus ?? 'sin estado'}, hasta ${dia}).`);
+      console.error('   No se toco nada.');
+      console.error('   Borrar estos campos le quita el plan a quien paga sin avisar');
+      console.error('   a la pasarela, que seguiria cobrandole. Para cancelar de');
+      console.error('   verdad, usa el panel de la aplicacion.');
+      console.error('   Si aun asi sabes lo que haces: --forzar\n');
+      process.exit(1);
+    }
+    console.log(`AVISO: Pro vigente (${via}, ${datos.subscriptionStatus ?? 'sin estado'}, hasta ${dia}).\n`);
+  }
 
   const presentes = CAMPOS.filter((c) => datos[c] !== undefined);
   if (presentes.length === 0 && (datos.planId ?? 'free') === 'free') {
