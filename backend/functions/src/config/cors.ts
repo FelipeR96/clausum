@@ -76,5 +76,9 @@ export function getCorsOptions(): CorsOptions {
       );
     },
     credentials: true,
+    // El informe viaja con su nombre en Content-Disposition. Sin exponerla,
+    // la politica de CORS se la oculta al JavaScript y el archivo acabaria
+    // descargandose con un nombre generico.
+    exposedHeaders: ['Content-Disposition'],
   };
 }

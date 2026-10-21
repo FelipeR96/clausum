@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SETTINGS_BILLING_PATH } from '@/constants/app-paths';
-import { exportContractPdf, resolveExportDownloadUrl } from '@/services/export.service';
+import { descargarInforme, exportContractPdf } from '@/services/export.service';
+import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
 
 type ExportPdfButtonProps = {
   contractId: string;
@@ -27,11 +28,20 @@ export function ExportPdfButton({
     setExporting(true);
     setExportError(null);
     try {
-      const result = await exportContractPdf(contractId);
-      const downloadUrl = await resolveExportDownloadUrl(result);
-      window.open(downloadUrl, '_blank', 'noopener,noreferrer');
-    } catch {
-      setExportError('No pudimos generar el PDF. Intenta de nuevo en unos segundos.');
+      descargarInforme(await exportContractPdf(contractId));
+    } catch (error) {
+      // El servidor ya dice por que fallo: que el contrato no tiene analisis,
+      // que el analisis sigue corriendo, que falta el plan. Tragarse ese
+      // mensaje y responder "intenta de nuevo en unos segundos" manda a la
+      // persona a repetir algo que no va a funcionar nunca, y a nosotros nos
+      // deja sin diagnostico. El generico queda solo como ultimo recurso.
+      setExportError(
+        getUserFacingErrorMessage(error, {
+          action: 'generar el PDF',
+          resource: 'informe',
+          fallback: 'No pudimos generar el PDF. Intenta de nuevo en unos segundos.',
+        })
+      );
     } finally {
       setExporting(false);
     }

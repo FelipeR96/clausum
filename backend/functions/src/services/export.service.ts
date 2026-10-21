@@ -3,11 +3,8 @@ import { COLLECTIONS, ENTITLEMENT_ACTIONS } from '@clausum/shared';
 import { assertEntitlement } from './subscription.service';
 import { getOwnedContract } from './contract.service';
 import { adminDb, adminStorage } from '../firebase/admin';
-import { isEmulator } from '../config/env';
 import { AppError } from '../utils/errors';
 import { logger } from '../utils/logger';
-
-const SIGNED_URL_TTL_MS = 60 * 60 * 1000;
 
 function sanitizeFileName(name: string): string {
   return name
@@ -129,15 +126,27 @@ async function renderAnalysisPdf(
   });
 }
 
+/**
+ * Genera el informe y devuelve sus bytes.
+ *
+ * Antes devolvia una URL firmada de Storage, y eso tenia dos problemas.
+ * Firmar exige que la cuenta de servicio de las funciones pueda llamar a
+ * signBlob, permiso que por defecto no tiene: el informe fallaba entero por
+ * eso. Y la URL resultante la abre cualquiera que la tenga, sin iniciar
+ * sesion, durante una hora — en un PDF con nombres, documentos y direcciones.
+ *
+ * Ahora el archivo vuelve por la misma conexion autenticada que lo pidio. Se
+ * sigue guardando en Storage como registro, pero ya nada depende de que
+ * exista una URL publica.
+ */
 export async function exportContractPdf(
   userId: string,
   contractId: string
 ): Promise<{
   exportId: string;
-  status: 'ready';
-  downloadUrl?: string;
   storagePath: string;
-  expiresAt?: string;
+  fileName: string;
+  pdf: Buffer;
 }> {
   await assertEntitlement(userId, ENTITLEMENT_ACTIONS.EXPORT_PDF);
 
@@ -189,29 +198,10 @@ export async function exportContractPdf(
     },
   });
 
-  let downloadUrl: string | undefined;
-  let expiresAtIso: string | undefined;
-
-  if (!isEmulator()) {
-    const expiresAt = new Date(Date.now() + SIGNED_URL_TTL_MS);
-    const [signed] = await file.getSignedUrl({
-      action: 'read',
-      expires: expiresAt,
-    });
-    downloadUrl = signed;
-    expiresAtIso = expiresAt.toISOString();
-  }
-
   logger.info('api', 'Export PDF generado', {
     userId,
     metadata: { contractId, exportId, storagePath },
   });
 
-  return {
-    exportId,
-    status: 'ready',
-    downloadUrl,
-    storagePath,
-    expiresAt: expiresAtIso,
-  };
+  return { exportId, storagePath, fileName, pdf: pdfBuffer };
 }

@@ -58,8 +58,13 @@ subscriptionRouter.post(
     const { contractId } = (req as AuthenticatedRequest & {
       validatedBody: { contractId: string };
     }).validatedBody;
-    const result = await exportContractPdf(uid, contractId);
-    res.status(200).json(result);
+    const { fileName, pdf } = await exportContractPdf(uid, contractId);
+    // El PDF vuelve por esta misma conexion, ya autenticada. Quien no tenga
+    // sesion no puede leerlo, y no queda ningun enlace publico detras.
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.setHeader('Content-Length', String(pdf.length));
+    res.status(200).send(pdf);
   })
 );
 
