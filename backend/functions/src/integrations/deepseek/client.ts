@@ -17,7 +17,7 @@ export interface DeepSeekResult {
 }
 
 interface DeepSeekApiResponse {
-  choices?: Array<{ message?: { content?: string } }>;
+  choices?: Array<{ message?: { content?: string }; finish_reason?: string }>;
   usage?: { total_tokens?: number };
   error?: { message?: string };
 }
@@ -94,6 +94,17 @@ export async function callDeepSeek(
       const content = data.choices?.[0]?.message?.content;
       if (!content) {
         throw new AppError('Respuesta vacía de DeepSeek', 502, 'DEEPSEEK_EMPTY');
+      }
+
+      // Si el modelo agota su presupuesto de salida, el JSON llega cortado
+      // a la mitad y el fallo aparece despues, al parsear, con una cara que
+      // no es la suya. Decirlo aqui ahorra la investigacion entera.
+      if (data.choices?.[0]?.finish_reason === 'length') {
+        throw new AppError(
+          'DeepSeek corto la respuesta por longitud',
+          502,
+          'DEEPSEEK_TRUNCATED'
+        );
       }
 
       return {

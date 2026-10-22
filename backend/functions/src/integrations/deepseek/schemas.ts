@@ -104,7 +104,17 @@ export function parseJsonResponse<T>(
   try {
     parsed = JSON.parse(raw);
   } catch {
-    throw new Error('DeepSeek no devolvió JSON válido');
+    // Sin una pista, este error no distingue "el modelo se corto" de "algo
+    // corrompio el texto al reinsertar los datos personales". Se informa la
+    // FORMA, nunca el contenido: la respuesta ya lleva nombres y cedulas
+    // restaurados y no puede acabar en los registros.
+    const abiertas = (raw.match(/\{/g) ?? []).length;
+    const cerradas = (raw.match(/\}/g) ?? []).length;
+    throw new Error(
+      `DeepSeek no devolvió JSON válido (${raw.length} caracteres, ` +
+        `llaves ${abiertas} abiertas / ${cerradas} cerradas` +
+        `${abiertas !== cerradas ? ', parece cortado a la mitad' : ''})`
+    );
   }
   const result = schema.safeParse(parsed);
   if (!result.success) {

@@ -232,9 +232,17 @@ export function restaurar(
 
     // Con corchetes primero; despues el token suelto, por si el modelo los
     // quito al reescribir la frase.
+    //
+    // El reemplazo va como FUNCION, no como cadena, y no es estilo.
+    // String.replace interpreta $&, $$ y los que llevan comilla dentro
+    // del TEXTO de reemplazo. Una razon social con uno de esos pegaba el
+    // resto del documento en mitad del JSON, y el analisis moria con
+    // "DeepSeek no devolvio JSON valido", culpando al modelo de algo que
+    // pasaba aqui. JSON.stringify no protege: el $ es legitimo en JSON.
+    // Pasar una funcion desactiva esa interpretacion por completo.
     salida = salida
-      .replace(new RegExp(escaparRegExp(marcador), 'g'), reemplazo)
-      .replace(new RegExp(`\\b${escaparRegExp(desnudo)}\\b`, 'g'), reemplazo);
+      .replace(new RegExp(escaparRegExp(marcador), 'g'), () => reemplazo)
+      .replace(new RegExp(`\\b${escaparRegExp(desnudo)}\\b`, 'g'), () => reemplazo);
   }
 
   return salida;

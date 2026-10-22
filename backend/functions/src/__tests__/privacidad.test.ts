@@ -134,4 +134,29 @@ describe('restauración dentro de la respuesta JSON', () => {
       'El riesgo recae sobre Ana María Ruiz.'
     );
   });
+
+  // Este caso costo un analisis roto en produccion. String.replace trata
+  // $&, $$ y los que llevan comilla como instrucciones dentro del TEXTO de
+  // reemplazo, no como caracteres: una razon social con uno de ellos pegaba
+  // trozos del documento en mitad del JSON y el analisis moria culpando al
+  // modelo. JSON.stringify no avisa, porque el $ es legitimo en JSON; el
+  // problema estaba en el reemplazo, no en el escapado.
+  it('no deja que un $ en el valor corrompa el JSON', () => {
+    const razonesSociales = [
+      "Inmobiliaria $' S.A.",
+      'Grupo $` Ltda',
+      'Inversiones $& Cía',
+      'Constructora $$ S.A.',
+      'Unión $1 Temporal',
+    ];
+
+    for (const razon of razonesSociales) {
+      const mapa = new Map([['[PERSONA_1]', razon]]);
+      const respuesta = JSON.stringify({ resumen: 'Firma [PERSONA_1] ante notario.' });
+      const restaurada = restaurar(respuesta, mapa, { enJson: true });
+
+      expect(() => JSON.parse(restaurada)).not.toThrow();
+      expect(JSON.parse(restaurada).resumen).toBe('Firma ' + razon + ' ante notario.');
+    }
+  });
 });
