@@ -64,7 +64,9 @@
         ".git",
         "firebase-debug.log",
         "firebase-debug.*.log",
-        "*.local"
+        "*.local",
+        "informe-muestra.pdf",
+        "lib/*.preview.cjs"
       ]
     }
   ],

@@ -43,6 +43,9 @@ Thumbs.db
 npm-debug.log*
 pnpm-debug.log*
 
+# Muestra del informe PDF (la genera scripts/previsualizar-informe.cjs)
+informe-muestra.pdf
+
 # Test
 coverage/
 

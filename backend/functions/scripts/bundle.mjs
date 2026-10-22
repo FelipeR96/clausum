@@ -18,7 +18,7 @@
  * nativos que no se pueden empaquetar.
  */
 import { build } from 'esbuild';
-import { readFileSync } from 'fs';
+import { readFileSync, rmSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'node:module';
@@ -56,6 +56,18 @@ function resolveCanvasVersion() {
 }
 
 const canvasVersion = resolveCanvasVersion();
+
+// lib/ se borra entera antes de construir.
+//
+// Este script solo escribe lib/index.js, pero nunca limpiaba lo que hubiera
+// antes. Un `tsc` de hace meses habia dejado ahi un arbol compilado
+// completo —config/, routes/, services/ y hasta __tests__— y Firebase sube
+// la carpeta backend/functions ENTERA a Cloud Build. Es decir: los tests
+// compilados, que piden vitest, viajaban a produccion en cada despliegue.
+//
+// Construir sobre restos tambien es como un archivo borrado del codigo
+// sigue vivo en el contenedor durante meses.
+rmSync(join(root, 'lib'), { recursive: true, force: true });
 
 // Externo: todo lo que Cloud Build va a instalar. Varios traen binarios
 // nativos y no se pueden empaquetar.
