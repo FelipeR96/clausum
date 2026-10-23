@@ -70,10 +70,15 @@ function mapClause(
   return {
     id: `cl-${index}`,
     severity: mapImportanceToSeverity(clause.importance),
+    assessment: clause.assessment,
     section: clause.page ? `Pág. ${clause.page}` : 'Cláusula',
     title: clause.title,
     excerpt: clause.excerpt ?? clause.content.slice(0, 280),
-    suggestion: clause.importance !== 'low' ? clause.content : undefined,
+    // Antes esto se llamaba "suggestion" y era otra vez clause.content, es
+    // decir la misma descripcion repetida bajo otro nombre. Y ningun
+    // componente lo pintaba. Ahora son dos datos distintos y los dos se ven.
+    explanation: clause.content,
+    meaning: clause.meaning,
     lawRef,
   };
 }
@@ -135,6 +140,7 @@ export function mapAnalysisToResultView(
     country: COUNTRY_LABELS[countryCode] ?? countryCode,
     countryCode,
     summary: analysis.summary ?? 'Sin resumen disponible.',
+    favorability: analysis.favorability,
     riskScore: Math.round(attentionScore),
     totalClauses: clauses.length,
     revisionsSuggested: high + medium,

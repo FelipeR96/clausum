@@ -14,6 +14,12 @@ function mapContractTypeLabel(contract: Contract): string {
   return fromCatalog?.name ?? typeId.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/**
+ * Las "clausulas ausentes" se adivinan buscando palabras en la descripcion de
+ * los riesgos. No es un analisis de lo que falta: es una heuristica sobre
+ * texto libre. Mientras el modelo no devuelva un campo propio para esto, al
+ * menos que lo que se muestre sea del riesgo y no el relleno generico.
+ */
 function inferMissingClauses(risks: RiskVectorItem[]): MissingClauseItem[] {
   return risks
     .filter((risk) => /ausente|falta|no se encontró|no establece/i.test(risk.description))
@@ -21,7 +27,7 @@ function inferMissingClauses(risks: RiskVectorItem[]): MissingClauseItem[] {
     .map((risk, index) => ({
       id: `mc-${index}`,
       title: risk.title,
-      description: risk.recommendation || risk.description,
+      description: risk.impact ?? risk.description,
     }));
 }
 
@@ -41,7 +47,12 @@ export function mapRisksToAlertsView(
       section: risk.clauseRef ?? 'Cláusula',
       title: risk.title,
       description: risk.description,
-      recommendation: risk.recommendation ?? 'Revisar con asesoría legal antes de firmar.',
+      excerpt: risk.excerpt,
+      impact: risk.impact,
+      // Sin relleno: si el modelo no dio recomendacion, la tarjeta no pinta
+      // la caja del playbook en vez de inventar una frase de cajon.
+      recommendation: risk.recommendation,
+      suggestedWording: risk.suggestedWording,
       lawRef,
     };
   });

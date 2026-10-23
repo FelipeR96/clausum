@@ -167,6 +167,7 @@ export async function executeAnalyzeContract(
         parties: parsed.parties ?? [],
         metadata: parsed.metadata ?? {},
         score: parsed.score,
+        favorability: parsed.favorability,
         clauses: parsed.clauses,
         country: legalContext.country,
         ...(legalContext.contractTypeId
@@ -246,6 +247,7 @@ export async function executeAnalyzeContract(
       parties: parsed.parties ?? [],
       metadata: parsed.metadata ?? {},
       score: parsed.score,
+      favorability: parsed.favorability,
       clauses: parsed.clauses,
       country: legalContext.country,
       ...(legalContext.contractTypeId

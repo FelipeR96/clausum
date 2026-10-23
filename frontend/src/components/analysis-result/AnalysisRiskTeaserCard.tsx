@@ -23,6 +23,27 @@ const TEASER_STYLES = {
   },
 } as const;
 
+const VEREDICTO_STYLES = {
+  estandar: {
+    border: 'border-emerald-300',
+    badge: 'bg-emerald-100 text-emerald-800',
+    label: 'Habitual',
+    icon: 'check_circle',
+  },
+  desfavorable: {
+    border: 'border-amber-300',
+    badge: 'bg-amber-100 text-amber-800',
+    label: 'En tu contra',
+    icon: 'warning',
+  },
+  abusiva: {
+    border: 'border-red-300',
+    badge: 'bg-red-100 text-red-800',
+    label: 'Posiblemente abusiva',
+    icon: 'gpp_maybe',
+  },
+} as const;
+
 type AnalysisRiskTeaserCardProps = {
   clause: AnalysisClauseItem;
   contractId: string;
@@ -34,7 +55,12 @@ export function AnalysisRiskTeaserCard({
   contractId,
   locked,
 }: AnalysisRiskTeaserCardProps) {
-  const style = TEASER_STYLES[clause.severity];
+  // El rotulo usa el veredicto cuando existe. Antes decia "Riesgo crítico"
+  // por el solo hecho de ser una clausula importante: una clausula de precio
+  // perfectamente normal salia marcada en rojo.
+  const style = clause.assessment
+    ? VEREDICTO_STYLES[clause.assessment]
+    : TEASER_STYLES[clause.severity];
   const riskPath = contractRiskProfilePath(contractId);
   const ctaPath = locked ? '/pricing' : riskPath;
 
@@ -63,8 +89,24 @@ export function AnalysisRiskTeaserCard({
           </span>
         </div>
 
+        {clause.explanation && (
+          <p className="mt-3 text-sm leading-relaxed text-on-surface">{clause.explanation}</p>
+        )}
+
+        {/* "meaning" sale del analisis general, que tambien tiene el plan
+            gratuito: no se difumina. Lo reservado a Pro es el perfil de
+            riesgo (exposicion, recomendacion, redaccion sugerida). */}
+        {clause.meaning && (
+          <div className="mt-4 border-l-2 border-primary/40 pl-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-primary">
+              Qué implica para ti
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-on-surface">{clause.meaning}</p>
+          </div>
+        )}
+
         <p
-          className={`mt-3 text-sm leading-relaxed text-on-surface-variant ${
+          className={`mt-4 text-sm italic leading-relaxed text-on-surface-variant ${
             locked ? 'select-none blur-[3px]' : ''
           }`}
         >

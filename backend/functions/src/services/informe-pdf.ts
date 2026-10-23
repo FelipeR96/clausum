@@ -29,6 +29,45 @@ const SEVERIDAD = {
   low: { etiqueta: 'RIESGO BAJO', fuerte: '#059669', suave: '#ECFDF5', texto: '#047857' },
 } as const;
 
+/**
+ * Veredicto global. Es la cifra de portada real del informe: la queja de la
+ * primera usuaria fue que el numero grande era "indice de claridad", que
+ * contesta otra pregunta que la que ella traia ("esto esta bien o mal").
+ */
+const VEREDICTO = {
+  favorable: {
+    etiqueta: 'FAVORABLE PARA TI',
+    fuerte: '#059669',
+    suave: '#ECFDF5',
+    texto: '#047857',
+  },
+  equilibrado: {
+    etiqueta: 'EQUILIBRADO',
+    fuerte: '#006A60',
+    suave: '#F4FBFA',
+    texto: '#00504A',
+  },
+  desfavorable: {
+    etiqueta: 'DESFAVORABLE PARA TI',
+    fuerte: '#D97706',
+    suave: '#FFFBEB',
+    texto: '#B45309',
+  },
+  muy_desfavorable: {
+    etiqueta: 'MUY DESFAVORABLE PARA TI',
+    fuerte: '#DC2626',
+    suave: '#FEF2F2',
+    texto: '#B91C1C',
+  },
+} as const;
+
+/** Veredicto por clausula: normal, inclinada en contra, o abusiva. */
+const EVALUACION = {
+  estandar: { etiqueta: 'HABITUAL', suave: '#ECFDF5', texto: '#047857' },
+  desfavorable: { etiqueta: 'EN TU CONTRA', suave: '#FFFBEB', texto: '#B45309' },
+  abusiva: { etiqueta: 'POSIBLEMENTE ABUSIVA', suave: '#FEF2F2', texto: '#B91C1C' },
+} as const;
+
 const IMPORTANCIA = {
   high: { etiqueta: 'CLAVE', suave: '#FEF2F2', texto: '#B91C1C' },
   medium: { etiqueta: 'RELEVANTE', suave: '#FFFBEB', texto: '#B45309' },
@@ -43,7 +82,9 @@ type Riesgo = {
   title: string;
   description: string;
   excerpt?: string;
+  impact?: string;
   recommendation?: string;
+  suggestedWording?: string;
 };
 
 export type RiesgosDelInforme = {
@@ -140,10 +181,49 @@ function portada(
   });
   if (campos.length) y += 44;
 
+  // ── Banda de veredicto ───────────────────────────────────────────────
+  // Va antes de las tarjetas y a todo el ancho porque es la respuesta a la
+  // pregunta con la que la gente abre el informe. Si el analisis es viejo y
+  // no trae veredicto, la banda no se pinta y la portada queda como antes.
+  const fav = analysis.favorability;
+  let yBanda = Math.max(y, 370);
+  if (fav && (fav.rationale || fav.forWhom)) {
+    const v = VEREDICTO[fav.verdict] ?? VEREDICTO.equilibrado;
+    const wBanda = ancho(doc);
+
+    doc.font('Helvetica').fontSize(9).fillColor(MARCA.muted);
+    const hRazon = fav.rationale
+      ? doc.heightOfString(fav.rationale, { width: wBanda - 36 })
+      : 0;
+    const altoBanda = 62 + (fav.forWhom ? 14 : 0) + (hRazon ? hRazon + 8 : 0);
+
+    doc.roundedRect(MARGEN, yBanda, wBanda, altoBanda, 10).fill(v.suave);
+    doc.rect(MARGEN + 1, yBanda + 12, 4, altoBanda - 24).fill(v.fuerte);
+
+    etiquetaCampo(doc, 'Veredicto', MARGEN + 20, yBanda + 16);
+    doc.font('Helvetica-Bold').fontSize(17).fillColor(v.texto);
+    doc.text(v.etiqueta, MARGEN + 20, yBanda + 30, { lineBreak: false });
+
+    let yb = yBanda + 56;
+    if (fav.forWhom) {
+      doc.font('Helvetica').fontSize(9).fillColor(MARCA.muted);
+      doc.text('Beneficia a: ', MARGEN + 20, yb, { lineBreak: false });
+      const wPrefijo = doc.widthOfString('Beneficia a: ');
+      doc.font('Helvetica-Bold').fillColor(MARCA.onSurface);
+      doc.text(fav.forWhom, MARGEN + 20 + wPrefijo, yb, { lineBreak: false });
+      yb += 16;
+    }
+    if (fav.rationale) {
+      doc.font('Helvetica').fontSize(9).fillColor(MARCA.muted);
+      doc.text(fav.rationale, MARGEN + 20, yb, { width: wBanda - 36, lineGap: 1 });
+    }
+    yBanda += altoBanda + 14;
+  }
+
   // ── Dos tarjetas de cabecera ─────────────────────────────────────────
   const anchoCard = (ancho(doc) - 16) / 2;
   const altoCard = 96;
-  const yCard = Math.max(y, 400);
+  const yCard = yBanda;
 
   doc.roundedRect(MARGEN, yCard, anchoCard, altoCard, 10).fill(MARCA.container);
   etiquetaCampo(doc, 'Claridad del contrato', MARGEN + 18, yCard + 18);
@@ -154,6 +234,8 @@ function portada(
   doc.text('/100', MARGEN + 20 + anchoNumero, yCard + 56, { lineBreak: false });
   doc.font('Helvetica').fontSize(7.5).fillColor(MARCA.faint);
   doc.text('Qué tan claro está redactado', MARGEN + 18, yCard + 76, { lineBreak: false });
+  // Nota: la claridad NO dice si el contrato conviene. Eso lo dice la banda
+  // de veredicto de arriba. Son dos preguntas distintas y se responden aparte.
 
   const xCard2 = MARGEN + anchoCard + 16;
   const lista = riesgos?.risks ?? [];
@@ -193,19 +275,6 @@ function portada(
     { width: ancho(doc) - 32 }
   );
 
-  // El resumen va aqui y no en pagina aparte: dejaba un tercio de portada en
-  // blanco, y asi quien abre el informe empieza leyendo en vez de mirando.
-  if (analysis.summary) {
-    doc.x = MARGEN;
-    doc.y = yAviso + 74;
-    tituloSeccion(doc, 'Resumen ejecutivo');
-    doc.font('Helvetica').fontSize(10.5).fillColor(MARCA.muted);
-    doc.text(analysis.summary, MARGEN, doc.y, {
-      width: ancho(doc),
-      align: 'justify',
-      lineGap: 2,
-    });
-  }
 }
 
 function tarjetaRiesgo(doc: Doc, riesgo: Riesgo): void {
@@ -223,13 +292,25 @@ function tarjetaRiesgo(doc: Doc, riesgo: Riesgo): void {
     doc.font('Helvetica-Oblique').fontSize(9);
     hCita = doc.heightOfString(`«${riesgo.excerpt}»`, { width: wTexto - 14 }) + 16;
   }
+  let hImpacto = 0;
+  if (riesgo.impact) {
+    doc.font('Helvetica').fontSize(9.5);
+    hImpacto = doc.heightOfString(riesgo.impact, { width: wTexto }) + 24;
+  }
   let hReco = 0;
   if (riesgo.recommendation) {
     doc.font('Helvetica').fontSize(9.5);
     hReco = doc.heightOfString(riesgo.recommendation, { width: wTexto }) + 24;
   }
+  let hRedaccion = 0;
+  if (riesgo.suggestedWording) {
+    doc.font('Helvetica-Oblique').fontSize(9);
+    hRedaccion =
+      doc.heightOfString(riesgo.suggestedWording, { width: wTexto - 28 }) + 40;
+  }
 
-  const alto = 20 + 15 + 10 + hTitulo + 7 + hDesc + hCita + hReco + 18;
+  const alto =
+    20 + 15 + 10 + hTitulo + 7 + hDesc + hCita + hImpacto + hReco + hRedaccion + 18;
   reservar(doc, alto + 16);
 
   const y0 = doc.y;
@@ -255,12 +336,35 @@ function tarjetaRiesgo(doc: Doc, riesgo: Riesgo): void {
     y = doc.y;
   }
 
+  if (riesgo.impact) {
+    y += 12;
+    etiquetaCampo(doc, 'Si esto se aplica', MARGEN + 18, y);
+    doc.font('Helvetica').fontSize(9.5).fillColor(MARCA.onSurface);
+    doc.text(riesgo.impact, MARGEN + 18, y + 12, { width: wTexto, align: 'justify' });
+    y = doc.y;
+  }
+
   if (riesgo.recommendation) {
     y += 12;
     etiquetaCampo(doc, 'Qué hacer', MARGEN + 18, y);
     doc.font('Helvetica').fontSize(9.5).fillColor(MARCA.onSurface);
     doc.text(riesgo.recommendation, MARGEN + 18, y + 12, { width: wTexto, align: 'justify' });
     y = doc.y;
+  }
+
+  // La redaccion sugerida va en caja aparte para que se lea como texto que se
+  // copia y se lleva a la mesa, no como mas explicacion.
+  if (riesgo.suggestedWording) {
+    y += 12;
+    etiquetaCampo(doc, 'Redacción sugerida', MARGEN + 18, y);
+    doc.font('Helvetica-Oblique').fontSize(9);
+    const hCaja =
+      doc.heightOfString(riesgo.suggestedWording, { width: wTexto - 28 }) + 20;
+    doc.roundedRect(MARGEN + 18, y + 13, wTexto, hCaja, 6).fill(MARCA.blanco);
+    doc.rect(MARGEN + 19, y + 19, 2.5, hCaja - 12).fill(sev.fuerte);
+    doc.fillColor(MARCA.muted).font('Helvetica-Oblique').fontSize(9);
+    doc.text(riesgo.suggestedWording, MARGEN + 32, y + 23, { width: wTexto - 28 });
+    y = y + 13 + hCaja;
   }
 
   doc.y = y0 + alto + 14;
@@ -277,10 +381,19 @@ function bloqueClausula(doc: Doc, clause: Clausula): void {
   const hTitulo = doc.heightOfString(clause.title, { width: wTexto - 90 });
   doc.font('Helvetica').fontSize(9.5);
   const hCont = doc.heightOfString(clause.content ?? '', { width: wTexto });
-  reservar(doc, hTitulo + hCont + 60);
+  const hSignifica = clause.meaning
+    ? doc.heightOfString(clause.meaning, { width: wTexto - 28 }) + 26
+    : 0;
+  reservar(doc, hTitulo + hCont + hSignifica + 60);
 
   const y0 = doc.y;
-  chip(doc, imp.etiqueta, imp.suave, imp.texto, MARGEN, y0);
+  const wChip = chip(doc, imp.etiqueta, imp.suave, imp.texto, MARGEN, y0);
+  // El veredicto va al lado de la importancia: "CLAVE" dice cuanto pesa la
+  // clausula, "EN TU CONTRA" dice de que lado esta. Hacen falta las dos.
+  const evaluacion = clause.assessment ? EVALUACION[clause.assessment] : undefined;
+  if (evaluacion) {
+    chip(doc, evaluacion.etiqueta, evaluacion.suave, evaluacion.texto, MARGEN + wChip + 6, y0);
+  }
 
   doc.font('Helvetica-Bold').fontSize(11.5).fillColor(MARCA.onSurface);
   doc.text(clause.title, MARGEN, y0 + 22, { width: wTexto });
@@ -291,6 +404,23 @@ function bloqueClausula(doc: Doc, clause: Clausula): void {
   if (clause.excerpt) {
     doc.font('Helvetica-Oblique').fontSize(8.5).fillColor(MARCA.faint);
     doc.text(`«${clause.excerpt}»`, MARGEN + 14, doc.y + 6, { width: wTexto - 14 });
+  }
+
+  // "content" dice que DICE la clausula; esto dice que le pasa a quien firma.
+  if (clause.meaning) {
+    const yImp = doc.y + 10;
+    etiquetaCampo(doc, 'Qué implica para ti', MARGEN, yImp);
+    doc.font('Helvetica').fontSize(9.5).fillColor(MARCA.onSurface);
+    doc.text(clause.meaning, MARGEN + 14, yImp + 13, {
+      width: wTexto - 28,
+      align: 'justify',
+    });
+    doc
+      .moveTo(MARGEN + 2, yImp + 2)
+      .lineTo(MARGEN + 2, doc.y - 2)
+      .lineWidth(2)
+      .strokeColor(MARCA.primarySoft)
+      .stroke();
   }
 
   const yLinea = doc.y + 12;
@@ -336,9 +466,27 @@ export async function renderAnalysisPdf(
 
     portada(doc, contract, analysis, riesgos);
 
+    // El resumen abre la segunda pagina y los riesgos siguen debajo SIN salto
+    // propio. Antes el resumen iba al pie de la portada; con la banda de
+    // veredicto dejo de caber por un pelo, tituloSeccion forzaba pagina nueva
+    // y el resumen acababa solo en una hoja vacia en sus tres cuartas partes.
+    // Encadenarlos deja la portada como portada y la pagina 2 llena.
+    doc.addPage();
+
+    if (analysis.summary) {
+      tituloSeccion(doc, 'Resumen ejecutivo');
+      doc.font('Helvetica').fontSize(10.5).fillColor(MARCA.muted);
+      doc.text(analysis.summary, MARGEN, doc.y, {
+        width: ancho(doc),
+        align: 'justify',
+        lineGap: 2,
+      });
+      doc.y += 22;
+      doc.x = MARGEN;
+    }
+
     const lista = riesgos?.risks ?? [];
     if (lista.length) {
-      doc.addPage();
       const orden = { high: 0, medium: 1, low: 2 } as const;
       const ordenados = [...lista].sort((a, b) => (orden[a.level] ?? 3) - (orden[b.level] ?? 3));
       tituloSeccion(doc, 'Riesgos encontrados');

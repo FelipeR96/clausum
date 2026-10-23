@@ -3,6 +3,28 @@ import { z } from 'zod';
 const importanceSchema = z.enum(['high', 'medium', 'low']);
 const riskLevelSchema = z.enum(['high', 'medium', 'low']);
 
+// Los campos de profundidad van OPCIONALES a proposito. Lo que obliga al
+// modelo a llenarlos es el prompt, no el esquema; el esquema solo decide si
+// un analisis por lo demas bueno se tira a la basura porque falto "meaning"
+// en una clausula de doce. Preferimos guardarlo incompleto que perderlo.
+//
+// Los enums llevan .catch() por lo mismo: un valor que el modelo se invente
+// degrada a neutro en vez de reventar el analisis completo.
+//
+// Y los null NO se tratan campo por campo: se quitan del JSON entero antes
+// de validar, en parseJsonResponse. Ver el comentario de quitarNulos.
+const clauseAssessmentSchema = z
+  .enum(['estandar', 'desfavorable', 'abusiva'])
+  .catch('estandar');
+
+const favorabilitySchema = z.object({
+  verdict: z
+    .enum(['favorable', 'equilibrado', 'desfavorable', 'muy_desfavorable'])
+    .catch('equilibrado'),
+  forWhom: z.string().optional(),
+  rationale: z.string().optional(),
+});
+
 export const lawReferenceSchema = z.object({
   lawId: z.string(),
   article: z.string(),
@@ -23,6 +45,7 @@ export const analyzeResponseSchema = z.object({
     })
     .optional(),
   score: z.number().min(0).max(100),
+  favorability: favorabilitySchema.optional(),
   clauses: z.array(
     z.object({
       title: z.string(),
@@ -30,6 +53,8 @@ export const analyzeResponseSchema = z.object({
       importance: importanceSchema,
       page: z.number().optional(),
       excerpt: z.string().optional(),
+      meaning: z.string().optional(),
+      assessment: clauseAssessmentSchema.optional(),
       lawReferences: z.array(lawReferenceSchema).optional(),
     })
   ),
@@ -46,7 +71,9 @@ export const risksResponseSchema = z.object({
       description: z.string(),
       excerpt: z.string(),
       clauseRef: z.string().optional(),
+      impact: z.string().optional(),
       recommendation: z.string().optional(),
+      suggestedWording: z.string().optional(),
       lawReferences: z.array(lawReferenceSchema).optional(),
     })
   ),
@@ -96,6 +123,37 @@ export type RisksResponse = z.infer<typeof risksResponseSchema>;
 export type ProAnalyzeResponse = z.infer<typeof proAnalyzeResponseSchema>;
 export type CompareResponse = z.infer<typeof compareResponseSchema>;
 
+/**
+ * Quita los null del JSON del modelo, tratandolos como "campo ausente".
+ *
+ * Los modelos devuelven null cuando quieren decir "no aplica", y null no pasa
+ * por .optional(): un null en un campo accesorio tumbaba el analisis entero.
+ * Esto se resuelve en un solo sitio y no campo por campo, por dos razones:
+ * los .optional() quedan planos (sin transforms cuya inferencia de tipo haya
+ * que pelear), y la proteccion cubre TODOS los campos del esquema, incluidos
+ * los que ya existian (clauseRef, page, relevance, los de metadata) y los que
+ * se agreguen despues sin acordarse de este problema.
+ *
+ * Ninguno de los esquemas usa .nullable(), asi que no hay campo para el que
+ * null sea un valor legitimo que esto estropee.
+ */
+function quitarNulos(valor: unknown): unknown {
+  if (Array.isArray(valor)) {
+    // Un null suelto dentro de un arreglo tampoco pasa el esquema del
+    // elemento, asi que se descarta en vez de dejarlo romper el arreglo.
+    return valor.filter((v) => v !== null).map(quitarNulos);
+  }
+  if (valor !== null && typeof valor === 'object') {
+    const limpio: Record<string, unknown> = {};
+    for (const [clave, v] of Object.entries(valor as Record<string, unknown>)) {
+      if (v === null) continue;
+      limpio[clave] = quitarNulos(v);
+    }
+    return limpio;
+  }
+  return valor;
+}
+
 export function parseJsonResponse<T>(
   raw: string,
   schema: z.ZodSchema<T>
@@ -116,7 +174,7 @@ export function parseJsonResponse<T>(
         `${abiertas !== cerradas ? ', parece cortado a la mitad' : ''})`
     );
   }
-  const result = schema.safeParse(parsed);
+  const result = schema.safeParse(quitarNulos(parsed));
   if (!result.success) {
     throw new Error(
       `JSON de DeepSeek inválido: ${result.error.errors.map((e) => e.path.join('.')).join(', ')}`

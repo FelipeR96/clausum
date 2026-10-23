@@ -36,6 +36,20 @@ export type RiskLevel = 'high' | 'medium' | 'low';
 
 export type Importance = 'high' | 'medium' | 'low';
 
+/**
+ * Veredicto de una clausula frente a lo habitual en su tipo de contrato.
+ * "abusiva" es una afirmacion juridica fuerte: solo se usa cuando contradice
+ * una norma del corpus legal o renuncia a un derecho irrenunciable.
+ */
+export type ClauseAssessment = 'estandar' | 'desfavorable' | 'abusiva';
+
+/** Veredicto global del contrato para quien lo sube a analizar. Ordinal. */
+export type FavorabilityVerdict =
+  | 'favorable'
+  | 'equilibrado'
+  | 'desfavorable'
+  | 'muy_desfavorable';
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export type HistoryAction =

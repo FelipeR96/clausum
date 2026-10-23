@@ -169,3 +169,147 @@ describe('esquema de riesgos', () => {
     ).not.toThrow();
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────
+// Campos de profundidad (veredicto, impacto, redaccion sugerida).
+//
+// Todos son opcionales en el esquema aunque el prompt los exija: si el modelo
+// se salta uno en una clausula de doce, preferimos guardar el analisis
+// incompleto a perderlo entero. Estas pruebas fijan ese comportamiento, que
+// es el que de verdad decide si un analisis llega al usuario o se cae.
+// ─────────────────────────────────────────────────────────────────────────
+describe('campos de profundidad', () => {
+  it('trata null como campo ausente en vez de fallar', () => {
+    const resultado = parseJsonResponse(
+      JSON.stringify({
+        ...analisisValido,
+        favorability: null,
+        clauses: [
+          {
+            title: 'Canon de arrendamiento',
+            content: 'El canon mensual será de $2.000.000.',
+            importance: 'high',
+            meaning: null,
+            assessment: null,
+            excerpt: null,
+          },
+        ],
+      }),
+      analyzeResponseSchema
+    );
+
+    expect(resultado.clauses[0]?.meaning).toBeUndefined();
+    expect(resultado.clauses[0]?.assessment).toBeUndefined();
+    expect(resultado.favorability).toBeUndefined();
+  });
+
+  it('guarda el veredicto completo cuando el modelo lo devuelve', () => {
+    const resultado = parseJsonResponse(
+      JSON.stringify({
+        ...analisisValido,
+        favorability: {
+          verdict: 'muy_desfavorable',
+          forWhom: 'el arrendador',
+          rationale: 'La terminación unilateral y la multa recaen solo en el arrendatario.',
+        },
+        clauses: [
+          {
+            title: 'Terminación',
+            content: 'El arrendador puede terminar en cualquier momento.',
+            importance: 'high',
+            meaning: 'Te pueden sacar con 0 días de aviso.',
+            assessment: 'abusiva',
+          },
+        ],
+      }),
+      analyzeResponseSchema
+    );
+
+    expect(resultado.favorability?.verdict).toBe('muy_desfavorable');
+    expect(resultado.clauses[0]?.assessment).toBe('abusiva');
+    expect(resultado.clauses[0]?.meaning).toMatch(/0 días/);
+  });
+
+  it('degrada a neutro un veredicto que el modelo se invente', () => {
+    const resultado = parseJsonResponse(
+      JSON.stringify({
+        ...analisisValido,
+        favorability: { verdict: 'catastrofico', forWhom: 'nadie', rationale: 'x' },
+        clauses: [
+          {
+            title: 'Canon',
+            content: 'El canon mensual será de $2.000.000.',
+            importance: 'low',
+            assessment: 'leonina',
+          },
+        ],
+      }),
+      analyzeResponseSchema
+    );
+
+    // Un valor fuera del enum no puede tumbar el analisis entero, pero
+    // tampoco puede inventarse un juicio: cae al valor neutro.
+    expect(resultado.favorability?.verdict).toBe('equilibrado');
+    expect(resultado.clauses[0]?.assessment).toBe('estandar');
+  });
+
+  it('acepta un riesgo sin impacto ni redacción sugerida', () => {
+    const resultado = parseJsonResponse(
+      JSON.stringify({
+        summary: 'Un riesgo menor.',
+        score: 88,
+        risks: [
+          {
+            level: 'low',
+            title: 'Gastos notariales compartidos',
+            description: 'Es lo acostumbrado.',
+            excerpt: 'por partes iguales',
+            impact: null,
+            recommendation: null,
+            suggestedWording: null,
+          },
+        ],
+      }),
+      risksResponseSchema
+    );
+
+    expect(resultado.risks[0]?.impact).toBeUndefined();
+    expect(resultado.risks[0]?.recommendation).toBeUndefined();
+  });
+
+  it('conserva impacto y redacción sugerida cuando vienen', () => {
+    const resultado = parseJsonResponse(
+      JSON.stringify({
+        summary: 'Un riesgo alto.',
+        score: 40,
+        risks: [
+          {
+            level: 'high',
+            title: 'Cláusula penal desproporcionada',
+            description: 'La pena del 20 % opera solo contra el comprador.',
+            excerpt: 'veinte por ciento (20%)',
+            impact: 'Perderías $84.000.000 sobre un precio de $420.000.000.',
+            recommendation: 'Pide que la cuota inicial vaya a una fiducia.',
+            suggestedWording: 'La cuota inicial se consignará en un encargo fiduciario.',
+          },
+        ],
+      }),
+      risksResponseSchema
+    );
+
+    expect(resultado.risks[0]?.impact).toMatch(/84\.000\.000/);
+    expect(resultado.risks[0]?.suggestedWording).toMatch(/fiduciario/);
+  });
+
+  it('descarta un null suelto dentro de un arreglo', () => {
+    const resultado = parseJsonResponse(
+      JSON.stringify({
+        ...analisisValido,
+        parties: ['Arrendador S.A.S.', null, 'Juan Pérez'],
+      }),
+      analyzeResponseSchema
+    );
+
+    expect(resultado.parties).toEqual(['Arrendador S.A.S.', 'Juan Pérez']);
+  });
+});

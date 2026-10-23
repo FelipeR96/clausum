@@ -43,7 +43,47 @@ RÚBRICA "score" (análisis: claridad y equilibrio, 0–100)
 - 50–69: ambigüedades relevantes o desequilibrio notable entre partes
 - 30–49: vacíos importantes, cláusulas potencialmente leoninas o muy confusas
 - 0–29: texto muy incompleto, ilegible o gravemente desfavorable/desbalanceado
-Califica con el contrato en la mano; no infles el score por defecto.`;
+Califica con el contrato en la mano; no infles el score por defecto.
+
+VEREDICTO POR CLÁUSULA ("assessment")
+Compara cada cláusula con lo HABITUAL en su tipo de contrato, no con un ideal.
+- estandar: aparece en la mayoría de contratos de este tipo con redacción parecida.
+  En un contrato normal la mayoría de las cláusulas son estándar. No fuerces hallazgos
+  para parecer útil: decir "esto es normal" también es información valiosa.
+- desfavorable: válida y exigible, pero inclinada en contra de quien consulta
+  (plazos, cargas, costos o facultades asimétricos). Es materia de negociación.
+- abusiva: RESERVADA. Úsala solo si (a) contradice un artículo presente en CONTEXTO
+  JURÍDICO, y lo citas en "lawReferences" de esa misma cláusula, o (b) renuncia a un
+  derecho que la ley declara irrenunciable. Si no puedes señalar la norma concreta,
+  usa "desfavorable". Nunca califiques de abusiva por intuición.
+
+"meaning": QUÉ IMPLICA, no qué dice
+- "content" describe lo que la cláusula dice. "meaning" dice qué le pasa a quien firma.
+- Segunda persona y concreto: "si te atrasas un mes, el arrendador puede terminar el
+  contrato sin pasar por un juez", no "regula los efectos del incumplimiento".
+- No repitas "content" con otras palabras. Si no agrega nada, sé breve y directo.
+- Usa las cifras y los plazos literales del contrato cuando existan. No inventes cifras.
+
+VEREDICTO GLOBAL ("favorability")
+Esta es la respuesta a "¿está bien o mal este contrato?". El "score" mide claridad,
+que es otra pregunta. Contéstalas por separado y no las confundas.
+- "verdict", desde la perspectiva de quien sube el contrato a analizar:
+  * favorable: las ventajas materiales están de su lado
+  * equilibrado: cargas y protecciones reparten parejo entre las partes
+  * desfavorable: la otra parte tiene ventajas claras en dinero, salida o responsabilidad
+  * muy_desfavorable: concentra riesgo grave en quien consulta, o hay cláusulas abusivas
+- "forWhom": QUIÉN SALE GANANDO. Es la parte a la que el contrato le da las
+  ventajas, NO quien consulta y NO quien carga con las obligaciones. Usa el rol
+  tal como aparece en el contrato ("el arrendador", "EADE"). Si reparte parejo,
+  "ninguna en particular".
+  COMPROBACIÓN OBLIGATORIA antes de responder: si "verdict" es "desfavorable" o
+  "muy_desfavorable", entonces "forWhom" tiene que ser LA CONTRAPARTE de quien
+  consulta, nunca quien consulta. Si es "favorable", al revés. Releer el propio
+  "rationale": si ahí dices que las cargas recaen sobre X, entonces X NO puede
+  ser el valor de "forWhom".
+- "rationale": una o dos frases nombrando las cláusulas concretas que lo sostienen.
+- Coherencia obligatoria: si hay alguna cláusula "abusiva" o dos o más riesgos "high",
+  el veredicto NO puede ser "equilibrado" ni "favorable".`;
 
 const ANALYSIS_EXTRA_RULES = `REGLAS ADICIONALES (análisis)
 - "parties": nombres o roles tal como aparecen (persona natural/jurídica, arrendador/arrendatario, etc.).
@@ -75,7 +115,28 @@ Si no hay riesgos materiales, devuelve pocos ítems "low" y score alto (cercano 
 - medium: desventaja negociable pero relevante
 - low: riesgo menor, formal o de seguimiento
 
-"recommendation": acción concreta (negociar, eliminar, acotar, definir plazo, pedir anexo). Debe ser específica al excerpt citado, no genérica.
+"impact": LA CONSECUENCIA, NO LA ETIQUETA
+- Qué le pasa en concreto a quien firma si el riesgo se materializa.
+- Si el contrato trae cifras, plazos o porcentajes explícitos, úsalos y haz la cuenta:
+  "la multa equivale a 3 cánones, unos $2.700.000 con el canon de este contrato".
+- Calcula SOLO con números que estén literalmente en el contrato. Si no están,
+  describe la consecuencia sin inventar cifras.
+- Prohibido quedarse en "podría generar riesgos legales" o "podría afectar a la parte":
+  eso no le dice nada a quien lo lee.
+
+"recommendation": ACCIONABLE Y OBLIGATORIA
+- Qué pedir, con qué argumento, dirigido a quien va a negociar.
+- Específica al excerpt citado. Si la misma recomendación sirve para dos riesgos
+  distintos, está demasiado genérica: reescríbela.
+- "Consultar a un abogado" no vale como recomendación única; dilo solo además de algo
+  concreto que la persona pueda llevar a la mesa.
+
+"suggestedWording": REDACCIÓN PARA LLEVAR A LA MESA
+- Incluye una redacción sustitutiva cuando el arreglo sea textual: acotar un plazo,
+  fijar un tope, exigir preaviso, limitar una facultad unilateral.
+- Escríbela como iría en el contrato, lista para copiar y pegar.
+- Omite el campo cuando el arreglo no sea de redacción (pedir un anexo, un certificado,
+  una garantía bancaria).
 
 RÚBRICA "score" (riesgos: 100 = sin riesgos relevantes)
 - 90–100: sin riesgos materiales
@@ -91,6 +152,11 @@ COHERENCIA
 - "analysis" describe QUÉ dice el contrato; "risks" evalúa QUÉ puede salir mal.
 - No copies la misma cláusula como riesgo con el mismo texto: el riesgo debe explicar el perjuicio.
 - Si "analysis.score" es bajo (<60), "risks.score" no debería ser muy alto (>80) salvo motivo claro.
+- "analysis.favorability" debe cuadrar con los riesgos: si "risks" trae dos o más "high",
+  el veredicto no puede ser "equilibrado" ni "favorable".
+- Si una cláusula va marcada "abusiva", debe existir un riesgo que la recoja, y el
+  veredicto global debe ser "desfavorable" o "muy_desfavorable".
+- Las cláusulas marcadas "estandar" no necesitan riesgo asociado. No inventes uno.
 - Usa el mismo criterio de excerpts y lawId en ambas secciones.`;
 
 const COMPARE_METHODOLOGY = `METODOLOGÍA DE COMPARACIÓN
@@ -114,10 +180,17 @@ const ANALYSIS_JSON_SCHEMA = `{
     "renewal": "condición de renovación si aparece; si no, cadena vacía"
   },
   "score": número del 0 al 100 indicando claridad y equilibrio del contrato,
+  "favorability": {
+    "verdict": "favorable" | "equilibrado" | "desfavorable" | "muy_desfavorable",
+    "forWhom": "QUIÉN SALE GANANDO: la parte que recibe las ventajas, NO quien consulta ni quien carga las obligaciones",
+    "rationale": "una o dos frases nombrando las cláusulas que sostienen el veredicto"
+  },
   "clauses": [
     {
       "title": "nombre de la cláusula",
-      "content": "explicación en lenguaje claro",
+      "content": "qué DICE la cláusula, en lenguaje claro",
+      "meaning": "qué IMPLICA para quien firma, en segunda persona y en concreto",
+      "assessment": "estandar" | "desfavorable" | "abusiva",
       "importance": "high" | "medium" | "low",
       "page": número opcional,
       "excerpt": "cita textual breve del contrato",
@@ -152,7 +225,9 @@ const RISKS_JSON_SCHEMA = `{
       "description": "explicación del riesgo",
       "excerpt": "cita textual del contrato",
       "clauseRef": "referencia opcional",
-      "recommendation": "qué negociar o revisar",
+      "impact": "qué te pasa en concreto si el riesgo se materializa, con las cifras del contrato",
+      "recommendation": "qué pedir en la mesa de negociación, específico a este excerpt",
+      "suggestedWording": "redacción sustitutiva lista para copiar; omite el campo si el arreglo no es textual",
       "lawReferences": [
         {
           "lawId": "id del artículo",

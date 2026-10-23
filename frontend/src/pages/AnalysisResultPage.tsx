@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AppShell } from '@/components/app/AppShell';
 import { AnalysisResultHeader } from '@/components/analysis-result/AnalysisResultHeader';
 import { AnalysisSummarySection } from '@/components/analysis-result/AnalysisSummarySection';
+import { AnalysisVerdictBanner } from '@/components/analysis-result/AnalysisVerdictBanner';
 import { AnalysisMetaGrid } from '@/components/analysis-result/AnalysisMetaGrid';
 import { AnalysisClauseBreakdown } from '@/components/analysis-result/AnalysisClauseBreakdown';
 import { AnalysisRiskTeaserBanner } from '@/components/analysis-result/AnalysisRiskTeaserBanner';
@@ -184,6 +185,7 @@ export function AnalysisResultPage() {
     <AppShell pageTitle="Resultado del análisis" breadcrumb="Análisis de IA">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <AnalysisResultHeader data={data} contractId={contractId} isPro={isPro} />
+        <AnalysisVerdictBanner data={data} />
         <AnalysisSummarySection data={data} contractId={contractId} />
         <AnalysisRiskTeaserBanner data={data} contractId={contractId} isPro={isPro} />
         <AnalysisMetaGrid data={data} />
