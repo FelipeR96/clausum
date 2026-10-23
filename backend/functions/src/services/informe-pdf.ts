@@ -364,9 +364,12 @@ function tarjetaRiesgo(doc: Doc, riesgo: Riesgo): void {
     doc.rect(MARGEN + 19, y + 19, 2.5, hCaja - 12).fill(sev.fuerte);
     doc.fillColor(MARCA.muted).font('Helvetica-Oblique').fontSize(9);
     doc.text(riesgo.suggestedWording, MARGEN + 32, y + 23, { width: wTexto - 28 });
-    y = y + 13 + hCaja;
   }
 
+  // Aqui no se actualiza `y`: el final de la tarjeta lo gobierna `alto`, que
+  // se calculo arriba para poder pintar el fondo antes que el texto. Quien
+  // agregue un bloque nuevo debe sumarlo a `alto` tambien, o el texto se
+  // saldra del rectangulo de color.
   doc.y = y0 + alto + 14;
   doc.x = MARGEN;
 }
