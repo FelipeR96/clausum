@@ -12,11 +12,32 @@
  * El secret NO se escribe a mano: se saca de Secret Manager, que es donde
  * vive, asi que no pasa por el portapapeles ni por la pantalla.
  *
- * ── Uso (desde backend/functions, en PowerShell) ────────────────────────
- *   $s = ..\..\node_modules\.bin\firebase functions:secrets:access PAYPAL_CLIENT_SECRET
- *   $env:PAYPAL_CLIENT_SECRET = ($s | Select-Object -Last 1).Trim()
- *   node scripts/verificar-paypal.cjs
- *   Remove-Item Env:\PAYPAL_CLIENT_SECRET
+ * ── Uso (en PowerShell) ─────────────────────────────────────────────────
+ * La receta anterior tenia dos fallos y los dos se descubrieron usandola:
+ *
+ *   1. El CLI de Firebase se llamaba desde backend/functions, pero necesita
+ *      el firebase.json, que esta en la RAIZ del repositorio. Alli fallaba y
+ *      devolvia vacio, asi que la variable nunca se ponia y el script se
+ *      quejaba de que faltaba el secreto, culpando al sintoma equivocado.
+ *
+ *   2. El CLI devuelve DOS lineas: el valor y una vacia del salto final.
+ *      "Select-Object -Last 1" se quedaba con la vacia.
+ *
+ * De ahi el filtro de lineas vacias y la comprobacion de largo: si el valor
+ * no mide 80 no se ejecuta nada, porque un valor basura haria fallar la
+ * llamada a PayPal y pareceria que el secreto esta roto cuando el problema
+ * seria de PowerShell.
+ *
+ *   cd C:\Users\User\repos\contratos
+ *   $s = .\node_modules\.bin\firebase functions:secrets:access PAYPAL_CLIENT_SECRET --project clausum-dev
+ *   $valor = (@($s) | Where-Object { $_.Trim() -ne '' } | Select-Object -Last 1).Trim()
+ *   if ($valor.Length -eq 80) {
+ *     $env:PAYPAL_CLIENT_SECRET = $valor
+ *     cd backend\functions
+ *     node scripts/verificar-paypal.cjs
+ *     Remove-Item Env:\PAYPAL_CLIENT_SECRET
+ *   } else { "No parece el secreto, no sigo." }
+ *   Remove-Variable valor, s -ErrorAction SilentlyContinue
  */
 const fs = require('node:fs');
 const path = require('node:path');
