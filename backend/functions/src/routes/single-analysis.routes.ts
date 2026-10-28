@@ -1,8 +1,10 @@
 import express, { Router } from 'express';
 import { createHash } from 'node:crypto';
+import { z } from 'zod';
 import type { BillingRegion, CountryCode } from '@clausum/shared';
 import { isSupportedContractFileName } from '@clausum/shared';
 import { asyncHandler } from '../middleware/asyncHandler';
+import { validateBody } from '../middleware/validateRequest';
 import { createWompiSingleAnalysisCheckout } from '../services/wompi.service';
 import {
   capturePayPalSingleAnalysisOrder,
@@ -12,11 +14,16 @@ import {
   comprobarLimitePorOrigen,
   crearOrdenDeAnalisis,
   ejecutarAnalisisSuelto,
+  enviarInformePorCorreo,
+  generarPdfDelInforme,
+  marcarEntregado,
   obtenerEstado,
+  obtenerInformeCompleto,
   proveedorDeLaOrden,
 } from '../services/single-analysis.service';
 import { enqueueJob } from '../tasks/jobs.task';
 import { AppError } from '../utils/errors';
+import { logger } from '../utils/logger';
 
 export const singleAnalysisRouter = Router();
 
@@ -168,5 +175,81 @@ singleAnalysisRouter.get(
     // es exactamente lo que debe pasar.
     const reference = referenciaValida(String(req.params.reference ?? ''));
     res.json(await obtenerEstado(reference));
+  })
+);
+
+// ─────────────────────────────────────────────────────────────────────────
+// Entrega del informe pagado
+//
+// Tres rutas y una sola entrega. Ver el informe en pantalla NO cuenta como
+// entrega --no sale ningun archivo-- asi que se puede consultar mientras la
+// orden siga viva. La descarga o el correo si: la primera que se complete
+// cierra la orden y borra el analisis.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** El informe entero para la pantalla. No gasta la entrega. */
+singleAnalysisRouter.get(
+  '/single/:reference/informe',
+  asyncHandler(async (req, res) => {
+    const reference = referenciaValida(String(req.params.reference ?? ''));
+    res.json(await obtenerInformeCompleto(reference));
+  })
+);
+
+singleAnalysisRouter.get(
+  '/single/:reference/pdf',
+  asyncHandler(async (req, res) => {
+    const reference = referenciaValida(String(req.params.reference ?? ''));
+    const pdf = await generarPdfDelInforme(reference);
+
+    /**
+     * El borrado va enganchado a 'finish', y la eleccion del evento es la
+     * parte importante de esta ruta.
+     *
+     * 'finish' solo salta cuando la respuesta se escribio COMPLETA. 'close'
+     * salta tambien cuando el navegador aborta a medias, asi que borrar ahi
+     * dejaria sin informe a quien pago y se quedo con medio archivo.
+     *
+     * Aun asi conviene no exagerar lo que prueba: significa que lo mandamos
+     * entero, no que llegara entero --entre nosotros y el navegador hay un
+     * proxy--. Es lo mas cerca que se puede estar de confirmarlo.
+     *
+     * Si el borrado falla, la orden se queda pagada y puede descargar otra
+     * vez. Fallar hacia poder repetir es lo correcto aqui.
+     */
+    res.on('finish', () => {
+      void marcarEntregado(reference, 'download').catch((error: unknown) => {
+        logger.error('api', 'No se pudo cerrar la orden tras la descarga', error, {
+          metadata: { reference },
+        });
+      });
+    });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="analisis-clausum.pdf"');
+    res.setHeader('Content-Length', String(pdf.length));
+    res.end(pdf);
+  })
+);
+
+const correoSchema = z.object({
+  // 254 es el maximo de una direccion de correo segun el RFC 5321.
+  email: z.string().trim().toLowerCase().email().max(254),
+});
+
+singleAnalysisRouter.post(
+  '/single/:reference/email',
+  validateBody(correoSchema),
+  asyncHandler(async (req, res) => {
+    const reference = referenciaValida(String(req.params.reference ?? ''));
+    const { email } = (
+      req as express.Request & { validatedBody: { email: string } }
+    ).validatedBody;
+
+    await enviarInformePorCorreo(reference, email);
+
+    // Sin devolver la direccion: ya la escribio quien la mando, y repetirla
+    // en una respuesta solo la pone en un registro mas.
+    res.json({ enviado: true });
   })
 );

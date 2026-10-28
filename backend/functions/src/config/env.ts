@@ -22,6 +22,8 @@ export const wompiIntegritySecret = defineSecret('WOMPI_INTEGRITY_SECRET');
 export const wompiEventsSecret = defineSecret('WOMPI_EVENTS_SECRET');
 export const paypalClientSecretSecret = defineSecret('PAYPAL_CLIENT_SECRET');
 export const paypalWebhookIdSecret = defineSecret('PAYPAL_WEBHOOK_ID');
+/** Contrasena del buzon de Hostinger desde el que se envian los informes. */
+export const smtpPasswordSecret = defineSecret('SMTP_PASSWORD');
 
 /**
  * Lista completa de secretos. Toda función que toque DeepSeek, Wompi o PayPal
@@ -35,6 +37,7 @@ export const ALL_SECRETS: SecretParam[] = [
   wompiEventsSecret,
   paypalClientSecretSecret,
   paypalWebhookIdSecret,
+  smtpPasswordSecret,
 ];
 
 /**

@@ -1,4 +1,4 @@
-import type { Analysis, Contract } from '@clausum/shared';
+import type { Analysis } from '@clausum/shared';
 
 /**
  * Dibujo del informe PDF.
@@ -141,7 +141,7 @@ function fechaLarga(d: Date): string {
 
 function portada(
   doc: Doc,
-  contract: Contract & { id: string },
+  contract: DocumentoDelInforme,
   analysis: Analysis,
   riesgos: RiesgosDelInforme
 ): void {
@@ -453,8 +453,22 @@ function pies(doc: Doc): void {
   }
 }
 
+/**
+ * Lo que el informe necesita del documento analizado: su titulo y el nombre
+ * del archivo. Nada mas.
+ *
+ * Antes la firma pedia un Contract entero, y era mentira: solo se leen esos
+ * dos campos. Ademas impedia generar el informe de una compra suelta, que no
+ * tiene documento de contrato en Firestore porque no hay cuenta a la que
+ * colgarlo.
+ */
+export type DocumentoDelInforme = {
+  title?: string;
+  fileName?: string;
+};
+
 export async function renderAnalysisPdf(
-  contract: Contract & { id: string },
+  contract: DocumentoDelInforme,
   analysis: Analysis,
   riesgos: RiesgosDelInforme
 ): Promise<Buffer> {

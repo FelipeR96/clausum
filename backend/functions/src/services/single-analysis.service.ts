@@ -1,9 +1,11 @@
 import { randomBytes } from 'node:crypto';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import type {
+  Analysis,
   AnalysisRisk,
   BillingRegion,
   CountryCode,
+  SingleAnalysisDelivery,
   SingleAnalysisOrder,
   SingleAnalysisPreview,
 } from '@clausum/shared';
@@ -15,6 +17,8 @@ import { callDeepSeek } from '../integrations/deepseek/client';
 import { buildProAnalyzePrompt, SYSTEM_LEGAL } from '../integrations/deepseek/legal-prompts';
 import { parseJsonResponse, proAnalyzeResponseSchema } from '../integrations/deepseek/schemas';
 import { buildLegalContext } from './legal-context.service';
+import { enviarCorreo } from './correo';
+import { renderAnalysisPdf } from './informe-pdf';
 import { AppError } from '../utils/errors';
 import { firestoreDateToDate } from '../utils/firestore-date';
 import { logger } from '../utils/logger';
@@ -71,6 +75,8 @@ type OrdenGuardada = SingleAnalysisOrder & {
   contractText?: string;
   analysis?: Record<string, unknown>;
   risks?: AnalysisRisk[];
+  risksSummary?: string;
+  risksScore?: number;
 };
 
 async function leerOrden(reference: string): Promise<OrdenGuardada> {
@@ -553,4 +559,183 @@ export async function borrarAnalisisCaducados(): Promise<{
   }
 
   return { ordenes, contadores };
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Entrega del informe pagado
+//
+// La regla es que el analisis se borra al completarse la PRIMERA entrega, y
+// eso obliga a tener claro que cuenta como completada:
+//
+//  - Descarga: solo cuando la respuesta HTTP salio entera. Engancharlo al
+//    cierre de la conexion borraria el informe de quien se quedo con medio
+//    archivo.
+//  - Correo: solo cuando el servidor de salida lo acepta. Si falla, no se
+//    borra nada y puede reintentar o descargar.
+//
+// En los dos casos, un fallo deja la orden intacta. Es la unica direccion
+// segura: quien ya pago no puede acabar sin nada.
+// ─────────────────────────────────────────────────────────────────────────
+
+export interface InformeCompleto {
+  analysis: Analysis;
+  risks: AnalysisRisk[];
+  risksSummary?: string;
+  risksScore?: number;
+  /** El contrato se corto por largo y el analisis cubre solo una parte. */
+  truncated: boolean;
+}
+
+/**
+ * El informe entero, con las cuatro negativas que lo protegen.
+ *
+ * El orden de las comprobaciones es el que importa, y no es casual: primero
+ * las que explican por que no hay nada (caducado, ya entregado) y luego la
+ * que explica que falta pagar. Al reves, quien ya descargo su informe veria
+ * "falta pagar" --y habiendo pagado, eso parece un cobro doble.
+ */
+export async function obtenerInformeCompleto(
+  reference: string
+): Promise<InformeCompleto> {
+  const orden = await leerOrden(reference);
+
+  if (estaCaducada(orden)) {
+    throw new AppError('Este análisis ya expiró', 410, 'ORDER_EXPIRED');
+  }
+  if (orden.status === 'delivered') {
+    throw new AppError(
+      'Este informe ya se entregó y, como prometimos, se borró.',
+      410,
+      'ALREADY_DELIVERED'
+    );
+  }
+  if (orden.status !== 'paid') {
+    throw new AppError('Este informe aún no está pagado', 402, 'PAYMENT_REQUIRED');
+  }
+  if (!orden.analysis) {
+    throw new AppError('El análisis todavía no ha terminado', 409, 'ANALYSIS_NOT_READY');
+  }
+
+  return {
+    analysis: orden.analysis as unknown as Analysis,
+    risks: orden.risks ?? [],
+    risksSummary: orden.risksSummary,
+    risksScore: orden.risksScore,
+    truncated: orden.truncated === true,
+  };
+}
+
+/**
+ * Cierra la orden y borra el contenido.
+ *
+ * El texto del contrato ya se fue al terminar el analisis; aqui cae el
+ * resultado, que es lo ultimo que queda de el. Tambien la huella del origen:
+ * servia para contar mientras la compra estaba viva y no tiene razon de
+ * sobrevivirla.
+ *
+ * Lo que queda es el recibo --referencia, importe, cuando y por que via-- y
+ * eso no es contenido de nadie.
+ */
+export async function marcarEntregado(
+  reference: string,
+  via: SingleAnalysisDelivery
+): Promise<void> {
+  await ordenRef(reference).update({
+    status: 'delivered',
+    deliveredAt: FieldValue.serverTimestamp(),
+    deliveredBy: via,
+    analysis: FieldValue.delete(),
+    risks: FieldValue.delete(),
+    risksSummary: FieldValue.delete(),
+    risksScore: FieldValue.delete(),
+    clientFingerprint: FieldValue.delete(),
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+
+  logger.info('api', 'Informe suelto entregado y borrado', {
+    metadata: { reference, via },
+  });
+}
+
+/**
+ * El PDF del informe.
+ *
+ * La portada no lleva el nombre del archivo que subio la persona, y no es un
+ * olvido: ese nombre no se guarda. Suele traer el nombre de quien firma
+ * ("contrato-juan-perez.pdf"), asi que guardarlo para adornar una portada
+ * seria conservar un dato personal a cambio de nada.
+ */
+function pdfDesdeInforme(informe: InformeCompleto): Promise<Buffer> {
+  return renderAnalysisPdf({ title: 'Análisis de contrato' }, informe.analysis, {
+    summary: informe.risksSummary,
+    score: informe.risksScore,
+    risks: informe.risks,
+  });
+}
+
+export async function generarPdfDelInforme(reference: string): Promise<Buffer> {
+  return pdfDesdeInforme(await obtenerInformeCompleto(reference));
+}
+
+const ASUNTO = 'Tu análisis de contrato — Clausum';
+
+function cuerpoDelCorreo(truncado: boolean): string {
+  const aviso = truncado
+    ? '\nNota: tu contrato era muy largo y el análisis cubre solo la primera parte del texto.\n'
+    : '';
+
+  return [
+    'Aquí tienes tu análisis en PDF.',
+    '',
+    'Guárdalo: no conservamos ninguna copia. Tu contrato se borró al terminar',
+    'el análisis y el informe se borró al enviarte este correo, así que este',
+    'archivo adjunto es el único que existe.',
+    aviso,
+    'Esto es un análisis automático y no sustituye la asesoría de un abogado.',
+    '',
+    'Clausum — clausumlegal.com',
+  ].join('\n');
+}
+
+/**
+ * Manda el informe por correo y lo borra si el envio sale bien.
+ *
+ * ── Por que no hace falta frenar el abuso aqui ──────────────────────────
+ * La primera reaccion es que alguien con una referencia valida podria usar
+ * nuestro SMTP para mandar correo a direcciones ajenas. No llega a ser un
+ * problema, y conviene ver por que: hace falta haber PAGADO, y el envio que
+ * sale bien gasta la unica entrega de esa compra. Un correo por analisis
+ * pagado es un techo que lo pone el cobro, no un contador.
+ *
+ * El PDF se genera ANTES de enviar. Si el envio falla no se borra nada, asi
+ * que la persona puede reintentar o descargarlo.
+ */
+export async function enviarInformePorCorreo(
+  reference: string,
+  email: string
+): Promise<void> {
+  // Una sola lectura para las dos cosas. Pedirla dos veces no solo gasta
+  // lecturas: entre una y otra el estado puede cambiar, y el aviso de
+  // truncado del correo acabaria describiendo un informe distinto del que va
+  // adjunto.
+  const informe = await obtenerInformeCompleto(reference);
+  const pdf = await pdfDesdeInforme(informe);
+
+  await enviarCorreo({
+    para: email,
+    asunto: ASUNTO,
+    texto: cuerpoDelCorreo(informe.truncated),
+    adjuntos: [
+      {
+        filename: 'analisis-clausum.pdf',
+        content: pdf,
+        contentType: 'application/pdf',
+      },
+    ],
+  });
+
+  // Solo si el servidor lo acepto. "Aceptado" no es "entregado" --un rebote
+  // llega despues y por otro canal-- pero es lo mas cerca que se puede estar
+  // de confirmarlo, y es lo que se acordo que cuenta como entrega.
+  await marcarEntregado(reference, 'email');
 }
