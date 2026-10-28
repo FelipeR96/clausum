@@ -20,6 +20,7 @@ import { buildProAnalyzePrompt, SYSTEM_LEGAL } from '../integrations/deepseek/le
 import { parseJsonResponse, proAnalyzeResponseSchema } from '../integrations/deepseek/schemas';
 import { buildLegalContext } from './legal-context.service';
 import { AppError } from '../utils/errors';
+import { firestoreDateToDate } from '../utils/firestore-date';
 import { logger } from '../utils/logger';
 
 /**
@@ -71,7 +72,6 @@ function ordenRef(reference: string) {
 }
 
 type OrdenGuardada = SingleAnalysisOrder & {
-  truncated?: boolean;
   contractText?: string;
   analysis?: Record<string, unknown>;
   risks?: AnalysisRisk[];
@@ -83,6 +83,25 @@ async function leerOrden(reference: string): Promise<OrdenGuardada> {
     throw new AppError('Análisis no encontrado o ya expirado', 404, 'ORDER_NOT_FOUND');
   }
   return snap.data() as OrdenGuardada;
+}
+
+/**
+ * Si la orden ya paso su fecha de caducidad.
+ *
+ * Se comprueba AL LEER, y no se deja en manos del barrido nocturno. El
+ * barrido libera espacio; esto decide que se entrega. Si solo existiera el
+ * barrido, una orden caducada a las 06:00 seguiria sirviendo su vista
+ * previa hasta las 04:00 del dia siguiente, que es lo contrario de lo que
+ * se le promete a quien sube un contrato.
+ *
+ * Sin fecha legible se considera caducada. Es la unica direccion segura
+ * para equivocarse: un campo corrupto no puede convertirse en acceso
+ * perpetuo.
+ */
+function estaCaducada(orden: OrdenGuardada): boolean {
+  const limite = firestoreDateToDate(orden.expiresAt);
+  if (!limite) return true;
+  return limite.getTime() <= Date.now();
 }
 
 /**
@@ -165,6 +184,20 @@ export async function crearOrdenDeAnalisis(input: {
 export async function ejecutarAnalisisSuelto(reference: string): Promise<void> {
   const orden = await leerOrden(reference);
 
+  // Antes de nada: si caduco esperando en la cola, no se gasta una llamada
+  // a DeepSeek en un analisis que ya nadie va a poder ver.
+  if (estaCaducada(orden)) {
+    logger.info('api', 'Orden caducada antes de analizarse; se descarta', {
+      metadata: { reference },
+    });
+    await ordenRef(reference).update({
+      status: 'expired',
+      contractText: FieldValue.delete(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return;
+  }
+
   if (orden.analysis) {
     logger.info('api', 'Analisis suelto ya completado; se omite el reintento', {
       metadata: { reference },
@@ -246,7 +279,7 @@ export type EstadoDeOrden =
 export async function obtenerEstado(reference: string): Promise<EstadoDeOrden> {
   const orden = await leerOrden(reference);
 
-  if (orden.status === 'expired') return { estado: 'expirado' };
+  if (orden.status === 'expired' || estaCaducada(orden)) return { estado: 'expirado' };
   if (!orden.analysis) return { estado: 'analizando' };
 
   return {
@@ -309,4 +342,154 @@ export async function comprobarLimitePorOrigen(fingerprint: string): Promise<voi
       'RATE_LIMITED'
     );
   }
+}
+
+/**
+ * Marca la orden como pagada y le renueva el plazo.
+ *
+ * Lo segundo no es un adorno. El plazo empieza a contar al SUBIR el
+ * documento, y entre subirlo, leer la vista previa, decidirse y pasar por
+ * la pasarela se va un rato largo. Quien paga en la hora 23 tendria un
+ * minuto para descargar, y si cierra la pestana se queda sin informe
+ * habiendo pagado: una devolucion y un cliente perdido por un reloj que
+ * arranco antes de que existiera la compra.
+ *
+ * Al confirmarse el pago el plazo vuelve a contar desde cero. La promesa
+ * sigue siendo las mismas 24 horas, contadas desde lo ultimo que hizo la
+ * persona, que es como cualquiera las entiende.
+ *
+ * Es idempotente a proposito: las pasarelas reenvian el mismo aviso varias
+ * veces y el segundo no debe volver a mover el plazo.
+ *
+ * Si la orden ya no existe lanza ORDER_NOT_FOUND. Eso significa dinero
+ * cobrado sobre un analisis ya borrado, asi que quien llame tiene que
+ * registrarlo y NO devolver error a la pasarela: un fallo la haria
+ * reintentar para siempre sobre algo que no va a aparecer.
+ */
+export async function marcarOrdenPagada(
+  reference: string,
+  datos?: { email?: string }
+): Promise<{ yaEstaba: boolean }> {
+  const ref = ordenRef(reference);
+
+  return adminDb().runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) {
+      throw new AppError('Análisis no encontrado o ya expirado', 404, 'ORDER_NOT_FOUND');
+    }
+
+    const orden = snap.data() as OrdenGuardada;
+    if (orden.status === 'paid' || orden.status === 'delivered') {
+      return { yaEstaba: true };
+    }
+
+    const nuevoLimite = new Date(Date.now() + HORAS_DE_VIDA * 60 * 60 * 1000);
+
+    tx.update(ref, {
+      status: 'paid',
+      paidAt: FieldValue.serverTimestamp(),
+      expiresAt: Timestamp.fromDate(nuevoLimite),
+      updatedAt: FieldValue.serverTimestamp(),
+      ...(datos?.email ? { email: datos.email } : {}),
+    });
+
+    return { yaEstaba: false };
+  });
+}
+
+/** Cuantos documentos borra el barrido como maximo en una pasada. */
+const POR_LOTE = 300;
+const LOTES_MAXIMOS = 5;
+
+/**
+ * Tope absoluto de vida, contado desde que se crea la orden y sin mirar
+ * `expiresAt`. Es la red por si ese campo queda ilegible.
+ */
+const HORAS_TOPE_ABSOLUTO = 72;
+
+function hace(horas: number): Timestamp {
+  return Timestamp.fromMillis(Date.now() - horas * 60 * 60 * 1000);
+}
+
+/**
+ * Borra las ordenes caducadas. Las borra de verdad: el documento entero.
+ *
+ * ── Por que no se conserva un registro ──────────────────────────────────
+ * La tentacion es vaciar el contenido y dejar la cascara para contar
+ * cuanta gente ve la vista previa y no compra. Se descarta por tres
+ * razones, y la tercera es la que decide:
+ *
+ *  1. Lo que se cobro ya tiene su registro propio en la coleccion de
+ *     pagos, que es donde vive la contabilidad. Conservar la orden
+ *     duplicaria ese dato en dos sitios que pueden discrepar.
+ *  2. Una cascara con `status` caducado volveria a salir en la consulta
+ *     de este barrido todas las noches, para siempre. Filtrarla pediria
+ *     un indice compuesto por una consulta de mantenimiento.
+ *  3. Lo prometido es que no se guarda nada. Un documento con el pais, el
+ *     tipo de contrato, el numero de paginas y una huella del origen no
+ *     es "nada", aunque le falte el texto. Si mas adelante hacen falta
+ *     metricas, se cuentan al crear la orden y se suman en un contador
+ *     agregado, sin guardar una fila por contrato.
+ *
+ * Los contadores del freno por origen (`_limite_*`) viven en la misma
+ * coleccion y caen en la misma consulta. Se borran igual: son mecanismo
+ * puro, no hay nada que conservar en ellos.
+ *
+ * ── La hora a la que corre ──────────────────────────────────────────────
+ * Va con el mantenimiento nocturno de las 04:00, asi que una orden puede
+ * seguir fisicamente en Firestore unas horas despues de caducar. No
+ * afecta a lo que ve nadie: `estaCaducada` ya cierra el acceso en el
+ * instante exacto. Por eso la pantalla dice "deja de estar disponible a
+ * las 24 horas y se borra esa misma noche" y no promete el borrado al
+ * minuto, que seria mentira sin un programador propio --y uno propio
+ * cuesta una funcion desplegada mas para no ganar nada.
+ */
+export async function borrarAnalisisCaducados(): Promise<{
+  ordenes: number;
+  contadores: number;
+}> {
+  const coleccion = adminDb().collection(COLLECTIONS.singleAnalysisOrders);
+  let ordenes = 0;
+  let contadores = 0;
+
+  /**
+   * Dos consultas, no una, y la segunda no es redundante.
+   *
+   * Firestore ordena por TIPO antes que por valor: una cadena va despues de
+   * cualquier marca de tiempo. Si un fallo deja `expiresAt` como texto, ese
+   * documento nunca entra en `expiresAt < ahora` y su analisis se queda
+   * guardado para siempre --invisible, porque `estaCaducada` ya le cierra el
+   * acceso, y por eso nadie se enteraria nunca.
+   *
+   * La segunda pasada mira `createdAt`, que lo escribimos nosotros y no
+   * depende de nada. Una orden vive como maximo 24 horas desde que se crea,
+   * y 24 mas si se paga justo antes de caducar: 48 en el peor caso legitimo.
+   * A las 72 se borra sin preguntar por `expiresAt`.
+   */
+  const pasadas = [
+    () => coleccion.where('expiresAt', '<', Timestamp.now()).limit(POR_LOTE),
+    () => coleccion.where('createdAt', '<', hace(HORAS_TOPE_ABSOLUTO)).limit(POR_LOTE),
+  ];
+
+  // En lotes y con tope: si algun dia hay mas caducadas de las que caben, el
+  // resto espera a la noche siguiente. Como el acceso ya esta cerrado, lo
+  // unico que se retrasa es liberar espacio.
+  for (const consulta of pasadas) {
+    for (let lote = 0; lote < LOTES_MAXIMOS; lote += 1) {
+      const snap = await consulta().get();
+      if (snap.empty) break;
+
+      const batch = adminDb().batch();
+      for (const doc of snap.docs) {
+        batch.delete(doc.ref);
+        if (doc.id.startsWith('_limite_')) contadores += 1;
+        else ordenes += 1;
+      }
+      await batch.commit();
+
+      if (snap.size < POR_LOTE) break;
+    }
+  }
+
+  return { ordenes, contadores };
 }

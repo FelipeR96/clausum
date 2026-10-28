@@ -64,6 +64,17 @@ export interface SingleAnalysisOrder extends WithTimestamps {
   pageCount?: number;
 
   /**
+   * El extractor corto el contrato por largo, asi que el analisis cubre
+   * solo una parte.
+   *
+   * Se guarda porque hay que AVISARLO antes del pago. Cobrar por un
+   * analisis parcial sin decirlo es exactamente lo que no se puede
+   * permitir un producto legal: quien paga cree que se reviso su contrato
+   * entero.
+   */
+  truncated?: boolean;
+
+  /**
    * Tope duro de vida del analisis. Pasada esta fecha se borra aunque
    * nadie haya pagado y aunque nadie lo haya descargado.
    */

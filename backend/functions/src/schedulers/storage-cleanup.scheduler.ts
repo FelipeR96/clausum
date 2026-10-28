@@ -3,6 +3,7 @@ import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@clausum/shared';
 import { adminDb, adminStorage } from '../firebase/admin';
 import { ALL_SECRETS } from '../config/env';
+import { borrarAnalisisCaducados } from '../services/single-analysis.service';
 import { logger } from '../utils/logger';
 
 const DEFAULT_EXPORT_RETENTION_DAYS = 30;
@@ -101,6 +102,16 @@ export const storageCleanupScheduler = onSchedule(
     if (pagos.caducados > 0) {
       logger.info('api', 'Pagos pendientes caducados', {
         metadata: { ...pagos, horas: getPendingPaymentHours() },
+      });
+    }
+
+    // Y por la misma razon, el barrido de los analisis sueltos sin cuenta.
+    // Cierra el circulo de la promesa: el texto del contrato ya se borro al
+    // terminar el analisis, y aqui cae el resultado y todo lo demas.
+    const sueltos = await borrarAnalisisCaducados();
+    if (sueltos.ordenes > 0 || sueltos.contadores > 0) {
+      logger.info('api', 'Analisis sueltos caducados borrados', {
+        metadata: sueltos,
       });
     }
   }
