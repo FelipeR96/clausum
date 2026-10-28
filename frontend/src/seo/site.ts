@@ -1,12 +1,32 @@
+import {
+  DOMINIO_PUBLICO,
+  OG_IMAGE_PATH,
+  SITE_NAME,
+  SITE_TAGLINE,
+  TWITTER_HANDLE,
+} from '@/seo/constants';
+
 /**
- * El único dominio que debe aparecer en Google.
+ * Lo que no depende del entorno vive en constants.ts y se reexporta aqui,
+ * para que el resto de la aplicacion siga importando de un solo sitio.
  *
- * Está escrito aquí y no en una variable de entorno a propósito: es la
- * referencia contra la que se compara cada despliegue para decidir si
- * puede indexarse. Si viviera en el entorno, cada despliegue se declararía
- * canónico a sí mismo y el chequeo no serviría de nada.
+ * El motivo de la separacion: este modulo lee `import.meta.env` al
+ * importarse, lo que solo funciona dentro de Vite. El plugin que genera el
+ * HTML por ruta corre en Node y necesita esas constantes sin arrastrar
+ * este archivo.
  */
-export const DOMINIO_PUBLICO = 'https://clausumlegal.com';
+export {
+  DOMINIO_PUBLICO,
+  OG_IMAGE_PATH,
+  SITE_NAME,
+  SITE_TAGLINE,
+  TWITTER_HANDLE,
+};
+export type {
+  BreadcrumbItem,
+  FaqItem,
+  SeoPageConfig,
+} from '@/seo/constants';
 
 /** URL canónica de ESTE despliegue. */
 export const SITE_URL = (
@@ -48,50 +68,14 @@ export function esVisitaAlSitioPublico(): boolean {
   return host === HOST_PUBLICO || host === `www.${HOST_PUBLICO}`;
 }
 
-export const SITE_NAME = 'Clausum';
-
-export const SITE_TAGLINE =
-  'Análisis de contratos con IA y contexto jurídico colombiano';
-
-/**
- * PNG y no SVG a proposito: WhatsApp, Facebook, LinkedIn y X no renderizan
- * SVG en las vistas previas de enlaces. Con el SVG, compartir el sitio
- * mostraba un recuadro vacio. El SVG se conserva como fuente editable.
- */
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og/clausum-og.png`;
-
-export const TWITTER_HANDLE = '@clausum';
+export const DEFAULT_OG_IMAGE = `${SITE_URL}${OG_IMAGE_PATH}`;
 
 export const ORGANIZATION = {
   name: SITE_NAME,
   url: SITE_URL,
-  logo: `${SITE_URL}/og/clausum-og.png`,
+  logo: `${SITE_URL}${OG_IMAGE_PATH}`,
   description: SITE_TAGLINE,
   areaServed: 'CO',
   availableLanguage: 'es',
 } as const;
 
-export type FaqItem = {
-  question: string;
-  answer: string;
-};
-
-export type BreadcrumbItem = {
-  name: string;
-  path: string;
-};
-
-export type SeoPageConfig = {
-  path: string;
-  title: string;
-  description: string;
-  keywords: string;
-  ogTitle?: string;
-  ogDescription?: string;
-  ogImage?: string;
-  ogType?: 'website' | 'article';
-  robots?: string;
-  breadcrumbs: BreadcrumbItem[];
-  faq?: FaqItem[];
-  schemaType?: 'WebPage' | 'SoftwareApplication';
-};

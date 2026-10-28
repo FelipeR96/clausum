@@ -1,15 +1,20 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { seoArtifacts } from './vite-plugin-seo';
+import { DOMINIO_PUBLICO } from './src/seo/constants';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, __dirname, '');
   const projectId = env.VITE_FIREBASE_PROJECT_ID || 'clausum-dev';
   const functionsHost =
     env.VITE_FIREBASE_FUNCTIONS_EMULATOR_HOST || '127.0.0.1:5001';
+  // La misma URL que lee site.ts en el navegador. Si no es el dominio
+  // publico, el plugin cierra robots.txt y marca todo noindex.
+  const siteUrl = env.VITE_SITE_URL || DOMINIO_PUBLICO;
 
   return {
-    plugins: [react()],
+    plugins: [react(), seoArtifacts({ siteUrl })],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
