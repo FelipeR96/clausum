@@ -16,6 +16,7 @@ import {
 } from '../config/env';
 import { setUserPlan } from './subscription.service';
 import { getAmountInCents } from '../config/pricing';
+import { datosParaCobro, marcarOrdenPagada } from './single-analysis.service';
 import { AppError } from '../utils/errors';
 import { firestoreDateToDate } from '../utils/firestore-date';
 import { inicioDelNuevoPeriodo } from '../utils/billing-period';
@@ -337,6 +338,102 @@ export async function createWompiCheckout(
     redirectUrl,
     customerEmail: email,
     customerFullName: displayName,
+  };
+}
+
+/**
+ * Crea el pago pendiente del analisis suelto, SOLO si no existe ya.
+ *
+ * Con un `set` normal, pulsar "pagar" dos veces reescribiria el documento; y
+ * si entre los dos clics llego el aviso de Wompi, un cobro ya procesado
+ * volveria a `pending`. Lo grave no es el campo en si: la comprobacion de
+ * idempotencia del webhook mira exactamente ese valor, asi que el siguiente
+ * reenvio volveria a tratar el cobro como nuevo y a desbloquear otra vez.
+ *
+ * El contenido no cambia nunca --referencia y monto quedan fijados al crear
+ * la orden-- asi que crear si falta es todo lo que hace falta.
+ */
+async function crearPagoSueltoPendiente(input: {
+  reference: string;
+  amountInCents: number;
+  currency: string;
+}): Promise<void> {
+  const ref = adminDb().collection(COLLECTIONS.payments).doc(input.reference);
+
+  await adminDb().runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (snap.exists) return;
+
+    tx.set(ref, {
+      provider: 'wompi',
+      // Sin userId: se compra sin cuenta. El agregado de ingresos ya lo
+      // tolera y lo cuenta como ingreso sin sumarlo a clientes conocidos,
+      // que es lo correcto: un comprador anonimo no es un cliente conocido.
+      kind: 'single_analysis',
+      reference: input.reference,
+      amount: input.amountInCents,
+      currency: input.currency,
+      status: 'pending',
+      description: 'Clausum — análisis de un documento',
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  });
+}
+
+/**
+ * Cobro unico de un analisis suelto.
+ *
+ * Usa el Web Checkout y no el widget de tokenizacion que usan las
+ * suscripciones. La diferencia no es de estilo: el widget existe para
+ * guardar un medio de pago y volver a cobrarlo cada mes. Aqui se cobra una
+ * vez, asi que guardar la tarjeta de alguien que ni tiene cuenta seria
+ * recoger un dato sensible sin ninguna razon para tenerlo.
+ *
+ * El monto NO se vuelve a consultar: sale de la orden, donde quedo fijado al
+ * subir el documento. Es el precio que la persona vio en la vista previa, y
+ * es el que se firma.
+ */
+export async function createWompiSingleAnalysisCheckout(
+  reference: string
+): Promise<WompiCheckoutPayload> {
+  const config = getWompiConfig();
+  if (!config) {
+    throw new AppError('Los pagos con Wompi no están configurados en el servidor', 503);
+  }
+
+  const { amountInCents, currency, provider } = await datosParaCobro(reference);
+
+  if (provider !== 'wompi') {
+    throw new AppError(
+      'Este análisis se cobra con otro medio de pago',
+      400,
+      'WRONG_PROVIDER'
+    );
+  }
+
+  const integritySignature = buildIntegritySignature(
+    reference,
+    amountInCents,
+    currency,
+    config.integritySecret
+  );
+
+  await crearPagoSueltoPendiente({ reference, amountInCents, currency });
+
+  logger.info('wompi', 'Checkout de análisis suelto creado', {
+    metadata: { reference, amountInCents, currency },
+  });
+
+  return {
+    checkoutUrl: WOMPI_CHECKOUT_URL,
+    publicKey: config.publicKey,
+    currency,
+    amountInCents,
+    reference,
+    integritySignature,
+    // Vuelve a la pantalla del propio analisis, que es donde esta el boton
+    // de descarga. No hay panel al que mandarlo: no tiene cuenta.
+    redirectUrl: `${config.appUrl}/analisis/${reference}?pago=ok`,
   };
 }
 
@@ -667,7 +764,11 @@ export async function handleWompiWebhook(event: WompiWebhookEvent): Promise<void
   }
 
   const payment = paymentSnap.data()!;
-  const userId = payment.userId as string;
+  // Ausente significa suscripcion: es lo que eran todos los pagos antes de
+  // que existiera la compra suelta, y asi los documentos ya guardados se
+  // siguen leyendo bien sin tocarlos.
+  const esCompraSuelta = payment.kind === 'single_analysis';
+  const userId = payment.userId as string | undefined;
   const interval = (payment.billingInterval as BillingInterval) ?? 'monthly';
   const isRenewal = Boolean(payment.isRenewal);
   const expectedAmount = payment.amount as number | undefined;
@@ -737,9 +838,67 @@ export async function handleWompiWebhook(event: WompiWebhookEvent): Promise<void
   }
 
   if (transaction.status === 'APPROVED') {
-    await activateProFromPayment(userId, interval, transaction.id, payment, {
-      wompiPaymentSourceId: paymentSourceId,
-    });
+    if (esCompraSuelta) {
+      try {
+        // No concede plan: desbloquea SU informe y le renueva el plazo.
+        await marcarOrdenPagada(transaction.reference, {
+          email: transaction.customer_email,
+        });
+      } catch (error) {
+        if (error instanceof AppError && error.code === 'ORDER_NOT_FOUND') {
+          // Dinero cobrado sobre un analisis que ya se borro. Devolver un
+          // error haria que Wompi reintentara para siempre sobre algo que no
+          // va a reaparecer, asi que se registra y el pago se marca cobrado,
+          // porque lo fue. Queda visible en ingresos para devolverlo a mano.
+          logger.error(
+            'wompi',
+            'Pago de análisis suelto cuyo informe ya había caducado',
+            undefined,
+            {
+              metadata: {
+                reference: transaction.reference,
+                transactionId: transaction.id,
+              },
+            }
+          );
+          await paymentRef.update({
+            status: 'succeeded',
+            wompiTransactionId: transaction.id,
+            paidAt: FieldValue.serverTimestamp(),
+            failureCode: 'ORDER_EXPIRED',
+          });
+          return;
+        }
+        throw error;
+      }
+    } else if (!userId) {
+      // No deberia poder pasar: todo pago de suscripcion nace con su uid.
+      // Si pasa, es dinero que no se puede atribuir, y conceder Pro a ciegas
+      // seria peor que no conceder nada.
+      //
+      // El documento se deja en `pending` a proposito. Marcarlo `succeeded`
+      // sin haber dado nada escondería el problema entre los ingresos
+      // normales, y marcarlo `failed` seria mentira: el cobro ocurrio.
+      // Pendiente, cada reintento de Wompi vuelve a registrar el error y el
+      // barrido nocturno acaba marcandolo caducado, que es precisamente la
+      // anomalia que hay que ir a mirar.
+      logger.error(
+        'wompi',
+        'Pago aprobado que no se puede atribuir: sin usuario y sin tipo de compra',
+        undefined,
+        {
+          metadata: {
+            reference: transaction.reference,
+            transactionId: transaction.id,
+          },
+        }
+      );
+      return;
+    } else {
+      await activateProFromPayment(userId, interval, transaction.id, payment, {
+        wompiPaymentSourceId: paymentSourceId,
+      });
+    }
 
     await paymentRef.update({
       status: 'succeeded',
@@ -754,15 +913,27 @@ export async function handleWompiWebhook(event: WompiWebhookEvent): Promise<void
       ...(paymentSourceId ? { wompiPaymentSourceId: paymentSourceId } : {}),
     });
 
-    logger.info('wompi', isRenewal ? 'Renovación Wompi aprobada' : 'Pago Wompi aprobado — Pro activo', {
-      userId,
-      metadata: {
-        reference: transaction.reference,
-        transactionId: transaction.id,
-        interval,
-        isRenewal,
-      },
-    });
+    logger.info(
+      'wompi',
+      esCompraSuelta
+        ? 'Pago de análisis suelto aprobado'
+        : isRenewal
+          ? 'Renovación Wompi aprobada'
+          : 'Pago Wompi aprobado — Pro activo',
+      {
+        userId,
+        metadata: {
+          reference: transaction.reference,
+          transactionId: transaction.id,
+          // Una compra suelta no tiene intervalo ni renovacion; van en el
+          // registro de todas formas para no partir en dos la forma de los
+          // registros de pago, que es lo que se consulta cuando algo falla.
+          interval,
+          isRenewal,
+          esCompraSuelta,
+        },
+      }
+    );
     return;
   }
 

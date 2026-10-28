@@ -7,12 +7,8 @@ import type {
   SingleAnalysisOrder,
   SingleAnalysisPreview,
 } from '@clausum/shared';
-import {
-  buildSingleAnalysisPreview,
-  COLLECTIONS,
-  getSingleAnalysisAmount,
-  SINGLE_ANALYSIS_BILLING,
-} from '@clausum/shared';
+import { buildSingleAnalysisPreview, COLLECTIONS } from '@clausum/shared';
+import { getSingleAnalysisPricing } from '../config/pricing';
 import { adminDb } from '../firebase/admin';
 import { extractTextFromDocument } from '../integrations/document/extractor';
 import { callDeepSeek } from '../integrations/deepseek/client';
@@ -137,13 +133,19 @@ export async function crearOrdenDeAnalisis(input: {
 
   const expira = new Date(Date.now() + HORAS_DE_VIDA * 60 * 60 * 1000);
 
+  // El precio se congela AQUI, al subir el documento, y es lo que se cobrara
+  // despues. Si el cobro volviera a leerlo, un cambio de precio entre la
+  // vista previa y el pago cobraria algo distinto de lo que la persona vio
+  // --y "conocer el precio antes de pagar" es justo lo que vende esto.
+  const precio = await getSingleAnalysisPricing(input.region);
+
   const orden: OrdenGuardada = {
     reference,
     status: 'pending',
     provider: input.region === 'CO' ? 'wompi' : 'paypal',
     region: input.region,
-    amountInCents: getSingleAnalysisAmount(input.region),
-    currency: SINGLE_ANALYSIS_BILLING[input.region].currency,
+    amountInCents: precio.amountInCents,
+    currency: precio.currency,
     country: input.country,
     contractTypeId: input.contractTypeId,
     pageCount: extraccion.pageCount,
@@ -342,6 +344,53 @@ export async function comprobarLimitePorOrigen(fingerprint: string): Promise<voi
       'RATE_LIMITED'
     );
   }
+}
+
+/**
+ * Lo que el cobro necesita saber de la orden, con sus negativas.
+ *
+ * Vive aqui y no en el servicio de la pasarela para que las importaciones
+ * vayan en una sola direccion: la pasarela conoce la orden, la orden no
+ * conoce la pasarela. Al reves tendriamos un ciclo.
+ *
+ * Las tres negativas son el punto de la funcion:
+ *
+ *  - Caducada: no se cobra por algo que ya no se puede entregar.
+ *  - Ya pagada: evita el segundo cobro si alguien recarga la pantalla de
+ *    pago o vuelve atras en el navegador.
+ *  - Sin analisis todavia: no se cobra por un analisis que aun podria
+ *    fallar. Ademas nadie deberia llegar aqui sin haber visto la vista
+ *    previa, que es donde se muestra el precio.
+ */
+export async function datosParaCobro(reference: string): Promise<{
+  amountInCents: number;
+  currency: string;
+  provider: 'wompi' | 'paypal';
+}> {
+  const orden = await leerOrden(reference);
+
+  if (estaCaducada(orden)) {
+    throw new AppError('Este análisis ya expiró', 410, 'ORDER_EXPIRED');
+  }
+  if (orden.status === 'paid' || orden.status === 'delivered') {
+    throw new AppError('Este análisis ya está pagado', 409, 'ALREADY_PAID');
+  }
+  if (!orden.analysis) {
+    throw new AppError(
+      'El análisis todavía no ha terminado',
+      409,
+      'ANALYSIS_NOT_READY'
+    );
+  }
+
+  return {
+    amountInCents: orden.amountInCents,
+    currency: orden.currency,
+    // Lo decide la region al crear la orden. Viaja de vuelta para que quien
+    // cobre pueda negarse si no es el suyo: una orden de LATAM firmada por
+    // Wompi se cobraria en pesos el importe en dolares.
+    provider: orden.provider,
+  };
 }
 
 /**

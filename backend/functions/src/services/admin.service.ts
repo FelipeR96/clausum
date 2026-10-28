@@ -430,7 +430,12 @@ export async function getIngresos(options: {
     prov.comisionEnCentavos += comision;
     if (!tarifa) prov.sinTarifa = true;
 
-    const intervalo = (d.billingInterval as string) ?? 'desconocido';
+    // Una compra suelta no tiene intervalo: no se renueva. Sin esta linea
+    // caeria en 'desconocido' y en el panel pareceria un fallo.
+    const intervalo =
+      d.kind === 'single_analysis'
+        ? 'documento'
+        : ((d.billingInterval as string) ?? 'desconocido');
     m.porIntervalo[intervalo] ??= { pagos: 0, brutoEnCentavos: 0 };
     m.porIntervalo[intervalo].pagos += 1;
     m.porIntervalo[intervalo].brutoEnCentavos += bruto;

@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import type { BillingRegion, CountryCode } from '@clausum/shared';
 import { isSupportedContractFileName } from '@clausum/shared';
 import { asyncHandler } from '../middleware/asyncHandler';
+import { createWompiSingleAnalysisCheckout } from '../services/wompi.service';
 import {
   comprobarLimitePorOrigen,
   crearOrdenDeAnalisis,
@@ -104,6 +105,27 @@ singleAnalysisRouter.post(
     // con su documento de Firestore --solo que aqui, sin sesion, no puede
     // leer Firestore y tiene que preguntarle a la API.
     res.status(202).json({ reference, pageCount, status: 'processing' });
+  })
+);
+
+/**
+ * Arranca el cobro del informe completo.
+ *
+ * Sin `authenticate`, como todo lo de aqui: la referencia es la credencial.
+ * Y por eso no hay nada que robar aunque alguien la adivine --que no puede,
+ * son 128 bits-- mas alla de ver un informe: este endpoint no cobra nada,
+ * solo devuelve lo que el widget necesita. El cobro lo confirma el webhook
+ * con la firma de la pasarela.
+ *
+ * Va antes que GET /single/:reference a proposito. Express resuelve por
+ * orden de registro, y aunque aqui no choquen, dejar las rutas con mas
+ * segmentos primero evita que una futura ruta comodin se las coma.
+ */
+singleAnalysisRouter.post(
+  '/single/:reference/checkout',
+  asyncHandler(async (req, res) => {
+    const reference = referenciaValida(String(req.params.reference ?? ''));
+    res.json(await createWompiSingleAnalysisCheckout(reference));
   })
 );
 

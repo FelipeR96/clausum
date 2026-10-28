@@ -3,6 +3,7 @@ import {
   BILLING_CURRENCY_LATAM,
   PRO_BILLING,
   PRO_BILLING_LATAM,
+  SINGLE_ANALYSIS_BILLING,
   type BillingInterval,
   type BillingRegion,
 } from '@clausum/shared';
@@ -30,6 +31,15 @@ export interface RegionPricing {
   monthlyAmountInCents: number;
   yearlyAmountInCents: number;
   currency: string;
+  /**
+   * Lo que cuesta analizar un documento sin cuenta.
+   *
+   * Opcional a proposito, y es lo que evita un estropicio: el documento
+   * `config/pricing` que ya esta guardado NO lo lleva. Si fuera obligatorio,
+   * dejaria de validar y los precios de Pro que haya configurado el
+   * administrador volverian en silencio a los del codigo.
+   */
+  singleAnalysisAmountInCents?: number;
 }
 
 export interface Pricing {
@@ -73,6 +83,32 @@ function isRegionPricing(value: unknown): value is RegionPricing {
 }
 
 /**
+ * El precio del documento se limpia aparte, y no tumba la region si viene mal.
+ *
+ * Es una excepcion deliberada al "o todo o nada" de arriba, y conviene saber
+ * por que. Esa regla existe para que un documento a medio escribir no deje la
+ * plataforma cobrando cero en los campos que SIEMPRE tienen que estar. Este
+ * campo puede no estar, asi que tiene un respaldo propio. Si un cero o una
+ * cadena invalidaran la region entera, un dedazo en el precio del documento
+ * revertiria tambien el precio de la suscripcion, y eso es mucho peor: el
+ * administrador cobraria otra cosa por Pro sin enterarse.
+ */
+function precioDeDocumento(v: Record<string, unknown>): number | undefined {
+  const valor = v.singleAnalysisAmountInCents;
+  return typeof valor === 'number' && valor > 0 ? valor : undefined;
+}
+
+function limpiarRegion(v: RegionPricing): RegionPricing {
+  const suelto = precioDeDocumento(v as unknown as Record<string, unknown>);
+  return {
+    monthlyAmountInCents: v.monthlyAmountInCents,
+    yearlyAmountInCents: v.yearlyAmountInCents,
+    currency: v.currency,
+    ...(suelto ? { singleAnalysisAmountInCents: suelto } : {}),
+  };
+}
+
+/**
  * Un documento a medio escribir no debe poder dejar la plataforma cobrando
  * cero. Si cualquiera de las dos regiones no cuadra, se cae al respaldo
  * entera en vez de mezclar.
@@ -82,8 +118,8 @@ function parsePricing(data: unknown): Pricing | null {
   const d = data as Record<string, unknown>;
   if (!isRegionPricing(d.CO) || !isRegionPricing(d.LATAM)) return null;
   return {
-    CO: d.CO,
-    LATAM: d.LATAM,
+    CO: limpiarRegion(d.CO),
+    LATAM: limpiarRegion(d.LATAM),
     updatedAt: d.updatedAt as FirebaseFirestore.Timestamp | undefined,
     updatedBy: typeof d.updatedBy === 'string' ? d.updatedBy : undefined,
   };
@@ -126,4 +162,24 @@ export async function getAmountInCents(
 export async function getCurrency(region: BillingRegion): Promise<string> {
   const pricing = await getPricing();
   return region === 'CO' ? pricing.CO.currency : pricing.LATAM.currency;
+}
+
+/**
+ * Precio y moneda del analisis suelto, en una sola llamada.
+ *
+ * Juntos y no en dos funciones porque tienen que venir del mismo sitio: leer
+ * el precio de Firestore y la moneda de las constantes es como se acaba
+ * firmando una cantidad en pesos y cobrandola en dolares.
+ */
+export async function getSingleAnalysisPricing(
+  region: BillingRegion
+): Promise<{ amountInCents: number; currency: string }> {
+  const pricing = await getPricing();
+  const regional = region === 'CO' ? pricing.CO : pricing.LATAM;
+  return {
+    amountInCents:
+      regional.singleAnalysisAmountInCents ??
+      SINGLE_ANALYSIS_BILLING[region].amountInCents,
+    currency: regional.currency,
+  };
 }
