@@ -27,6 +27,55 @@ export const PRO_BILLING_LATAM = {
 
 export type BillingInterval = 'monthly' | 'annual';
 
+/**
+ * Compra de un analisis suelto, sin cuenta y sin suscripcion.
+ *
+ * Existe porque la mayoria de quien necesita revisar un contrato lo
+ * necesita UNA vez: quien va a firmar un arriendo o recibe una oferta
+ * laboral no se suscribe por meses para resolver algo puntual. La
+ * suscripcion asume una necesidad recurrente que ese usuario no tiene.
+ *
+ * El precio en dolares NO es equivalencia exacta del peso: es un numero
+ * redondo cercano (USD 2,99 ~ COP 9.627 al TRM 3.219 del modelo de costos).
+ * Si el TRM se mueve mucho, hay que revisarlo a mano.
+ *
+ * Cuidado con el margen: la comision de pasarela sobre un cobro de este
+ * tamano pesa mucho mas, en porcentaje, que sobre una suscripcion.
+ */
+export const SINGLE_ANALYSIS_BILLING = {
+  CO: {
+    currency: BILLING_CURRENCY,
+    /** $9.550 COP */
+    amountInCents: 955_000,
+  },
+  LATAM: {
+    currency: BILLING_CURRENCY_LATAM,
+    /** USD 2,99 */
+    amountInCents: 299,
+  },
+} as const;
+
+export function getSingleAnalysisAmount(region: BillingRegion): number {
+  return SINGLE_ANALYSIS_BILLING[region].amountInCents;
+}
+
+export function formatSingleAnalysisPrice(region: BillingRegion): string {
+  return formatProPrice(region, getSingleAnalysisAmount(region));
+}
+
+/**
+ * Cuantos analisis sueltos cuestan lo mismo que un mes de Pro.
+ *
+ * Es la escalera del producto: por debajo de ese numero sale mejor pagar
+ * suelto, por encima conviene suscribirse. Si algun dia da menos de 2, el
+ * pago suelto se esta comiendo la suscripcion.
+ */
+export function singleAnalysesPerProMonth(region: BillingRegion): number {
+  return Math.floor(
+    getProAmountForRegion(region, 'monthly') / getSingleAnalysisAmount(region)
+  );
+}
+
 export function getBillingCurrency(region: BillingRegion): string {
   return region === 'CO' ? BILLING_CURRENCY : BILLING_CURRENCY_LATAM;
 }

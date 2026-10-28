@@ -10,5 +10,6 @@ export * from './comparison.types';
 export * from './alert.types';
 export * from './history.types';
 export * from './payment.types';
+export * from './order.types';
 export * from './config.types';
 export * from './system-log.types';
