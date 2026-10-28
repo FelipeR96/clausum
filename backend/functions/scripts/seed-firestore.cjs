@@ -202,15 +202,6 @@ async function seed() {
     );
   }
 
-  if (forzarPlanes && !confirmado) {
-    console.log(
-      huboCambios
-        ? '\n⚠️  ENSAYO: no se ha escrito nada. Revisa el antes/despues de arriba.\n' +
-            '   Si es lo que quieres, repite el comando añadiendo --confirmar.\n' +
-            '   Para acotarlo a un plan: --plan=free --confirmar'
-        : '\n✓ ENSAYO: los limites de Firestore ya coinciden con el codigo.'
-    );
-  }
 
   console.log('\nConfiguracion:');
   for (const [id, doc] of Object.entries(config)) {
@@ -221,6 +212,17 @@ async function seed() {
     console.log(
       '\n💡 Nada existente se ha modificado. Para reescribir los planes con los\n' +
         '   limites del codigo: node scripts/seed-firestore.cjs --forzar-planes'
+    );
+  } else if (!confirmado) {
+    // Va al final y no junto a los planes a proposito: un aviso de "no se ha
+    // escrito nada" enterrado a mitad de la salida se lee como si el script ya
+    // hubiera terminado, y lo que viene debajo parece el resultado real.
+    console.log(
+      huboCambios
+        ? '\n⚠️  ENSAYO: no se ha escrito nada. Revisa el antes/despues de arriba.\n' +
+            '   Si es lo que quieres, repite el comando añadiendo --confirmar.\n' +
+            '   Para acotarlo a un plan: --plan=pro --confirmar'
+        : '\n✓ ENSAYO: los limites de Firestore ya coinciden con el codigo.'
     );
   }
   console.log('\n✅ Seed completado.');
