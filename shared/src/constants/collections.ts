@@ -13,6 +13,8 @@ export const COLLECTIONS = {
   contractTypes: 'contract_types',
   legalTopics: 'legal_topics',
   bugReports: 'bug_reports',
+  /** Compras de un analisis suelto, sin cuenta. */
+  singleAnalysisOrders: 'single_analysis_orders',
 } as const;
 
 export const USER_SUBCOLLECTIONS = {

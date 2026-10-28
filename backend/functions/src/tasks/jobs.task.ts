@@ -3,6 +3,7 @@ import { getFunctions } from 'firebase-admin/functions';
 import type { CountryCode } from '@clausum/shared';
 import { ALL_SECRETS, isEmulator } from '../config/env';
 import { executeAnalyzeContract } from '../services/analysis.service';
+import { ejecutarAnalisisSuelto } from '../services/single-analysis.service';
 import { executeDetectRisks } from '../services/risks.service';
 import { executeCompareContracts } from '../services/comparison.service';
 import { logger } from '../utils/logger';
@@ -60,6 +61,14 @@ type AnalyzeJob = {
   contractTypeId?: string;
 };
 
+/**
+ * Analisis comprado suelto, sin cuenta. No lleva userId porque no hay
+ * usuario: la referencia de la orden es lo unico que lo identifica.
+ */
+type SingleAnalysisJob = {
+  reference: string;
+};
+
 type CompareJob = {
   userId: string;
   contractIdA: string;
@@ -100,6 +109,24 @@ export const processAnalysisTask = onTaskDispatched<AnalyzeJob>(
       { country, contractTypeId },
       execOptionsFor(retryCount)
     );
+  }
+);
+
+export const processSingleAnalysisTask = onTaskDispatched<SingleAnalysisJob>(
+  taskOptions,
+  async (req) => {
+    const { reference } = req.data;
+    const { retryCount } = req;
+
+    logger.info('api', 'Tarea de analisis suelto recibida', {
+      metadata: { reference, attempt: retryCount + 1 },
+    });
+
+    // Sin cuota que devolver ni documento de analisis que marcar en error:
+    // si los reintentos se agotan, la orden se queda sin resultado y el
+    // barrido de expiracion la limpia. Nadie ha pagado todavia a estas
+    // alturas, asi que no hay dinero retenido por un fallo.
+    await ejecutarAnalisisSuelto(reference);
   }
 );
 
@@ -150,7 +177,8 @@ export const processComparisonTask = onTaskDispatched<CompareJob>(
 export type JobQueueName =
   | 'processAnalysisTask'
   | 'processRisksTask'
-  | 'processComparisonTask';
+  | 'processComparisonTask'
+  | 'processSingleAnalysisTask';
 
 /**
  * Encola un trabajo.
@@ -163,7 +191,7 @@ export type JobQueueName =
  */
 export async function enqueueJob(
   queue: JobQueueName,
-  payload: AnalyzeJob | CompareJob,
+  payload: AnalyzeJob | CompareJob | SingleAnalysisJob,
   runInline: () => Promise<unknown>
 ): Promise<void> {
   if (isEmulator()) {

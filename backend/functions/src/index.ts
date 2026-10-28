@@ -8,6 +8,7 @@ import { authenticate, AuthenticatedRequest } from './middleware/authenticate';
 import { errorHandler } from './middleware/errorHandler';
 import { asyncHandler } from './middleware/asyncHandler';
 import { adminDb } from './firebase/admin';
+import { singleAnalysisRouter } from './routes/single-analysis.routes';
 import { analysisRouter } from './routes/analysis.routes';
 import { subscriptionRouter } from './routes/subscription.routes';
 import { contractRouter } from './routes/contract.routes';
@@ -77,6 +78,7 @@ app.get(
 );
 
 app.use('/api', analysisRouter);
+app.use('/api', singleAnalysisRouter);
 app.use('/api', subscriptionRouter);
 app.use('/api', billingRouter);
 app.use('/api', contractRouter);
@@ -111,4 +113,5 @@ export {
   processAnalysisTask,
   processRisksTask,
   processComparisonTask,
+  processSingleAnalysisTask,
 } from './tasks/jobs.task';
