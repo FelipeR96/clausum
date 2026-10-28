@@ -99,6 +99,16 @@ const esDominioPublico = (url: string) => sinBarraFinal(url) === DOMINIO_PUBLICO
  * indexado compite contra el sitio real por las mismas palabras, y a veces
  * gana el equivocado.
  */
+/**
+ * Sobre `Disallow: /analisis/`: esas paginas son el informe de una compra sin
+ * cuenta, y su referencia ES la credencial. No estan enlazadas desde ningun
+ * sitio, asi que un buscador no deberia llegar nunca; pero una referencia se
+ * puede filtrar por el campo Referer, por una extension del navegador o
+ * porque alguien pegue el enlace en un foro para pedir ayuda con su contrato.
+ * Si eso pasa, que no quede indexado. La pagina lleva ademas su propio
+ * `noindex`, porque robots.txt pide que no se rastree y el meta pide que no
+ * se indexe --y son dos cosas distintas.
+ */
 export function construirRobotsTxt(siteUrl: string): string {
   const url = sinBarraFinal(siteUrl);
 
@@ -114,6 +124,7 @@ Disallow: /
 Allow: /
 Disallow: /panel/
 Disallow: /panel
+Disallow: /analisis/
 
 Sitemap: ${url}/sitemap.xml
 `;

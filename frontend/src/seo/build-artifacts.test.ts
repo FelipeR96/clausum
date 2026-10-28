@@ -51,6 +51,15 @@ describe('robots.txt', () => {
     expect(construirRobotsTxt(DOMINIO_PUBLICO)).toContain('Disallow: /panel');
   });
 
+  it('bloquea los informes de compra suelta', () => {
+    // La referencia de la URL es la credencial del informe. Esas páginas no
+    // están enlazadas desde ningún sitio, pero una referencia se puede
+    // filtrar --por el Referer, por una extensión, o porque alguien pegue el
+    // enlace en un foro pidiendo ayuda con su contrato-- y entonces no puede
+    // acabar indexada.
+    expect(construirRobotsTxt(DOMINIO_PUBLICO)).toContain('Disallow: /analisis/');
+  });
+
   it('cierra entero cualquier despliegue que NO sea el dominio publico', () => {
     // El caso peligroso: un sitio de pruebas indexado compite contra el real
     // por las mismas palabras, y a veces gana el equivocado.
@@ -71,6 +80,21 @@ describe('robots.txt', () => {
 });
 
 describe('sitemap.xml', () => {
+  it('NO lista los informes de compra suelta', () => {
+    // El sitemap se construye desde SITEMAP_PATHS, asi que la unica forma de
+    // que una ruta privada entre ahi es que alguien la anada a esa lista. Esta
+    // prueba esta para que ese dia falle algo.
+    const xml = construirSitemapXml(DOMINIO_PUBLICO, '2026-10-28');
+    expect(xml).not.toContain('/analisis/');
+  });
+
+  it('sí lista la entrada de la compra sin cuenta', () => {
+    // Es la pagina que mas tiene que encontrarse: la unica donde se puede
+    // probar el producto sin dar un correo.
+    const xml = construirSitemapXml(DOMINIO_PUBLICO, '2026-10-28');
+    expect(xml).toContain(`${DOMINIO_PUBLICO}/analizar-documento`);
+  });
+
   it('incluye TODAS las rutas de SITEMAP_PATHS', () => {
     // La regresion que motivo este modulo: habia una lista de cinco rutas
     // copiada a mano mientras SITEMAP_PATHS declaraba nueve, y las cuatro

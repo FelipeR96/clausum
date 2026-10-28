@@ -12,6 +12,7 @@ import {
   obtenerInformeSuelto,
 } from '@/services/single-analysis.service';
 import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
+import { useRobotsMeta } from '@/seo/useRobotsMeta';
 
 /**
  * El analisis de alguien que no tiene cuenta.
@@ -76,6 +77,10 @@ function Centrado({
 }
 
 export function SingleAnalysisPage() {
+  // Esta pagina es el informe de alguien, y la referencia de la URL es su
+  // credencial. Que no se indexe aunque el enlace se filtre.
+  useRobotsMeta();
+
   const { reference = '' } = useParams<{ reference: string }>();
   const [searchParams] = useSearchParams();
   const vueltaDePago = searchParams.get('pago') === 'ok';

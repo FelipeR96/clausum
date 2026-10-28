@@ -7,6 +7,9 @@ import {
   type CountryCode,
 } from '@clausum/shared';
 import { MarketingLayout } from '@/components/marketing/MarketingLayout';
+import { PageSeo } from '@/seo/PageSeo';
+import { SEO_PAGES } from '@/seo/pages';
+import { SeoBreadcrumbs } from '@/components/marketing/SeoBreadcrumbs';
 import { DocumentUploadGuidance } from '@/components/contracts/DocumentUploadGuidance';
 import {
   ContractCountrySelect,
@@ -96,6 +99,8 @@ export function AnalizarDocumentoPage() {
 
   return (
     <MarketingLayout>
+      <PageSeo page={SEO_PAGES.singleDocument} />
+      <SeoBreadcrumbs items={SEO_PAGES.singleDocument.breadcrumbs} />
       <main className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
         <h1 className="font-display text-3xl font-bold text-on-surface sm:text-4xl">
           Analiza un contrato sin crear cuenta

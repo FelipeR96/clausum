@@ -117,11 +117,40 @@ export const SEO_PAGES = {
       { name: 'Cookies', path: '/legal/cookies' },
     ],
   },
+  /**
+   * La entrada de la compra sin cuenta.
+   *
+   * Es la pagina que mas tiene que encontrarse de todas: quien busca
+   * "analizar contrato gratis" o "revisar contrato sin registrarse" llega
+   * buscando exactamente esto, y es el unico sitio donde se puede probar el
+   * producto sin dar un correo.
+   *
+   * No se confunde con /analizar-contratos, que es la landing explicativa. Esa
+   * cuenta lo que hace el producto; esta lo hace.
+   */
+  singleDocument: {
+    path: '/analizar-documento',
+    title: 'Analizar un Contrato Gratis, sin Registrarse | Clausum',
+    description:
+      'Sube tu contrato y descubre gratis a quién favorece y cuántas cláusulas peligrosas tiene, citando tu propio texto. Sin cuenta y sin suscripción: tu contrato no se guarda.',
+    keywords:
+      'analizar contrato gratis, revisar contrato sin registrarse, análisis de contrato sin cuenta, revisar contrato de arrendamiento, leer contrato antes de firmar',
+    ogTitle: 'Analiza tu contrato gratis, sin crear cuenta — Clausum',
+    ogDescription:
+      'Descubre a quién favorece tu contrato y cuántas cláusulas peligrosas tiene antes de pagar nada.',
+    robots: 'index, follow',
+    breadcrumbs: [
+      { name: 'Inicio', path: '/' },
+      { name: 'Analizar un documento', path: '/analizar-documento' },
+    ],
+    schemaType: 'WebPage',
+  },
 } as const satisfies Record<string, SeoPageConfig>;
 
 export const SITEMAP_PATHS = [
   SEO_PAGES.home.path,
   SEO_PAGES.analyze.path,
+  SEO_PAGES.singleDocument.path,
   SEO_PAGES.compare.path,
   SEO_PAGES.risks.path,
   SEO_PAGES.pricing.path,
