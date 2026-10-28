@@ -15,9 +15,28 @@ export function esIlimitado(limite: number): boolean {
   return limite === SIN_LIMITE;
 }
 
+/**
+ * Lo que tiene una cuenta sin suscripcion.
+ *
+ * Cero analisis y cero comparaciones, y eso cambia lo que ES este plan: ya no
+ * es una puerta de entrada --para probar el producto esta el pago por
+ * documento, que no pide cuenta-- sino lo que sostiene la cuenta de quien no
+ * paga ahora mismo.
+ *
+ * Los demas limites se quedan a proposito. maxContracts y historyMaxEntries
+ * mantienen alcanzable lo que la persona ya tenia: quien estuvo en Pro y lo
+ * dejo caer no puede perder el acceso a sus informes anteriores por haber
+ * dejado de pagar.
+ *
+ * OJO: esta constante NO manda en produccion. getPlanEntitlements hace
+ * `{ ...defaults, ...plan.limits }`, asi que el documento `plans/free` de
+ * Firestore gana campo por campo. Cambiar esto solo afecta a un proyecto
+ * recien sembrado o a los campos que falten en ese documento; para que tenga
+ * efecto hay que actualizar tambien el plan en Firestore.
+ */
 export const FREE_ENTITLEMENTS: PlanEntitlements = {
-  analysesPerMonth: 3,
-  comparisonsPerMonth: 1,
+  analysesPerMonth: 0,
+  comparisonsPerMonth: 0,
   maxFileSizeMb: 5,
   maxContracts: 10,
   exportPdf: false,
@@ -30,7 +49,7 @@ export const FREE_ENTITLEMENTS: PlanEntitlements = {
 
 export const PRO_ENTITLEMENTS: PlanEntitlements = {
   analysesPerMonth: 75,
-  comparisonsPerMonth: 30,
+  comparisonsPerMonth: 50,
   maxFileSizeMb: 10,
   maxContracts: SIN_LIMITE,
   exportPdf: true,
@@ -49,12 +68,8 @@ export const SEED_PLANS: Record<'free' | 'pro', Omit<Plan, 'updatedAt'>> = {
     currency: BILLING_CURRENCY,
     limits: FREE_ENTITLEMENTS,
     features: [
-      '3 análisis al mes',
-      '1 comparación al mes',
-      'PDF digital o Word (.docx) sin límite de páginas',
-      'Sin OCR para PDF escaneados',
-      'Alertas básicas',
-      'Historial limitado',
+      'Acceso a tus análisis anteriores',
+      'Sin análisis incluidos: se pagan por documento o con Pro',
     ],
     active: true,
     sortOrder: 0,
@@ -67,8 +82,8 @@ export const SEED_PLANS: Record<'free' | 'pro', Omit<Plan, 'updatedAt'>> = {
     currency: BILLING_CURRENCY,
     limits: PRO_ENTITLEMENTS,
     features: [
-      '75 análisis al mes',
-      '30 comparaciones al mes',
+      `${PRO_ENTITLEMENTS.analysesPerMonth} análisis al mes`,
+      `${PRO_ENTITLEMENTS.comparisonsPerMonth} comparaciones al mes`,
       'PDF digital o Word (.docx) sin límite de páginas',
       `OCR para PDF escaneados (primeras ${OCR_SCANNED_MAX_PAGES} páginas)`,
       'Alertas avanzadas',

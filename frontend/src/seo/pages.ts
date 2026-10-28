@@ -1,3 +1,4 @@
+import { PRO_ENTITLEMENTS } from '@clausum/shared';
 import type { SeoPageConfig } from '@/seo/site';
 
 export const SEO_PAGES = {
@@ -5,7 +6,7 @@ export const SEO_PAGES = {
     path: '/',
     title: 'Clausum — Analizar, comparar y detectar riesgos en contratos con IA',
     description:
-      'Plataforma de análisis contractual con inteligencia artificial para Colombia. Analiza PDFs, compara versiones y detecta riesgos legales antes de firmar. Plan gratuito disponible.',
+      'Plataforma de análisis contractual con inteligencia artificial para Colombia. Analiza PDFs, compara versiones y detecta riesgos legales antes de firmar. Pruébalo sin crear cuenta.',
     keywords:
       'análisis de contratos, inteligencia artificial legal, revisión de contratos Colombia, software jurídico, Clausum',
     breadcrumbs: [{ name: 'Inicio', path: '/' }],
@@ -63,7 +64,7 @@ export const SEO_PAGES = {
     path: '/pricing',
     title: 'Precios y Planes | Clausum',
     description:
-      'Plan Free con 3 análisis al mes y 1 comparación. Plan Pro con 75 análisis y 30 comparaciones, PDF/Word sin límite de páginas y OCR en escaneos (primeras 15 páginas).',
+      `Paga solo el documento que necesitas revisar, sin cuenta ni suscripción, o pasa a Pro con ${PRO_ENTITLEMENTS.analysesPerMonth} análisis y ${PRO_ENTITLEMENTS.comparisonsPerMonth} comparaciones al mes, OCR en escaneos y exportación en PDF.`,
     keywords: 'precios Clausum, plan análisis contratos, software legal Colombia',
     robots: 'index, follow',
     breadcrumbs: [

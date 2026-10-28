@@ -35,8 +35,8 @@ export function SignupValuePanel() {
         </h1>
         <p className="mt-4 max-w-md text-lg text-on-surface-variant">
           Clausum ayuda a equipos legales en Colombia a analizar PDFs, detectar
-          riesgos y comparar versiones. Empieza gratis: 3 análisis y 1 comparación al
-          mes.
+          riesgos y comparar versiones. Tu cuenta guarda el historial de lo que
+          analices; los análisis van con el plan Pro o se pagan por documento.
         </p>
       </div>
 

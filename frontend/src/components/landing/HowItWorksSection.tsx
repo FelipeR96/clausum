@@ -39,7 +39,7 @@ const STEPS = [
     icon: 'upload_file',
     title: 'Sube tu contrato',
     description:
-      'Sube un PDF con texto seleccionable o Word (.docx) — sin límite de páginas. En Free no admitimos escaneos; Pro usa OCR en las primeras 15 páginas del escaneo.',
+      'Sube un PDF con texto seleccionable o Word (.docx) — sin límite de páginas. Los PDF escaneados necesitan plan Pro, que usa OCR en las primeras 15 páginas.',
   },
   {
     step: '02',

@@ -285,26 +285,42 @@ export function HeroProductSlider() {
             {slide.description}
           </p>
 
+          {/* El boton principal lleva a probar el producto, no a registrarse.
+              El orden importa: a una marca que nadie conoce no se le crea una
+              cuenta por fe, pero si se le sube un contrato para ver que dice.
+              Quien ya tiene sesion va a su panel, que es lo que vino a hacer. */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              to={user ? '/panel' : '/signup'}
+              to={user ? '/panel' : '/analizar-documento'}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-base font-semibold text-on-primary shadow-soft transition hover:bg-primary/90"
             >
-              {user ? 'Ir al panel' : 'Crear cuenta gratis'}
+              {user ? 'Ir al panel' : 'Analizar un contrato'}
               <span className="material-symbols-outlined text-xl">arrow_forward</span>
             </Link>
-            <Link
-              to={slideDestinations[slide.id]}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-outline-variant bg-surface px-7 py-3.5 text-base font-semibold text-on-surface transition hover:border-primary/40 hover:text-primary"
-            >
-              {slide.linkLabel}
-            </Link>
+            {!user && (
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-outline-variant bg-surface px-7 py-3.5 text-base font-semibold text-on-surface transition hover:border-primary/40 hover:text-primary"
+              >
+                Crear cuenta
+              </Link>
+            )}
           </div>
+
+          <Link
+            to={slideDestinations[slide.id]}
+            className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:underline"
+          >
+            {slide.linkLabel}
+            <span className="material-symbols-outlined text-base" aria-hidden="true">
+              arrow_forward
+            </span>
+          </Link>
 
           <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-on-surface-variant">
             <li className="flex items-center gap-2">
               <span className="material-symbols-outlined text-lg text-primary">check_circle</span>
-              3 análisis/mes en Free
+              Sin cuenta para empezar
             </li>
             <li className="flex items-center gap-2">
               <span className="material-symbols-outlined text-lg text-primary">check_circle</span>

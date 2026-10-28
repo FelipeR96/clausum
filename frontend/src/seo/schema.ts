@@ -32,9 +32,9 @@ export function softwareApplicationSchema() {
     offers: [
       {
         '@type': 'Offer',
-        price: '0',
+        price: '9550',
         priceCurrency: 'COP',
-        description: 'Plan gratuito con 3 análisis al mes',
+        description: 'Análisis de un documento — pago único, sin cuenta',
       },
       {
         '@type': 'Offer',

@@ -17,25 +17,29 @@ export function CtaSection() {
           <h2 className="relative font-display text-3xl font-bold text-on-primary sm:text-4xl">
             Empieza a revisar contratos hoy
           </h2>
+          {/* Sin cifra a proposito: el precio vive en config/pricing y se puede
+              cambiar sin desplegar. Escribirlo aqui seria el segundo sitio donde
+              vive, y el dia que cambie este se queda atras. */}
           <p className="relative mx-auto mt-4 max-w-xl text-lg text-on-primary/85">
-            Plan gratuito con 3 análisis al mes. Sin tarjeta de crédito. Actualiza
-            a Pro para más capacidad, OCR en escaneos y exportación PDF — precios en COP
-            (Colombia) o USD (resto de LATAM).
+            Sube un contrato y descubre gratis a quién favorece y cuántas cláusulas
+            peligrosas tiene. Sin cuenta y sin tarjeta. Si quieres el informe completo
+            es un pago único por documento, o una suscripción si revisas contratos a
+            menudo.
           </p>
 
           <div className="relative mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              to="/signup"
+              to="/analizar-documento"
               className="inline-flex items-center gap-2 rounded-full bg-surface px-8 py-3.5 text-base font-semibold text-primary transition hover:bg-surface-container"
             >
-              Crear cuenta gratis
+              Analizar un contrato
               <span className="material-symbols-outlined">arrow_forward</span>
             </Link>
             <Link
               to="/pricing"
               className="inline-flex items-center gap-2 rounded-full border border-on-primary/30 px-8 py-3.5 text-base font-semibold text-on-primary transition hover:bg-white/10"
             >
-              Ver planes y precios
+              Ver precios
             </Link>
           </div>
         </div>

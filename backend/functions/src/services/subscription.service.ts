@@ -139,6 +139,46 @@ export async function getSubscriptionSummary(
  * Validación central de permisos por plan.
  * Todas las rutas sensibles deben pasar por aquí.
  */
+/**
+ * El texto que ve quien no puede analizar o comparar.
+ *
+ * Existe por dos razones. La primera es que el mensaje estaba construido en
+ * cuatro sitios --dos para analisis, dos para comparaciones-- con la misma
+ * plantilla copiada; cuatro copias significan que el dia que cambie la
+ * redaccion cambie en unas y no en otras.
+ *
+ * La segunda es que con el limite en CERO la plantilla miente. "Limite
+ * mensual alcanzado (0 analisis)" suena a fallo nuestro, no a un plan que no
+ * incluye analisis, y manda a la persona a soporte en vez de a pagar.
+ *
+ * Y con cero hay DOS salidas, no una: suscribirse, o pagar solo el documento
+ * que trae entre manos, que es mucho mas barato y no pide cuenta. Omitir la
+ * segunda es perder la venta facil por no nombrarla. Para comparaciones solo
+ * existe la suscripcion: la compra suelta analiza un documento, no compara
+ * dos.
+ */
+function mensajeDeCuota(
+  planId: PlanSlug,
+  limite: number,
+  que: 'analisis' | 'comparaciones'
+): string {
+  if (planId === 'pro') {
+    return que === 'analisis'
+      ? `Has alcanzado el límite mensual de tu plan Pro (${limite} análisis).`
+      : `Has alcanzado el límite mensual de tu plan Pro (${limite} comparaciones).`;
+  }
+
+  if (limite <= 0) {
+    return que === 'analisis'
+      ? 'Tu cuenta no incluye análisis. Puedes pagar solo este documento, sin suscribirte, o pasar a Pro.'
+      : 'Comparar versiones de un contrato requiere plan Pro.';
+  }
+
+  return que === 'analisis'
+    ? `Límite mensual alcanzado (${limite} análisis). Pasa a Pro para obtener hasta ${PRO_ENTITLEMENTS.analysesPerMonth} análisis al mes.`
+    : `Límite mensual de comparaciones alcanzado (${limite}). Pasa a Pro para obtener hasta ${PRO_ENTITLEMENTS.comparisonsPerMonth} comparaciones al mes.`;
+}
+
 export async function assertEntitlement(
   userId: string,
   action: EntitlementAction
@@ -151,12 +191,8 @@ export async function assertEntitlement(
     case 'analysis.run': {
       if (isUnlimited(entitlements.analysesPerMonth)) return;
       if (usage.analysesCount >= entitlements.analysesPerMonth) {
-        const hint =
-          planId === 'pro'
-            ? 'Has alcanzado el límite mensual de tu plan Pro.'
-            : 'Actualiza a Pro para obtener hasta 75 análisis al mes.';
         throw new AppError(
-          `Límite mensual alcanzado (${entitlements.analysesPerMonth} análisis). ${hint}`,
+          mensajeDeCuota(planId, entitlements.analysesPerMonth, 'analisis'),
           403,
           'QUOTA_ANALYSES_EXCEEDED'
         );
@@ -166,12 +202,8 @@ export async function assertEntitlement(
     case 'comparison.run': {
       if (isUnlimited(entitlements.comparisonsPerMonth)) return;
       if (usage.comparisonsCount >= entitlements.comparisonsPerMonth) {
-        const hint =
-          planId === 'pro'
-            ? 'Has alcanzado el límite mensual de tu plan Pro.'
-            : `Actualiza a Pro para obtener hasta ${PRO_ENTITLEMENTS.comparisonsPerMonth} comparaciones al mes.`;
         throw new AppError(
-          `Límite mensual de comparaciones alcanzado (${entitlements.comparisonsPerMonth}). ${hint}`,
+          mensajeDeCuota(planId, entitlements.comparisonsPerMonth, 'comparaciones'),
           403,
           'QUOTA_COMPARISONS_EXCEEDED'
         );
@@ -312,17 +344,12 @@ async function releaseMonthlyUsage(
 export async function reserveAnalysisUsage(userId: string): Promise<void> {
   const planId = await resolveEffectivePlanId(userId);
   const entitlements = await getPlanEntitlements(planId);
-  const upgradeHint =
-    planId === 'pro'
-      ? 'Has alcanzado el límite mensual de tu plan Pro.'
-      : 'Actualiza a Pro para obtener hasta 75 análisis al mes.';
-
   await reserveMonthlyUsage(
     userId,
     'analysesCount',
     entitlements.analysesPerMonth,
     {
-      message: `Límite mensual alcanzado (${entitlements.analysesPerMonth} análisis). ${upgradeHint}`,
+      message: mensajeDeCuota(planId, entitlements.analysesPerMonth, 'analisis'),
       code: 'QUOTA_ANALYSES_EXCEEDED',
     }
   );
@@ -331,17 +358,12 @@ export async function reserveAnalysisUsage(userId: string): Promise<void> {
 export async function reserveComparisonUsage(userId: string): Promise<void> {
   const planId = await resolveEffectivePlanId(userId);
   const entitlements = await getPlanEntitlements(planId);
-  const upgradeHint =
-    planId === 'pro'
-      ? 'Has alcanzado el límite mensual de tu plan Pro.'
-      : `Actualiza a Pro para obtener hasta ${PRO_ENTITLEMENTS.comparisonsPerMonth} comparaciones al mes.`;
-
   await reserveMonthlyUsage(
     userId,
     'comparisonsCount',
     entitlements.comparisonsPerMonth,
     {
-      message: `Límite mensual de comparaciones alcanzado (${entitlements.comparisonsPerMonth}). ${upgradeHint}`,
+      message: mensajeDeCuota(planId, entitlements.comparisonsPerMonth, 'comparaciones'),
       code: 'QUOTA_COMPARISONS_EXCEEDED',
     }
   );

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type DragEvent } from 'react';
 import { Link } from 'react-router-dom';
 import type { Contract, CountryCode } from '@clausum/shared';
-import { CONTRACT_FILE_ACCEPT } from '@clausum/shared';
+import { CONTRACT_FILE_ACCEPT, PRO_ENTITLEMENTS } from '@clausum/shared';
 import { useAuth } from '@/auth/AuthProvider';
 import { apiClient } from '@/services/api/client';
 import {
@@ -275,7 +275,8 @@ export function ComparisonUploadStep({
         <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
           <p className="font-semibold text-amber-900">Límite de comparaciones alcanzado</p>
           <p className="mt-1 text-sm text-amber-800">
-            El plan Free incluye 1 comparación al mes. Pro incluye hasta 30 comparaciones al mes.
+            Comparar dos versiones de un contrato requiere plan Pro, que incluye hasta{' '}
+            {PRO_ENTITLEMENTS.comparisonsPerMonth} comparaciones al mes.
           </p>
           <Link
             to="/pricing"

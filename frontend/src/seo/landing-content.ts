@@ -1,3 +1,4 @@
+import { PRO_ENTITLEMENTS } from '@clausum/shared';
 import type { FaqItem } from '@/seo/site';
 
 export const HOME_FAQ: FaqItem[] = [
@@ -7,9 +8,9 @@ export const HOME_FAQ: FaqItem[] = [
       'No. Clausum es una herramienta de apoyo que acelera la revisión inicial y señala riesgos potenciales. Para decisiones vinculantes o litigios, consulta siempre a un profesional del derecho.',
   },
   {
-    question: '¿Qué incluye el plan gratuito?',
+    question: '¿Puedo probar Clausum sin pagar?',
     answer:
-      '3 análisis al mes, 1 comparación al mes, archivos de hasta 5 MB y hasta 10 contratos guardados. PDF digital o Word sin límite de páginas. No admitimos PDF escaneados en Free.',
+      'Sí, y sin crear cuenta. Sube tu contrato y te decimos gratis a quién favorece, cuántas cláusulas peligrosas tiene y cuáles son, citando tu propio texto. El informe completo —qué te pasa con cada riesgo, qué pedir y con qué redacción— es un pago único por documento, sin suscripción.',
   },
   {
     question: '¿Qué países cubre el contexto legal?',
@@ -52,7 +53,7 @@ export const ANALYZE_FAQ: FaqItem[] = [
   {
     question: '¿Puedo analizar contratos gratis?',
     answer:
-      'Sí. El plan Free incluye 3 análisis al mes sin tarjeta de crédito. Ideal para probar la plataforma con contratos reales de tu operación.',
+      'Sin pagar nada puedes ver el veredicto de tu contrato, cuántos riesgos tiene y la cita textual de cada uno, sin crear cuenta ni dar una tarjeta. El detalle de cada riesgo y la redacción para corregirlo se pagan: por documento si es algo puntual, o con una suscripción si revisas contratos a menudo.',
   },
 ];
 
@@ -73,9 +74,9 @@ export const COMPARE_FAQ: FaqItem[] = [
       'Sí. Es ideal para revisar la versión que te devuelve la contraparte, identificar cláusulas nuevas o más restrictivas y preparar tu respuesta antes de firmar.',
   },
   {
-    question: '¿Cuántas comparaciones incluye el plan gratuito?',
+    question: '¿Cuántas comparaciones puedo hacer?',
     answer:
-      'El plan Free permite 1 comparación al mes. El plan Pro incluye hasta 30 comparaciones al mes para equipos que negocian contratos de forma recurrente.',
+      `Comparar dos versiones de un contrato requiere suscripción: el plan Pro incluye hasta ${PRO_ENTITLEMENTS.comparisonsPerMonth} comparaciones al mes. El pago por documento analiza un contrato, no compara dos.`,
   },
   {
     question: '¿La comparación sustituye una revisión legal?',

@@ -69,7 +69,7 @@ export function AnalyzeHero() {
               <span className="material-symbols-outlined text-lg text-primary">
                 check_circle
               </span>
-              3 análisis/mes en Free
+              Sin cuenta para empezar
             </li>
             <li className="flex items-center gap-2">
               <span className="material-symbols-outlined text-lg text-primary">

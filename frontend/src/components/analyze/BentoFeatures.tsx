@@ -113,8 +113,9 @@ export function BentoFeatures() {
             </span>
             <h4 className="mb-2 font-display text-lg font-bold">Formatos soportados</h4>
             <p className="text-sm text-on-surface-variant">
-              PDF como formato principal. Free: hasta 5 MB por archivo. Pro: hasta
-              10 MB. PDFs escaneados sin texto pueden requerir OCR.
+              PDF como formato principal, hasta 10 MB por archivo, y Word (.docx).
+              Un PDF escaneado no tiene texto que leer: eso necesita OCR, que
+              incluye el plan Pro.
             </p>
           </BentoCard>
 
@@ -144,7 +145,8 @@ export function BentoFeatures() {
             <h4 className="mb-2 font-display text-lg font-bold">Detección de alertas</h4>
             <p className="text-sm text-on-surface-variant">
               Riesgos priorizados, cláusulas no estándar, penalidades y renovaciones
-              automáticas. Free incluye alertas básicas; Pro añade alertas avanzadas.
+              automáticas. Las alertas que vigilan tus contratos guardados y avisan de
+              vencimientos son del plan Pro.
             </p>
           </BentoCard>
         </div>
