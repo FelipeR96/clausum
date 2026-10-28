@@ -873,6 +873,20 @@ export async function createPayPalSingleAnalysisOrder(
 
   const order = (await response.json()) as PayPalOrderResponse;
 
+  // PayPal nombra este enlace 'payer-action' en el flujo nuevo y 'approve' en
+  // el clasico, y devuelve uno o el otro segun la cuenta. Aceptar los dos
+  // evita que un cambio en su lado deje el boton de pagar sin destino.
+  const approveUrl = order.links?.find(
+    (l) => l.rel === 'payer-action' || l.rel === 'approve'
+  )?.href;
+
+  if (!approveUrl) {
+    logger.error('paypal', 'La orden de PayPal llegó sin enlace de aprobación', undefined, {
+      metadata: { reference, orderId: order.id },
+    });
+    throw new AppError('No se pudo iniciar el pago con PayPal', 502, 'PAYPAL_NO_APPROVE_URL');
+  }
+
   await crearPagoSueltoPendiente({
     reference,
     amountInCents,
@@ -884,7 +898,14 @@ export async function createPayPalSingleAnalysisOrder(
     metadata: { reference, orderId: order.id, amountInCents, currency },
   });
 
-  return { provider: 'paypal', orderId: order.id, reference, amountInCents, currency };
+  return {
+    provider: 'paypal',
+    orderId: order.id,
+    approveUrl,
+    reference,
+    amountInCents,
+    currency,
+  };
 }
 
 /**

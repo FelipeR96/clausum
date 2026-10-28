@@ -1,46 +1,11 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { RiskVectorItem } from '@/types/risk-alerts.types';
+import { BotonCopiar } from '@/components/ui/BotonCopiar';
 
 type RiskVectorCardProps = {
   risk: RiskVectorItem;
   contractId?: string;
 };
-
-/**
- * Boton de copiar para la redaccion sugerida.
- *
- * Tiene sentido como boton y no como texto suelto: ese parrafo existe para
- * llevarlo a una negociacion, asi que lo que se espera de el es pegarlo en un
- * correo o en el contrato, no leerlo.
- */
-function BotonCopiar({ texto }: { texto: string }) {
-  const [copiado, setCopiado] = useState(false);
-
-  async function copiar() {
-    try {
-      await navigator.clipboard.writeText(texto);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 2000);
-    } catch {
-      // Sin portapapeles (contexto no seguro o permiso negado) el texto sigue
-      // visible y seleccionable. No hay nada que avisar.
-    }
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={copiar}
-      className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary transition hover:underline"
-    >
-      <span className="material-symbols-outlined text-sm" aria-hidden="true">
-        {copiado ? 'check' : 'content_copy'}
-      </span>
-      {copiado ? 'Copiado' : 'Copiar redacción'}
-    </button>
-  );
-}
 
 export function RiskVectorCard({ risk, contractId }: RiskVectorCardProps) {
   const isHigh = risk.severity === 'high';

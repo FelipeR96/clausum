@@ -31,6 +31,14 @@ import { RisksPage } from '@/pages/RisksPage';
 import { LoginPage, SignupPage } from '@/pages/AuthPages';
 import { PricingPage } from '@/pages/PricingPage';
 
+const AnalizarDocumentoPage = lazy(() =>
+  import('@/pages/AnalizarDocumentoPage').then((m) => ({
+    default: m.AnalizarDocumentoPage,
+  }))
+);
+const SingleAnalysisPage = lazy(() =>
+  import('@/pages/SingleAnalysisPage').then((m) => ({ default: m.SingleAnalysisPage }))
+);
 const PanelPage = lazy(() =>
   import('@/pages/PanelPage').then((m) => ({ default: m.PanelPage }))
 );
@@ -92,6 +100,13 @@ export function App() {
 
         {/* Landings SEO */}
         <Route path="/analizar-contratos" element={<AnalyzePage />} />
+        {/* Compra sin cuenta. Diferidas igual que el panel: son dos pantallas
+            que solo abre quien va a comprar, y su codigo no tiene por que
+            viajar en el paquete de entrada de las landings publicas. */}
+        <Route element={<LazyBoundary />}>
+          <Route path="/analizar-documento" element={<AnalizarDocumentoPage />} />
+          <Route path="/analisis/:reference" element={<SingleAnalysisPage />} />
+        </Route>
         <Route path="/comparar-contratos" element={<ComparePage />} />
         <Route path="/detectar-riesgos" element={<RisksPage />} />
 

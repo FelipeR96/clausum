@@ -35,6 +35,7 @@ import {
 // ─────────────────────────────────────────────────────────────────────────
 
 const ORDEN_PAYPAL = 'ORDEN_PAYPAL_DE_PRUEBA';
+const APROBACION = 'https://www.sandbox.paypal.com/checkoutnow?token=ORDEN_PAYPAL_DE_PRUEBA';
 const CAPTURA_PAYPAL = 'CAPTURA_PAYPAL_DE_PRUEBA';
 const PRECIO = 299; // USD 2,99
 
@@ -78,6 +79,8 @@ type Llamada = { url: string; cuerpo: unknown };
 let llamadas: Llamada[] = [];
 /** Lo que responde la captura. Cada prueba lo ajusta a lo que necesita. */
 let respuestaDeCaptura: { ok: boolean; cuerpo: unknown } = { ok: true, cuerpo: {} };
+/** Para probar que una orden sin enlace de aprobacion no pasa de ahi. */
+let respuestaDeCreacionSinEnlaces = false;
 
 function capturaCompletada(valor = '2.99', correo?: string) {
   return {
@@ -142,10 +145,19 @@ function fingirPayPal(): void {
 
       if (dir.includes('/v2/checkout/orders')) {
         return Promise.resolve(
-          new Response(JSON.stringify({ id: ORDEN_PAYPAL, status: 'CREATED' }), {
-            status: 201,
-            headers: { 'Content-Type': 'application/json' },
-          })
+          new Response(
+            JSON.stringify({
+              id: ORDEN_PAYPAL,
+              status: 'CREATED',
+              links: respuestaDeCreacionSinEnlaces
+                ? []
+                : [
+                    { href: 'https://api.sandbox.paypal.com/...', rel: 'self', method: 'GET' },
+                    { href: APROBACION, rel: 'payer-action', method: 'GET' },
+                  ],
+            }),
+            { status: 201, headers: { 'Content-Type': 'application/json' } }
+          )
         );
       }
 
@@ -202,6 +214,7 @@ async function vaciar(): Promise<void> {
 beforeEach(async () => {
   llamadas = [];
   respuestaDeCaptura = capturaCompletada();
+  respuestaDeCreacionSinEnlaces = false;
   fingirPayPal();
   await vaciar();
 });
@@ -254,6 +267,31 @@ describe('apertura de la orden en PayPal', () => {
     expect(pago?.paypalOrderId).toBe(ORDEN_PAYPAL);
     expect(pago?.amount).toBe(PRECIO);
     expect(pago?.userId).toBeUndefined();
+  });
+
+  it('devuelve el enlace de aprobación al que redirigir', async () => {
+    // Con este enlace no hace falta cargar el SDK de PayPal: se redirige
+    // igual que con Wompi. Un script de terceros menos en una página por la
+    // que pasan contratos.
+    const r = ref('g');
+    await sembrarOrden(r);
+
+    const checkout = await createPayPalSingleAnalysisOrder(r);
+
+    expect(checkout.approveUrl).toBe(APROBACION);
+    expect(checkout.provider).toBe('paypal');
+  });
+
+  it('una orden sin enlace de aprobación no se da por buena', async () => {
+    // Sin el enlace, el botón de pagar se quedaría sin destino y el fallo
+    // aparecería al pulsarlo, no al crearla.
+    const r = ref('h');
+    await sembrarOrden(r);
+    respuestaDeCreacionSinEnlaces = true;
+
+    await expect(createPayPalSingleAnalysisOrder(r)).rejects.toMatchObject({
+      code: 'PAYPAL_NO_APPROVE_URL',
+    });
   });
 
   it('se niega a cobrar por PayPal una orden de Colombia', async () => {

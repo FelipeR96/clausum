@@ -152,6 +152,19 @@ export function formatUsdFromCents(amountInCents: number): string {
   }).format(amountInCents / 100);
 }
 
+/**
+ * Formatea por MONEDA y no por region.
+ *
+ * Hace falta porque una orden guarda su moneda, no la region desde la que se
+ * creo: formatear por region obligaria a deducirla de vuelta, y el dia que
+ * una region cobre en otra moneda la deduccion seria falsa.
+ */
+export function formatAmount(amountInCents: number, currency: string): string {
+  return currency === BILLING_CURRENCY
+    ? formatCopFromCents(amountInCents)
+    : formatUsdFromCents(amountInCents);
+}
+
 export function formatProPrice(
   region: BillingRegion,
   amountInCents: number

@@ -1,10 +1,11 @@
-import type { Analysis, Contract, FirestoreDate, Importance, LawReference } from '@clausum/shared';
+import type { Analysis, Contract, FirestoreDate, Importance } from '@clausum/shared';
 import { CONTRACT_TYPE_CATALOG } from '@clausum/shared';
 import type {
   AnalysisClauseItem,
   AnalysisResultData,
   ClauseSeverity,
 } from '@/types/analysis-view.types';
+import { formatLawReference } from '@/utils/law-reference';
 
 const COUNTRY_LABELS: Record<string, string> = {
   CO: 'Colombia',
@@ -39,11 +40,6 @@ function formatRelativeDate(date: Date): string {
   const diffDays = Math.floor(diffHours / 24);
   if (diffDays < 7) return `hace ${diffDays} días`;
   return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-function formatLawReference(ref: LawReference): string {
-  const article = ref.article ? `, art. ${ref.article}` : '';
-  return `${ref.codeName}${article}`;
 }
 
 function mapImportanceToSeverity(importance: Importance): ClauseSeverity {

@@ -1,4 +1,4 @@
-import type { AnalysisResultData } from '@/types/analysis-view.types';
+import type { AnalysisFavorability } from '@clausum/shared';
 
 /**
  * Veredicto global del contrato.
@@ -42,8 +42,17 @@ const ESTILO = {
   },
 } as const;
 
-export function AnalysisVerdictBanner({ data }: { data: AnalysisResultData }) {
-  const fav = data.favorability;
+/**
+ * Recibe el veredicto y no el analisis entero a proposito: asi lo usan los
+ * dos sitios donde hace falta --el informe de un usuario con cuenta y el de
+ * una compra suelta-- sin copiar la paleta en dos archivos, que es como se
+ * acaban pintando dos veredictos del mismo color distinto.
+ */
+export function AnalysisVerdictBanner({
+  favorability: fav,
+}: {
+  favorability?: AnalysisFavorability;
+}) {
   if (!fav || (!fav.rationale && !fav.forWhom)) return null;
 
   const estilo = ESTILO[fav.verdict] ?? ESTILO.equilibrado;

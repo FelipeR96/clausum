@@ -7,7 +7,8 @@ import type {
   CountryCode,
   SingleAnalysisDelivery,
   SingleAnalysisOrder,
-  SingleAnalysisPreview,
+  SingleAnalysisReport,
+  SingleAnalysisState,
 } from '@clausum/shared';
 import { buildSingleAnalysisPreview, COLLECTIONS } from '@clausum/shared';
 import { getSingleAnalysisPricing } from '../config/pricing';
@@ -266,17 +267,6 @@ export async function ejecutarAnalisisSuelto(reference: string): Promise<void> {
   });
 }
 
-export type EstadoDeOrden =
-  | { estado: 'analizando' }
-  | {
-      estado: 'listo';
-      pagado: boolean;
-      /** El contrato se corto por largo: el analisis cubre solo una parte. */
-      truncado: boolean;
-      preview: SingleAnalysisPreview;
-    }
-  | { estado: 'expirado' };
-
 /**
  * Lo que se le devuelve a quien consulta con su token.
  *
@@ -284,7 +274,7 @@ export type EstadoDeOrden =
  * eso esta obtenerInformeCompleto, que es otra ruta. Asi, un error en la
  * pantalla de la vista previa no puede filtrar lo que se cobra.
  */
-export async function obtenerEstado(reference: string): Promise<EstadoDeOrden> {
+export async function obtenerEstado(reference: string): Promise<SingleAnalysisState> {
   const orden = await leerOrden(reference);
 
   if (orden.status === 'expired' || estaCaducada(orden)) return { estado: 'expirado' };
@@ -294,6 +284,9 @@ export async function obtenerEstado(reference: string): Promise<EstadoDeOrden> {
     estado: 'listo',
     pagado: orden.status === 'paid' || orden.status === 'delivered',
     truncado: orden.truncated === true,
+    amountInCents: orden.amountInCents,
+    currency: orden.currency,
+    provider: orden.provider,
     preview: buildSingleAnalysisPreview({
       analysis: orden.analysis as never,
       risks: orden.risks ?? [],
@@ -577,15 +570,6 @@ export async function borrarAnalisisCaducados(): Promise<{
 // segura: quien ya pago no puede acabar sin nada.
 // ─────────────────────────────────────────────────────────────────────────
 
-export interface InformeCompleto {
-  analysis: Analysis;
-  risks: AnalysisRisk[];
-  risksSummary?: string;
-  risksScore?: number;
-  /** El contrato se corto por largo y el analisis cubre solo una parte. */
-  truncated: boolean;
-}
-
 /**
  * El informe entero, con las cuatro negativas que lo protegen.
  *
@@ -596,7 +580,7 @@ export interface InformeCompleto {
  */
 export async function obtenerInformeCompleto(
   reference: string
-): Promise<InformeCompleto> {
+): Promise<SingleAnalysisReport> {
   const orden = await leerOrden(reference);
 
   if (estaCaducada(orden)) {
@@ -665,7 +649,7 @@ export async function marcarEntregado(
  * ("contrato-juan-perez.pdf"), asi que guardarlo para adornar una portada
  * seria conservar un dato personal a cambio de nada.
  */
-function pdfDesdeInforme(informe: InformeCompleto): Promise<Buffer> {
+function pdfDesdeInforme(informe: SingleAnalysisReport): Promise<Buffer> {
   return renderAnalysisPdf({ title: 'Análisis de contrato' }, informe.analysis, {
     summary: informe.risksSummary,
     score: informe.risksScore,

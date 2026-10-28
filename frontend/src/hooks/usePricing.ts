@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   PRO_BILLING,
   PRO_BILLING_LATAM,
+  SINGLE_ANALYSIS_BILLING,
   type BillingInterval,
   type BillingRegion,
 } from '@clausum/shared';
@@ -10,6 +11,8 @@ interface RegionPricing {
   monthlyAmountInCents: number;
   yearlyAmountInCents: number;
   currency: string;
+  /** Opcional igual que en el servidor: el documento guardado puede no traerlo. */
+  singleAnalysisAmountInCents?: number;
 }
 
 interface Pricing {
@@ -72,6 +75,23 @@ export function usePricing(): { pricing: Pricing; loading: boolean } {
   }, []);
 
   return { pricing, loading };
+}
+
+/**
+ * Lo que cuesta analizar un documento sin cuenta.
+ *
+ * Con respaldo propio en la constante compartida, como en el servidor: el
+ * documento `config/pricing` que ya esta guardado no trae este campo, y una
+ * pagina de precios sin precio es peor que una con el precio desplegado.
+ */
+export function singleAnalysisAmountFor(
+  pricing: Pricing,
+  region: BillingRegion
+): number {
+  const r = region === 'CO' ? pricing.CO : pricing.LATAM;
+  return (
+    r.singleAnalysisAmountInCents ?? SINGLE_ANALYSIS_BILLING[region].amountInCents
+  );
 }
 
 export function amountFor(

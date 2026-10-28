@@ -1,11 +1,7 @@
-import type { Analysis, Contract, LawReference } from '@clausum/shared';
+import type { Analysis, Contract } from '@clausum/shared';
 import { CONTRACT_TYPE_CATALOG } from '@clausum/shared';
+import { formatLawReference } from '@/utils/law-reference';
 import type { MissingClauseItem, RiskAlertsData, RiskVectorItem } from '@/types/risk-alerts.types';
-
-function formatLawReference(ref: LawReference): string {
-  const article = ref.article ? `, art. ${ref.article}` : '';
-  return `${ref.codeName}${article}`;
-}
 
 function mapContractTypeLabel(contract: Contract): string {
   const typeId = contract.detectedContractTypeId ?? contract.contractTypeId;

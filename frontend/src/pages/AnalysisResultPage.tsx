@@ -185,7 +185,7 @@ export function AnalysisResultPage() {
     <AppShell pageTitle="Resultado del análisis" breadcrumb="Análisis de IA">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <AnalysisResultHeader data={data} contractId={contractId} isPro={isPro} />
-        <AnalysisVerdictBanner data={data} />
+        <AnalysisVerdictBanner favorability={data.favorability} />
         <AnalysisSummarySection data={data} contractId={contractId} />
         <AnalysisRiskTeaserBanner data={data} contractId={contractId} isPro={isPro} />
         <AnalysisMetaGrid data={data} />

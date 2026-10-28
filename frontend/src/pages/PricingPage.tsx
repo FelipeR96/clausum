@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import {
   SEED_PLANS,
+  formatAmount,
   formatProPrice,
   proAnnualSavingsPercentForRegion,
   type BillingInterval,
@@ -14,13 +15,18 @@ import { useRevealOnScroll } from '@/hooks/useRevealOnScroll';
 import { PricingDocumentFormats } from '@/components/pricing/PricingDocumentFormats';
 import { BillingRegionSelector } from '@/components/billing/BillingRegionSelector';
 import { useBillingRegion } from '@/hooks/useBillingRegion';
-import { usePricing, amountFor } from '@/hooks/usePricing';
+import { usePricing, amountFor, singleAnalysisAmountFor } from '@/hooks/usePricing';
 import { useAuth } from '@/auth/AuthProvider';
 import { SETTINGS_BILLING_PATH } from '@/constants/app-paths';
 
 export function PricingPage() {
   const page = SEO_PAGES.pricing;
-  const plans = [SEED_PLANS.free, SEED_PLANS.pro];
+  // Sin el plan gratuito. Quien no quiere suscribirse paga por documento, que
+  // es mas honesto que un plan "gratis" de un analisis al mes: ese plan no
+  // resolvia a nadie y convertia la primera impresion del producto en un
+  // limite. Los usuarios que ya estan en Free siguen igual; lo que desaparece
+  // es la puerta de entrada, no su cuenta.
+  const plans = [SEED_PLANS.pro];
   const ref = useRevealOnScroll<HTMLDivElement>();
   const { user, loading } = useAuth();
   const { region, setRegion, isColombia } = useBillingRegion();
@@ -35,6 +41,8 @@ export function PricingPage() {
     region,
     interval === 'annual' ? 'annual' : 'monthly'
   );
+  const precioDocumento = singleAnalysisAmountFor(pricing, region);
+  const monedaDocumento = region === 'CO' ? pricing.CO.currency : pricing.LATAM.currency;
 
   if (loading) {
     return null;
@@ -58,7 +66,8 @@ export function PricingPage() {
               Planes simples, sin sorpresas
             </h1>
             <p className="mt-4 text-lg text-on-surface-variant">
-              Empieza gratis y actualiza a Pro cuando necesites más capacidad.
+              Paga solo el documento que necesites revisar, o suscríbete si revisas
+              contratos a menudo.
               {isColombia
                 ? ' Pagos seguros con Wompi: tarjeta, PSE y Nequi.'
                 : ' Pagos seguros con PayPal en USD: tarjeta débito o crédito.'}
@@ -108,6 +117,54 @@ export function PricingPage() {
           </div>
 
           <div className="mt-14 grid gap-6 md:grid-cols-2">
+            {/* Va primero a proposito: es la opcion de quien llega sin saber si
+                esto le sirve, y pedirle una suscripcion antes de haberle
+                ensenado nada es pedirle confianza que todavia no tiene. */}
+            <div className="rounded-3xl border border-outline-variant bg-surface p-8">
+              <h2 className="font-display text-2xl font-bold">Un documento</h2>
+              <p className="mt-2 font-display text-4xl font-extrabold text-primary">
+                {formatAmount(precioDocumento, monedaDocumento)}
+                <span className="text-base font-normal text-on-surface-variant">
+                  {' '}
+                  una vez
+                </span>
+              </p>
+              <p className="mt-4 text-sm leading-relaxed text-on-surface-variant">
+                Sin cuenta y sin suscripción. Subes el contrato, ves gratis a quién
+                favorece y cuántas cláusulas peligrosas tiene, y decides después si
+                quieres el detalle.
+              </p>
+
+              <ul className="mt-6 space-y-3 text-sm text-on-surface">
+                {[
+                  'Análisis completo de un contrato',
+                  'Perfil de riesgos con qué pedir y cómo redactarlo',
+                  'Informe en PDF, descargable o por correo',
+                  'Tu contrato no se guarda: se borra al entregarlo',
+                ].map((linea) => (
+                  <li key={linea} className="flex gap-2">
+                    <span
+                      className="material-symbols-outlined text-base text-primary"
+                      aria-hidden="true"
+                    >
+                      check
+                    </span>
+                    {linea}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                to="/analizar-documento"
+                className="mt-8 block rounded-full border border-primary px-6 py-3 text-center font-semibold text-primary transition hover:bg-primary-container/40"
+              >
+                Analizar un contrato
+              </Link>
+              <p className="mt-3 text-center text-xs text-on-surface-variant">
+                Ver el resumen es gratis. No se cobra nada hasta que lo pidas.
+              </p>
+            </div>
+
             {plans.map((plan) => {
               const isPro = plan.slug === 'pro';
               const displayPrice = isPro ? proPrice : 0;
