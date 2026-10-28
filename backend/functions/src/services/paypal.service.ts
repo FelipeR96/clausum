@@ -3,6 +3,7 @@ import {
   BILLING_CURRENCY_LATAM,
   COLLECTIONS,
   type BillingInterval,
+  type SingleAnalysisCheckout,
 } from '@clausum/shared';
 import { adminDb } from '../firebase/admin';
 import {
@@ -11,6 +12,7 @@ import {
   readSecret,
 } from '../config/env';
 import { setUserPlan } from './subscription.service';
+import { datosParaCobro, marcarOrdenPagada } from './single-analysis.service';
 import { AppError } from '../utils/errors';
 import { firestoreDateToDate } from '../utils/firestore-date';
 import { inicioDelNuevoPeriodo } from '../utils/billing-period';
@@ -675,6 +677,11 @@ export async function handlePayPalWebhook(
     case 'PAYMENT.SALE.COMPLETED':
       await handlePaymentCompleted(resource);
       break;
+    // Las capturas son de Ordenes v2 --la compra suelta-- y las ventas son
+    // de suscripciones v1. No se pisan.
+    case 'PAYMENT.CAPTURE.COMPLETED':
+      await handleSingleAnalysisCaptureCompleted(resource);
+      break;
     case 'BILLING.SUBSCRIPTION.CANCELLED':
     case 'BILLING.SUBSCRIPTION.EXPIRED':
     case 'BILLING.SUBSCRIPTION.SUSPENDED':
@@ -685,4 +692,423 @@ export async function handlePayPalWebhook(
         metadata: { eventType, eventId: event.id },
       });
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Compra de un analisis suelto, sin cuenta
+//
+// Es un flujo distinto del de las suscripciones de arriba, no una variante.
+// Una suscripcion de PayPal se crea contra un PLAN, que lleva el precio
+// dentro y se cobra solo cada mes. Aqui se cobra una vez y el precio es el
+// que lleva la orden, asi que esto son Ordenes v2 con captura.
+//
+// El camino principal es la captura desde el servidor, y a proposito: la
+// hacemos nosotros llamando a PayPal, asi que el monto que confirmamos lo
+// dice PayPal y no el navegador. El webhook queda como red para cuando el
+// navegador se muere despues de aprobar y la captura nunca llega.
+// ─────────────────────────────────────────────────────────────────────────
+
+interface PayPalOrderResponse {
+  id: string;
+  status: string;
+  links?: PayPalLink[];
+}
+
+interface PayPalCaptureResponse {
+  id: string;
+  status: string;
+  purchase_units?: {
+    payments?: {
+      captures?: {
+        id: string;
+        status: string;
+        amount?: { currency_code?: string; value?: string };
+      }[];
+    };
+  }[];
+  payer?: { email_address?: string };
+}
+
+function pagoSueltoRef(reference: string): DocumentReference {
+  return adminDb().collection(COLLECTIONS.payments).doc(reference);
+}
+
+/**
+ * Convierte centavos al decimal que espera PayPal.
+ *
+ * Solo USD, y la restriccion es deliberada. PayPal clasifica las monedas por
+ * numero de decimales: el peso colombiano no admite decimales, asi que
+ * mandar "9550.00" en COP seria rechazado --o peor, interpretado-- y el
+ * error no se veria hasta que alguien intentara pagar. Aqui PayPal solo
+ * atiende LATAM, que cobra en dolares; Colombia va por Wompi.
+ */
+function importeParaPayPal(amountInCents: number, currency: string): string {
+  if (currency !== BILLING_CURRENCY_LATAM) {
+    throw new AppError(
+      `PayPal solo cobra en ${BILLING_CURRENCY_LATAM} en esta plataforma`,
+      400,
+      'PAYPAL_CURRENCY_UNSUPPORTED'
+    );
+  }
+  return (amountInCents / 100).toFixed(2);
+}
+
+/**
+ * Crea el pago pendiente del analisis suelto, SOLO si no existe.
+ *
+ * Mismo razonamiento que en Wompi: con un `set` normal, dos clics en pagar
+ * devolverian a 'pending' un cobro ya procesado, y la idempotencia tanto de
+ * la captura como del webhook mira exactamente ese campo.
+ *
+ * Guarda el id de la orden de PayPal, que es lo que se captura despues. No
+ * se acepta el que mande el navegador: ver capturarOrdenDeAnalisisSuelto.
+ */
+async function crearPagoSueltoPendiente(input: {
+  reference: string;
+  amountInCents: number;
+  currency: string;
+  paypalOrderId: string;
+}): Promise<void> {
+  const ref = pagoSueltoRef(input.reference);
+
+  await adminDb().runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (snap.exists) {
+      // La orden de PayPal puede ser otra si la primera caduco sin pagarse.
+      // El resto no cambia nunca, asi que solo se refresca ese id --y nunca
+      // sobre un pago ya resuelto.
+      if (snap.data()?.status === 'pending') {
+        tx.update(ref, { paypalOrderId: input.paypalOrderId });
+      }
+      return;
+    }
+
+    tx.set(ref, {
+      provider: 'paypal',
+      // Sin userId: se compra sin cuenta.
+      kind: 'single_analysis',
+      reference: input.reference,
+      paypalOrderId: input.paypalOrderId,
+      amount: input.amountInCents,
+      currency: input.currency,
+      status: 'pending',
+      description: 'Clausum — análisis de un documento',
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  });
+}
+
+/**
+ * Abre la orden de PayPal para cobrar un analisis suelto.
+ *
+ * El monto sale de la orden nuestra, donde quedo congelado al subir el
+ * documento: es el precio que la persona vio en la vista previa.
+ *
+ * `PayPal-Request-Id` con nuestra referencia hace la creacion idempotente en
+ * su lado: dos clics en "pagar" devuelven la MISMA orden en vez de dejar
+ * ordenes huerfanas sueltas por su panel.
+ */
+export async function createPayPalSingleAnalysisOrder(
+  reference: string
+): Promise<Extract<SingleAnalysisCheckout, { provider: 'paypal' }>> {
+  const config = getPayPalConfig();
+  if (!config) {
+    throw new AppError('Los pagos con PayPal no están configurados en el servidor', 503);
+  }
+
+  const { amountInCents, currency, provider } = await datosParaCobro(reference);
+
+  if (provider !== 'paypal') {
+    throw new AppError(
+      'Este análisis se cobra con otro medio de pago',
+      400,
+      'WRONG_PROVIDER'
+    );
+  }
+
+  const token = await getPayPalAccessToken(config);
+  const baseUrl = getPayPalBaseUrl(config.mode);
+  const vuelta = `${config.appUrl}/analisis/${reference}`;
+
+  const response = await fetch(`${baseUrl}/v2/checkout/orders`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'PayPal-Request-Id': reference,
+    },
+    body: JSON.stringify({
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          reference_id: reference,
+          // custom_id es lo que vuelve dentro del evento de captura. Es como
+          // el webhook encuentra que desbloquear.
+          custom_id: reference,
+          description: 'Clausum — análisis de un documento',
+          amount: {
+            currency_code: currency,
+            value: importeParaPayPal(amountInCents, currency),
+          },
+        },
+      ],
+      application_context: {
+        brand_name: 'Clausum',
+        user_action: 'PAY_NOW',
+        // Sin cuenta no hay panel al que volver: se vuelve al propio
+        // analisis, que es donde esta el boton de descarga.
+        return_url: `${vuelta}?pago=ok`,
+        cancel_url: `${vuelta}?pago=cancelado`,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    logger.error('paypal', 'Error creando orden de análisis suelto', new Error(body), {
+      metadata: { reference },
+    });
+    throw new AppError('No se pudo iniciar el pago con PayPal', 502, 'PAYPAL_ORDER_FAILED');
+  }
+
+  const order = (await response.json()) as PayPalOrderResponse;
+
+  await crearPagoSueltoPendiente({
+    reference,
+    amountInCents,
+    currency,
+    paypalOrderId: order.id,
+  });
+
+  logger.info('paypal', 'Orden de análisis suelto creada', {
+    metadata: { reference, orderId: order.id, amountInCents, currency },
+  });
+
+  return { provider: 'paypal', orderId: order.id, reference, amountInCents, currency };
+}
+
+/**
+ * Cobra la orden y desbloquea el informe.
+ *
+ * ── El id de la orden NO lo manda el navegador ──────────────────────────
+ * Se usa el que guardamos al crearla. Aceptar el que llegue en la peticion
+ * dejaria desbloquear un informe con el id de una orden pagada de otra
+ * persona: sin sesion, lo unico que ata el pago a este analisis es lo que
+ * nosotros mismos guardamos.
+ *
+ * ── Y se comprueba el monto ─────────────────────────────────────────────
+ * PayPal devuelve lo que cobro de verdad. Si no cuadra con lo que la orden
+ * dice, no se desbloquea nada: es el equivalente a la comprobacion de monto
+ * del webhook de Wompi, y sirve para lo mismo --que pagar menos no de un
+ * informe completo.
+ */
+export async function capturePayPalSingleAnalysisOrder(
+  reference: string
+): Promise<{ status: 'paid'; yaEstaba: boolean }> {
+  const config = getPayPalConfig();
+  if (!config) {
+    throw new AppError('Los pagos con PayPal no están configurados', 503);
+  }
+
+  const pagoSnap = await pagoSueltoRef(reference).get();
+  if (!pagoSnap.exists) {
+    throw new AppError('No hay un pago iniciado para este análisis', 404, 'PAYMENT_NOT_FOUND');
+  }
+
+  const pago = pagoSnap.data()!;
+  if (pago.kind !== 'single_analysis') {
+    throw new AppError('Referencia inválida', 400, 'BAD_REFERENCE');
+  }
+
+  // Ya cobrado: no se vuelve a llamar a PayPal. Pasa de verdad --el webhook
+  // y el navegador compiten por llegar primero-- y las dos respuestas tienen
+  // que ser la misma.
+  if (pago.status === 'succeeded') {
+    return { status: 'paid', yaEstaba: true };
+  }
+
+  const orderId = pago.paypalOrderId as string | undefined;
+  if (!orderId) {
+    throw new AppError('No hay un pago iniciado para este análisis', 409, 'NO_PAYPAL_ORDER');
+  }
+
+  const token = await getPayPalAccessToken(config);
+  const baseUrl = getPayPalBaseUrl(config.mode);
+
+  const response = await fetch(`${baseUrl}/v2/checkout/orders/${orderId}/capture`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'PayPal-Request-Id': `${reference}-capture`,
+    },
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    // ORDER_ALREADY_CAPTURED significa que el cobro si ocurrio, casi siempre
+    // porque el webhook llego primero. Tratarlo como fallo le diria a quien
+    // ya pago que su pago no sirvio.
+    if (body.includes('ORDER_ALREADY_CAPTURED')) {
+      logger.info('paypal', 'Orden ya capturada; se resuelve con lo guardado', {
+        metadata: { reference, orderId },
+      });
+      await marcarOrdenPagada(reference);
+      await pagoSueltoRef(reference).update({
+        status: 'succeeded',
+        paidAt: FieldValue.serverTimestamp(),
+      });
+      return { status: 'paid', yaEstaba: true };
+    }
+
+    logger.error('paypal', 'Error capturando orden de análisis suelto', new Error(body), {
+      metadata: { reference, orderId },
+    });
+    throw new AppError('No se pudo completar el pago con PayPal', 502, 'PAYPAL_CAPTURE_FAILED');
+  }
+
+  const captura = (await response.json()) as PayPalCaptureResponse;
+  const detalle = captura.purchase_units?.[0]?.payments?.captures?.[0];
+
+  if (captura.status !== 'COMPLETED' || detalle?.status !== 'COMPLETED') {
+    logger.warn('paypal', 'Captura de análisis suelto no completada', {
+      metadata: {
+        reference,
+        orderId,
+        estadoOrden: String(captura.status),
+        estadoCaptura: String(detalle?.status ?? 'sin captura'),
+      },
+    });
+    throw new AppError('El pago no se completó', 402, 'PAYMENT_NOT_COMPLETED');
+  }
+
+  // Se le pasa el detalle COMPLETO, no detalle.amount: la funcion busca
+  // `.amount` dentro de lo que recibe. Pasarle el amount suelto la hace
+  // devolver null siempre, y entonces ninguna captura valida desbloquearia
+  // nada --fallando por el lado de no entregar lo pagado.
+  const cobrado = importeCobradoPorPayPal(detalle as unknown as Record<string, unknown>);
+  const esperado = pago.amount as number;
+
+  if (!cobrado || cobrado.amountInCents !== esperado) {
+    logger.error(
+      'paypal',
+      'Monto capturado distinto del esperado: no se desbloquea el informe',
+      undefined,
+      {
+        metadata: {
+          reference,
+          orderId,
+          esperado,
+          cobrado: cobrado?.amountInCents ?? -1,
+        },
+      }
+    );
+    await pagoSueltoRef(reference).update({
+      status: 'failed',
+      failureCode: 'AMOUNT_MISMATCH',
+      paypalCaptureId: detalle.id,
+    });
+    throw new AppError('El monto cobrado no coincide', 409, 'AMOUNT_MISMATCH');
+  }
+
+  await marcarOrdenPagada(reference, { email: captura.payer?.email_address });
+
+  await pagoSueltoRef(reference).update({
+    status: 'succeeded',
+    paypalCaptureId: detalle.id,
+    paidAt: FieldValue.serverTimestamp(),
+  });
+
+  logger.info('paypal', 'Pago de análisis suelto capturado', {
+    metadata: { reference, orderId, captureId: detalle.id, cobrado: esperado },
+  });
+
+  return { status: 'paid', yaEstaba: false };
+}
+
+/**
+ * Red por si el navegador muere despues de aprobar y nunca pide la captura.
+ *
+ * PayPal captura de todas formas y manda este evento. Sin esta rama, alguien
+ * que cierra la pestana justo despues de aprobar quedaria pagado en PayPal y
+ * sin informe aqui.
+ *
+ * No llama a PayPal: el evento ya viene verificado contra su firma y trae el
+ * monto cobrado, asi que se comprueba igual que en la captura.
+ */
+async function handleSingleAnalysisCaptureCompleted(
+  resource: Record<string, unknown>
+): Promise<void> {
+  const reference = typeof resource.custom_id === 'string' ? resource.custom_id : '';
+  if (!reference) return;
+
+  const snap = await pagoSueltoRef(reference).get();
+  if (!snap.exists) return;
+
+  const pago = snap.data()!;
+  if (pago.kind !== 'single_analysis') return;
+
+  // El navegador suele llegar antes. Terminal es terminal.
+  if (pago.status === 'succeeded') {
+    logger.info('paypal', 'Captura ya resuelta; se ignora el evento', {
+      metadata: { reference },
+    });
+    return;
+  }
+
+  const cobrado = importeCobradoPorPayPal(resource);
+  const esperado = pago.amount as number;
+
+  if (!cobrado || cobrado.amountInCents !== esperado) {
+    logger.error(
+      'paypal',
+      'Evento de captura con monto distinto del esperado: no se desbloquea',
+      undefined,
+      {
+        metadata: {
+          reference,
+          esperado,
+          cobrado: cobrado?.amountInCents ?? -1,
+        },
+      }
+    );
+    await pagoSueltoRef(reference).update({
+      status: 'failed',
+      failureCode: 'AMOUNT_MISMATCH',
+    });
+    return;
+  }
+
+  try {
+    await marcarOrdenPagada(reference);
+  } catch (error) {
+    if (error instanceof AppError && error.code === 'ORDER_NOT_FOUND') {
+      // Dinero cobrado sobre un analisis ya borrado. Se registra y el pago se
+      // marca cobrado, porque lo fue: queda visible en ingresos para
+      // devolverlo a mano. Lanzar haria que PayPal reintentara para siempre.
+      logger.error(
+        'paypal',
+        'Captura de un análisis cuyo informe ya había caducado',
+        undefined,
+        { metadata: { reference } }
+      );
+      await pagoSueltoRef(reference).update({
+        status: 'succeeded',
+        paidAt: FieldValue.serverTimestamp(),
+        failureCode: 'ORDER_EXPIRED',
+      });
+      return;
+    }
+    throw error;
+  }
+
+  await pagoSueltoRef(reference).update({
+    status: 'succeeded',
+    paidAt: FieldValue.serverTimestamp(),
+    ...(typeof resource.id === 'string' ? { paypalCaptureId: resource.id } : {}),
+  });
+
+  logger.info('paypal', 'Pago de análisis suelto confirmado por webhook', {
+    metadata: { reference, esperado },
+  });
 }

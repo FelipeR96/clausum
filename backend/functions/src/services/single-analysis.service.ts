@@ -347,6 +347,18 @@ export async function comprobarLimitePorOrigen(fingerprint: string): Promise<voi
 }
 
 /**
+ * Quien cobra esta orden, para que la ruta sepa a que pasarela ir.
+ *
+ * Aparte de datosParaCobro porque se consulta ANTES de decidir, cuando
+ * todavia no se sabe si se puede cobrar. Las negativas las pone la otra.
+ */
+export async function proveedorDeLaOrden(
+  reference: string
+): Promise<'wompi' | 'paypal'> {
+  return (await leerOrden(reference)).provider;
+}
+
+/**
  * Lo que el cobro necesita saber de la orden, con sus negativas.
  *
  * Vive aqui y no en el servicio de la pasarela para que las importaciones

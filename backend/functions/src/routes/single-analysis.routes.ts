@@ -5,10 +5,15 @@ import { isSupportedContractFileName } from '@clausum/shared';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { createWompiSingleAnalysisCheckout } from '../services/wompi.service';
 import {
+  capturePayPalSingleAnalysisOrder,
+  createPayPalSingleAnalysisOrder,
+} from '../services/paypal.service';
+import {
   comprobarLimitePorOrigen,
   crearOrdenDeAnalisis,
   ejecutarAnalisisSuelto,
   obtenerEstado,
+  proveedorDeLaOrden,
 } from '../services/single-analysis.service';
 import { enqueueJob } from '../tasks/jobs.task';
 import { AppError } from '../utils/errors';
@@ -125,7 +130,33 @@ singleAnalysisRouter.post(
   '/single/:reference/checkout',
   asyncHandler(async (req, res) => {
     const reference = referenciaValida(String(req.params.reference ?? ''));
-    res.json(await createWompiSingleAnalysisCheckout(reference));
+    // La region de la orden decide la pasarela, y se decidio al subir el
+    // documento. La respuesta lleva el proveedor dentro para que la pantalla
+    // no tenga que adivinar que widget abrir.
+    const proveedor = await proveedorDeLaOrden(reference);
+    res.json(
+      proveedor === 'paypal'
+        ? await createPayPalSingleAnalysisOrder(reference)
+        : await createWompiSingleAnalysisCheckout(reference)
+    );
+  })
+);
+
+/**
+ * Cobra la orden de PayPal que ya aprobo la persona.
+ *
+ * El id de la orden NO viene en el cuerpo: se usa el que guardamos al
+ * crearla. Aceptar el que mande el navegador dejaria desbloquear este
+ * informe con el id de una compra pagada por otro --sin sesion, lo unico
+ * que ata el pago a este analisis es lo que guardamos nosotros.
+ *
+ * Wompi no necesita equivalente: alli el cobro lo confirma su webhook.
+ */
+singleAnalysisRouter.post(
+  '/single/:reference/paypal/capture',
+  asyncHandler(async (req, res) => {
+    const reference = referenciaValida(String(req.params.reference ?? ''));
+    res.json(await capturePayPalSingleAnalysisOrder(reference));
   })
 );
 

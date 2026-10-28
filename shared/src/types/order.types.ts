@@ -34,6 +34,33 @@ export type SingleAnalysisOrderStatus =
   /** Nadie pago dentro del plazo; el analisis se borro. */
   | 'expired';
 
+/**
+ * Lo que necesita el navegador para cobrar, segun la pasarela que toque.
+ *
+ * Union discriminada y no un objeto con todo opcional: asi la pantalla no
+ * puede olvidarse de mirar el proveedor y acabar pasandole al widget de
+ * Wompi una orden de PayPal con la firma vacia.
+ */
+export type SingleAnalysisCheckout =
+  | {
+      provider: 'wompi';
+      reference: string;
+      amountInCents: number;
+      currency: string;
+      checkoutUrl: string;
+      publicKey: string;
+      integritySignature: string;
+      redirectUrl: string;
+    }
+  | {
+      provider: 'paypal';
+      reference: string;
+      amountInCents: number;
+      currency: string;
+      /** Orden de PayPal que el SDK del navegador tiene que aprobar. */
+      orderId: string;
+    };
+
 /** Como se le hizo llegar el informe a quien pago. */
 export type SingleAnalysisDelivery = 'download' | 'email';
 

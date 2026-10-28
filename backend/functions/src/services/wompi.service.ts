@@ -5,6 +5,7 @@ import {
   COLLECTIONS,
   WOMPI_CHECKOUT_URL,
   type BillingInterval,
+  type SingleAnalysisCheckout,
 } from '@clausum/shared';
 import type { User } from '@clausum/shared';
 import { adminDb } from '../firebase/admin';
@@ -395,7 +396,7 @@ async function crearPagoSueltoPendiente(input: {
  */
 export async function createWompiSingleAnalysisCheckout(
   reference: string
-): Promise<WompiCheckoutPayload> {
+): Promise<Extract<SingleAnalysisCheckout, { provider: 'wompi' }>> {
   const config = getWompiConfig();
   if (!config) {
     throw new AppError('Los pagos con Wompi no están configurados en el servidor', 503);
@@ -425,6 +426,7 @@ export async function createWompiSingleAnalysisCheckout(
   });
 
   return {
+    provider: 'wompi',
     checkoutUrl: WOMPI_CHECKOUT_URL,
     publicKey: config.publicKey,
     currency,
