@@ -11,6 +11,7 @@ import { PageSeo } from '@/seo/PageSeo';
 import { SEO_PAGES } from '@/seo/pages';
 import { SeoBreadcrumbs } from '@/components/marketing/SeoBreadcrumbs';
 import { DocumentUploadGuidance } from '@/components/contracts/DocumentUploadGuidance';
+import { AvisoAntesDeAnalizar } from '@/components/single/AvisoAntesDeAnalizar';
 import {
   ContractCountrySelect,
   DEFAULT_CONTRACT_COUNTRY,
@@ -221,6 +222,8 @@ export function AnalizarDocumentoPage() {
         <p className="mt-4 text-center text-xs text-on-surface-variant">
           No se cobra nada ahora. Verás el precio y lo que encontramos antes de decidir.
         </p>
+
+        <AvisoAntesDeAnalizar />
       </main>
     </MarketingLayout>
   );
