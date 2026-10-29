@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import {
   archivoDeRuta,
   construirHtmlDeRuta,
@@ -28,6 +30,10 @@ const PLANTILLA = `<!doctype html>
     />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#006A60" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/icono.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icono-192.png" />
+    <link rel="apple-touch-icon" href="/icono-180.png" />
     <meta property="og:locale" content="es_CO" />
     <meta property="og:site_name" content="Clausum" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -261,5 +267,65 @@ describe('paginasPublicas', () => {
 
   it('todas las rutas publicas estan configuradas en SEO_PAGES', () => {
     expect(() => paginasPublicas()).not.toThrow();
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+// El icono del sitio.
+//
+// Sin el, Google dibuja un globo gris junto al resultado y la pestana del
+// navegador queda igual que la de cualquier pagina en blanco. Es la unica
+// marca que se ve en una lista de resultados, y se pierde de dos maneras
+// silenciosas: que alguien quite las etiquetas de la plantilla, o que los
+// archivos de public/ se renombren y las etiquetas queden apuntando a un
+// 404. Ninguna de las dos rompe el build.
+//
+// El fixture de arriba es una copia a mano, asi que estas pruebas leen el
+// index.html DE VERDAD: es la unica forma de que el test sepa lo que se
+// despliega.
+// ─────────────────────────────────────────────────────────────────────────
+describe('icono del sitio', () => {
+  const dirFrontend = fileURLToPath(new URL('../../', import.meta.url));
+  const plantillaReal = readFileSync(dirFrontend + 'index.html', 'utf-8');
+
+  /** href de cada <link rel="icon"> y <link rel="apple-touch-icon">. */
+  const iconosDeclarados = [
+    ...plantillaReal.matchAll(
+      /<link[^>]+rel="(?:icon|apple-touch-icon)"[^>]*>/g
+    ),
+  ].map((etiqueta) => {
+    const href = /href="([^"]+)"/.exec(etiqueta[0]);
+    return href ? href[1] : '';
+  });
+
+  it('la plantilla real declara al menos un icono', () => {
+    expect(iconosDeclarados.length).toBeGreaterThan(0);
+  });
+
+  it('declara el .ico, que es el que lee Google', () => {
+    expect(iconosDeclarados).toContain('/favicon.ico');
+  });
+
+  it('cada icono declarado existe en public/', () => {
+    for (const href of iconosDeclarados) {
+      const archivo = dirFrontend + 'public' + href;
+      expect(existsSync(archivo), href + ' no existe en public/').toBe(true);
+    }
+  });
+
+  it('sobrevive al reescrito de la cabecera en TODAS las rutas', () => {
+    // construirHtmlDeRuta borra y reinyecta parte del <head>. Si algun dia
+    // se le anade un patron que arrastre los <link>, el sitio se queda sin
+    // icono en las nueve paginas menos en la portada, y no lo nota nadie.
+    for (const pagina of paginasPublicas()) {
+      const html = construirHtmlDeRuta(plantillaReal, pagina, DOMINIO_PUBLICO);
+      expect(html, pagina.path).toContain('/favicon.ico');
+      expect(html, pagina.path).toContain('rel="apple-touch-icon"');
+    }
+  });
+
+  it('no deja dos veces el mismo icono', () => {
+    const html = construirHtmlDeRuta(PLANTILLA, SEO_PAGES.home, DOMINIO_PUBLICO);
+    expect(html.split('/favicon.ico').length - 1).toBe(1);
   });
 });
