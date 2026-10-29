@@ -34,6 +34,9 @@ import {
  * funcion que la arma, que es lo que ya cubre la prueba de shared.
  */
 const SECRETOS = {
+  tituloRiesgo: 'CENTINELA_TITULO_SUELTO',
+  resumenEjecutivo: 'CENTINELA_RESUMEN_EJECUTIVO_SUELTO',
+  veredictoPorque: 'CENTINELA_RAZON_VEREDICTO_SUELTO',
   descripcion: 'CENTINELA_DESCRIPCION_SUELTO',
   impacto: 'CENTINELA_IMPACTO_SUELTO',
   recomendacion: 'CENTINELA_RECOMENDACION_SUELTO',
@@ -42,14 +45,20 @@ const SECRETOS = {
   significadoClausula: 'CENTINELA_SIGNIFICADO_CLAUSULA_SUELTO',
 } as const;
 
-const RESUMEN_PUBLICO = 'Contrato de arrendamiento con tres riesgos relevantes.';
+const DESCRIPCION_PUBLICA =
+  'Contrato de arrendamiento de vivienda urbana entre una inmobiliaria y un particular.';
 const CITA_PUBLICA = 'El arrendatario renuncia a cualquier reclamación posterior.';
 
 function analisisDePrueba() {
   return {
-    summary: RESUMEN_PUBLICO,
+    overview: DESCRIPCION_PUBLICA,
+    summary: SECRETOS.resumenEjecutivo,
     score: 62,
-    favorability: { verdict: 'desfavorable', forWhom: 'arrendador' },
+    favorability: {
+      verdict: 'desfavorable',
+      forWhom: 'arrendador',
+      rationale: SECRETOS.veredictoPorque,
+    },
     parties: ['Arrendador S.A.S.', 'Juan Pérez'],
     country: 'CO',
     contractTypeId: 'arrendamiento',
@@ -69,7 +78,7 @@ function riesgosDePrueba() {
   return [
     {
       level: 'medium',
-      title: 'Prórroga automática',
+      title: SECRETOS.tituloRiesgo,
       excerpt: 'El contrato se prorroga por igual término.',
       description: SECRETOS.descripcion,
       impact: SECRETOS.impacto,
@@ -78,7 +87,7 @@ function riesgosDePrueba() {
     },
     {
       level: 'high',
-      title: 'Renuncia a reclamar',
+      title: SECRETOS.tituloRiesgo,
       excerpt: CITA_PUBLICA,
       description: SECRETOS.descripcion,
       impact: SECRETOS.impacto,
@@ -177,7 +186,8 @@ describe('caducidad del análisis suelto', () => {
     expect(estado.estado).toBe('listo');
     if (estado.estado !== 'listo') return;
     expect(estado.pagado).toBe(false);
-    expect(estado.preview.summary).toBe(RESUMEN_PUBLICO);
+    // La descripción, no el resumen ejecutivo: ese diagnostica y se cobra.
+    expect(estado.preview.overview).toBe(DESCRIPCION_PUBLICA);
   });
 
   it('responde "analizando" mientras no hay resultado', async () => {
@@ -267,6 +277,8 @@ describe('el muro de pago sobre datos guardados', () => {
     // Y el riesgo más grave primero, que es el que convence.
     expect(estado.preview.risks[0]?.level).toBe('high');
     expect(estado.preview.risks[0]?.locked).toContain('impact');
+    // Sin título: es el diagnóstico en tres palabras y se cobra.
+    expect(estado.preview.risks[0]).not.toHaveProperty('title');
   });
 
   it('avisa del recorte cuando el contrato se cortó por largo', async () => {

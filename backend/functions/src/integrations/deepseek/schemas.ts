@@ -34,6 +34,11 @@ export const lawReferenceSchema = z.object({
 });
 
 export const analyzeResponseSchema = z.object({
+  // Opcional porque los analisis anteriores a la compra sin cuenta no lo
+  // traen. Si falta, la vista previa se queda sin la descripcion y enseña
+  // menos: fallar hacia contar de menos es la unica direccion segura en un
+  // campo que existe para decidir que se regala.
+  overview: z.string().optional(),
   summary: z.string().min(1),
   parties: z.array(z.string()).optional(),
   metadata: z

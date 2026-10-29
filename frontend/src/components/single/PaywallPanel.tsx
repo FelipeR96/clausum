@@ -15,9 +15,15 @@ import { getUserFacingErrorMessage } from '@/services/api/user-facing-errors';
  *  1. El VEREDICTO primero. Es lo que la persona vino a saber --si le
  *     conviene firmar-- y se da gratis.
  *  2. El conteo de riesgos. Una cifra concreta sobre SU contrato.
- *  3. Cada riesgo con su cita textual del documento, y debajo, con candado,
- *     los nombres de lo que falta: que te pasa si se aplica, que pedir, con
- *     que redaccion.
+ *  3. La cita textual de cada clausula marcada, y debajo, con candado, los
+ *     nombres de lo que falta: en que consiste, que te pasa si se aplica, que
+ *     pedir y con que redaccion.
+ *
+ * Lo que NO va: el titulo del riesgo, el motivo del veredicto y el resumen
+ * ejecutivo. Los tres diagnostican, y los tres se escapaban en la primera
+ * version --el resumen llegaba a decir "el valor del canon esta en blanco, lo
+ * que genera incertidumbre" mientras el muro tapaba lo mismo dos secciones
+ * mas abajo.
  *
  * Primero se demuestra que leimos su contrato; el precio aparece despues.
  * Al reves --precio arriba, pruebas abajo-- se pide confianza antes de
@@ -94,13 +100,13 @@ export function PaywallPanel({
         </div>
       )}
 
-      {preview.summary && (
+      {preview.overview && (
         <section>
           <h2 className="mb-3 font-display text-xl font-bold text-on-surface">
             Qué dice tu contrato
           </h2>
           <p className="text-sm leading-relaxed text-on-surface-variant sm:text-base">
-            {preview.summary}
+            {preview.overview}
           </p>
         </section>
       )}
@@ -132,12 +138,16 @@ export function PaywallPanel({
             Lo que encontramos en tu contrato
           </h2>
           <p className="mb-5 text-sm text-on-surface-variant">
-            Las citas son texto de tu documento. Lo que está bajo candado no se ha
-            descargado a tu navegador: no hay nada que revelar ahí abajo.
+            Estas son las cláusulas que marcamos, citadas de tu propio documento. Lo
+            que está bajo candado no se ha descargado a tu navegador: no hay nada que
+            revelar ahí abajo.
           </p>
           <div className="space-y-5">
             {preview.risks.map((risk, i) => (
-              <PreviewRiskCard key={`${risk.title}-${i}`} risk={risk} />
+              // Por indice: ya no hay titulo, y dos riesgos pueden citar la
+              // misma clausula. La lista no se reordena ni se filtra en
+              // pantalla, asi que el indice es estable.
+              <PreviewRiskCard key={i} risk={risk} />
             ))}
           </div>
         </section>

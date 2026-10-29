@@ -43,6 +43,14 @@ export interface AnalysisRisk {
   lawReferences?: LawReference[];
 }
 
+/**
+ * Que ES el contrato, sin juicio.
+ *
+ * Existe para separar la descripcion del diagnostico. El resumen ejecutivo
+ * mezcla las dos cosas --cuenta de que va el contrato y de paso senala lo que
+ * esta mal-- y eso lo hace inservible para una vista previa: regalaba los
+ * hallazgos en prosa mientras el muro de pago los tapaba en las tarjetas.
+ */
 export interface AnalysisFavorability {
   verdict: FavorabilityVerdict;
   /** A que parte se inclina el contrato. */
@@ -64,6 +72,8 @@ export interface Analysis extends WithTimestamps {
   mode: AnalysisMode;
   status: JobStatus;
   processingProgress?: ProcessingProgress;
+  /** Descripcion sin juicio. Es lo unico del resumen que se regala. */
+  overview?: string;
   summary?: string;
   parties?: string[];
   metadata?: AnalysisMetadata;

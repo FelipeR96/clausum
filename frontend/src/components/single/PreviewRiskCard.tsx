@@ -3,11 +3,15 @@ import type { PreviewRisk } from '@clausum/shared';
 /**
  * Un riesgo tal y como lo ve quien todavia no ha pagado.
  *
- * ── Lo que se ensena y lo que no ────────────────────────────────────────
- * Gratis van el nivel, el titulo y la CITA TEXTUAL del contrato. Esa cita es
- * la pieza que convence y conviene no quitarla para "dar menos": es texto
- * del documento que la persona acaba de subir, asi que no se le regala nada
- * que no tenga, y demuestra que leimos SU contrato y no una plantilla.
+ * ── Se senala, no se diagnostica ────────────────────────────────────────
+ * Gratis van el nivel y la CITA TEXTUAL del contrato. El titulo NO: "Renuncia
+ * a la constitucion en mora" es el diagnostico en tres palabras --dice que
+ * buscar y como se llama-- y eso es parte de lo que se cobra.
+ *
+ * La cita se queda porque es la pieza que convence: es texto del documento
+ * que la persona acaba de subir, asi que no se le regala nada que no tenga,
+ * y demuestra que leimos SU contrato y no una plantilla. Ve la frase exacta
+ * que le va a doler, sin saber por que.
  *
  * ── El difuminado no esconde nada, porque no hay nada debajo ────────────
  * Un difuminado suele significar "esta aqui pero tapado", y aqui no: el
@@ -78,14 +82,18 @@ export function PreviewRiskCard({ risk }: { risk: PreviewRisk }) {
         </span>
       </div>
 
-      <h3 className="mb-4 font-display text-lg font-bold text-on-surface sm:text-xl">
-        {risk.title}
-      </h3>
-
-      {risk.excerpt && (
-        <blockquote className="border-l-2 border-outline-variant pl-4 text-sm italic leading-relaxed text-on-surface-variant">
+      {/* La cita es ahora el titular de la tarjeta, asi que pesa mas que
+          cuando acompanaba a un titulo. */}
+      {risk.excerpt ? (
+        <blockquote className="border-l-2 border-outline-variant pl-4 font-display text-base italic leading-relaxed text-on-surface sm:text-lg">
           &ldquo;{risk.excerpt}&rdquo;
         </blockquote>
+      ) : (
+        // Sin cita la tarjeta se quedaria en una insignia suelta. Raro, pero
+        // posible si el analisis no la trajo.
+        <p className="text-sm italic text-on-surface-variant">
+          Una cláusula de tu contrato marcada en este nivel.
+        </p>
       )}
 
       {risk.locked.length > 0 && (

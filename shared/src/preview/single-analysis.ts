@@ -1,28 +1,45 @@
+import type { Analysis, AnalysisMetadata, AnalysisRisk } from '../types/analysis.types';
 import type {
-  Analysis,
-  AnalysisFavorability,
-  AnalysisMetadata,
-  AnalysisRisk,
-} from '../types/analysis.types';
-import type { ClauseAssessment, Importance, RiskLevel } from '../types/common.types';
+  ClauseAssessment,
+  FavorabilityVerdict,
+  Importance,
+  RiskLevel,
+} from '../types/common.types';
 
 /**
  * Lo que ve quien todavia no ha pagado.
  *
- * ── El reparto, y por que esta donde esta ───────────────────────────────
- * Gratis va lo DESCRIPTIVO: que tipo de contrato es, que dice en resumen,
- * a quien favorece, cuantos riesgos hay y de que nivel, y de cada riesgo su
- * titulo y la CITA TEXTUAL del propio documento.
+ * ── El reparto: se SENALA, no se DIAGNOSTICA ───────────────────────────
+ * Gratis va lo que dice QUE hay delante: que tipo de contrato es, a quien
+ * favorece, cuantos riesgos hay y de que nivel, y la CITA TEXTUAL de cada
+ * clausula marcada.
  *
- * Se cobra lo que es JUICIO Y ACCION: en que consiste cada riesgo, que te
- * pasa si se aplica, que pedir y con que redaccion pedirlo.
+ * Se cobra todo lo que explica: como se llama el problema, en que consiste,
+ * que te pasa si se aplica, que pedir y con que redaccion pedirlo.
  *
- * La cita es la pieza clave y conviene no quitarla para "dar menos". Es
- * texto del documento que la persona acaba de subir, asi que no se le esta
- * regalando nada que no tenga; lo que hace es demostrar que leimos SU
- * contrato y no que le estamos ensenando una plantilla. Un difuminado no
- * demuestra eso: debajo podria no haber nada. Para una marca que nadie
- * conoce, ese es el problema de conversion real.
+ * La cita se queda, y conviene no quitarla para "dar menos". Es texto del
+ * documento que la persona acaba de subir, asi que no se le regala nada que
+ * no tenga; lo que hace es demostrar que leimos SU contrato y no ensenarle
+ * una plantilla. Un difuminado no demuestra eso: debajo podria no haber
+ * nada. Para una marca que nadie conoce, ese es el problema de conversion
+ * real.
+ *
+ * ── Los tres campos que se escapaban ────────────────────────────────────
+ * La primera version clasificaba con cuidado los campos de los riesgos y de
+ * las clausulas, y dejaba pasar enteros el RESUMEN EJECUTIVO, el MOTIVO del
+ * veredicto y el TITULO de cada riesgo. Los tres diagnostican:
+ *
+ *  - El resumen cuenta de que va el contrato y de paso senala lo que esta
+ *    mal ("el valor del canon esta en blanco, lo que genera incertidumbre").
+ *    Por eso existe `overview`, que describe sin juzgar.
+ *  - El motivo del veredicto llegaba a nombrar las clausulas por su numero
+ *    ("la renuncia a la constitucion en mora (novena)").
+ *  - El titulo del riesgo ES el diagnostico en tres palabras: "Renuncia a la
+ *    constitucion en mora" dice que buscar y como se llama.
+ *
+ * El muro era solido donde se reviso y transparente donde nadie miro. La
+ * leccion esta en la forma de este archivo: se construye campo por campo y
+ * lo que no se nombra, no viaja.
  *
  * ── La propiedad que no se puede romper ─────────────────────────────────
  * Este objeto viaja al navegador. Todo lo que entre aqui es publico, por
@@ -47,16 +64,45 @@ export const CAMPOS_RIESGO_DE_PAGO = [
   'suggestedWording',
 ] as const;
 
+/**
+ * Campos que NO viajan y que tampoco se anuncian como bloqueados.
+ *
+ * Estan aparte de CAMPOS_RIESGO_DE_PAGO porque esa lista alimenta las
+ * etiquetas que se pintan con candado, y un candado sobre el titulo seria
+ * raro: el candado va sobre lo que explica el riesgo, no sobre su nombre.
+ * Esta lista existe para que las pruebas puedan comprobarlos y para que
+ * quede escrito que su ausencia es deliberada.
+ */
+export const CAMPOS_RIESGO_OCULTOS = ['title'] as const;
+
 /** Campos de una clausula que NO viajan sin pagar. */
 export const CAMPOS_CLAUSULA_DE_PAGO = ['content', 'meaning', 'excerpt'] as const;
 
+/**
+ * Un riesgo sin su titulo, a proposito.
+ *
+ * El titulo no esta como campo bloqueado: no esta en absoluto. Un campo que
+ * no existe en el tipo no se puede rellenar por descuido, que es mas fuerte
+ * que acordarse de borrarlo.
+ */
 export type PreviewRisk = {
   level: RiskLevel;
-  title: string;
   /** Cita textual del contrato. Vacia si el analisis no la trajo. */
   excerpt: string;
   /** Que queda detras del muro, por nombre, para pintarlo bloqueado. */
   locked: readonly string[];
+};
+
+/**
+ * El veredicto sin su motivo.
+ *
+ * El veredicto en si --a quien favorece-- es lo que la persona vino a saber
+ * y se regala. El motivo explica POR QUE, nombrando las clausulas que lo
+ * sostienen, y eso es el informe.
+ */
+export type PreviewVerdict = {
+  verdict: FavorabilityVerdict;
+  forWhom?: string;
 };
 
 export type PreviewClause = {
@@ -73,11 +119,12 @@ export type RiskCounts = {
 };
 
 export type SingleAnalysisPreview = {
-  summary: string;
+  /** Que ES el contrato, sin juicio. Nunca el resumen ejecutivo. */
+  overview: string;
   /** Indice de claridad. Mide como esta redactado, no si conviene. */
   score?: number;
   /** A quien favorece el contrato. Es el titular real del informe. */
-  favorability?: AnalysisFavorability;
+  favorability?: PreviewVerdict;
   parties?: string[];
   metadata?: AnalysisMetadata;
   country?: string;
@@ -124,10 +171,14 @@ export function buildSingleAnalysisPreview(input: {
     (a, b) => (ORDEN_NIVEL[a.level] ?? 3) - (ORDEN_NIVEL[b.level] ?? 3)
   );
 
+  const fav = analysis.favorability;
+
   return {
-    summary: analysis.summary ?? '',
+    // overview y NO summary. El resumen ejecutivo diagnostica.
+    overview: analysis.overview ?? '',
     score: analysis.score,
-    favorability: analysis.favorability,
+    // Campo por campo: copiar el objeto entero traeria el motivo.
+    favorability: fav ? { verdict: fav.verdict, forWhom: fav.forWhom } : undefined,
     parties: analysis.parties,
     metadata: analysis.metadata,
     country: analysis.country,
@@ -135,7 +186,6 @@ export function buildSingleAnalysisPreview(input: {
     riskCounts: contarPorNivel(risks),
     risks: ordenados.map((r) => ({
       level: r.level,
-      title: r.title,
       excerpt: r.excerpt ?? '',
       locked: CAMPOS_RIESGO_DE_PAGO.filter((campo) => tieneTexto(r[campo])),
     })),

@@ -96,7 +96,7 @@ function analisisCompleto() {
     favorability: {
       verdict: 'desfavorable',
       forWhom: 'arrendador',
-      reason: 'Traslada todos los costes de reparación al arrendatario.',
+      rationale: 'Traslada todos los costes de reparación al arrendatario.',
     },
     parties: ['Inmobiliaria Ejemplo S.A.S.', 'María Gómez'],
     metadata: {
@@ -206,6 +206,17 @@ describe('el informe completo', () => {
     }
     expect(informe.risks).toHaveLength(2);
     expect(informe.risksScore).toBe(64);
+  });
+
+  it('incluye lo que la vista previa tapa: título, resumen y motivo', () => {
+    // El espejo exacto del muro. Si alguien decide que algo deja de ser de
+    // pago, lo quita de un lado y esta prueba le recuerda el otro.
+    const analisis = analisisCompleto();
+    const riesgos = riesgosCompletos();
+
+    expect(analisis.summary).toBeTruthy();
+    expect(analisis.favorability.rationale).toBeTruthy();
+    expect(riesgos[0]!.title).toBeTruthy();
   });
 
   it('sin pagar responde que falta pagar, no que no existe', async () => {

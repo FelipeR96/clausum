@@ -171,6 +171,7 @@ const COMPARE_METHODOLOGY = `METODOLOGÍA DE COMPARACIÓN
 - Si un cambio elimina protecciones o agrega obligaciones desbalanceadas, marca importance/significance "high".`;
 
 const ANALYSIS_JSON_SCHEMA = `{
+  "overview": "2-3 frases que digan QUÉ ES este contrato: tipo, partes y objeto. PURAMENTE DESCRIPTIVO. No menciones riesgos, cláusulas problemáticas, desequilibrios, vacíos, ni nada que suene a evaluación. Si algo del contrato te parece grave, NO lo digas aquí: va en summary. Alguien que lea solo este campo debe saber de qué trata el documento y nada sobre si le conviene",
   "summary": "resumen ejecutivo en 2-4 párrafos",
   "parties": ["parte 1", "parte 2"],
   "metadata": {

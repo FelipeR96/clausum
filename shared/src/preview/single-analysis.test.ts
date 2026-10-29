@@ -19,6 +19,13 @@ import type { Analysis, AnalysisRisk } from '../types/analysis.types';
 
 /** Textos que solo existen detras del muro. Si se ven, el muro fallo. */
 const SECRETOS = {
+  // Los tres que se escapaban enteros antes de que alguien mirara la
+  // pantalla: el titulo ES el diagnostico en tres palabras, el motivo del
+  // veredicto llegaba a nombrar las clausulas por su numero, y el resumen
+  // ejecutivo cuenta de que va el contrato senalando de paso lo que esta mal.
+  riesgoTitulo: 'CENTINELA_TITULO_DEL_RIESGO',
+  veredictoPorque: 'CENTINELA_RAZON_DEL_VEREDICTO',
+  resumenEjecutivo: 'CENTINELA_RESUMEN_EJECUTIVO',
   riesgoDescripcion: 'CENTINELA_DESCRIPCION_DEL_RIESGO',
   riesgoImpacto: 'CENTINELA_IMPACTO_CONCRETO',
   riesgoRecomendacion: 'CENTINELA_QUE_PEDIR',
@@ -30,18 +37,16 @@ const SECRETOS = {
 
 /** Textos que si deben verse sin pagar. */
 const PUBLICOS = {
-  resumen: 'PUBLICO_RESUMEN_EJECUTIVO',
-  tituloRiesgo: 'PUBLICO_TITULO_DEL_RIESGO',
+  descripcion: 'PUBLICO_DESCRIPCION_SIN_JUICIO',
   citaRiesgo: 'PUBLICO_CITA_DEL_CONTRATO',
   tituloClausula: 'PUBLICO_TITULO_DE_CLAUSULA',
   favoreceA: 'PUBLICO_EL_ARRENDADOR',
-  porque: 'PUBLICO_RAZON_DEL_VEREDICTO',
 } as const;
 
 function riesgo(over: Partial<AnalysisRisk> = {}): AnalysisRisk {
   return {
     level: 'high',
-    title: PUBLICOS.tituloRiesgo,
+    title: SECRETOS.riesgoTitulo,
     description: SECRETOS.riesgoDescripcion,
     excerpt: PUBLICOS.citaRiesgo,
     impact: SECRETOS.riesgoImpacto,
@@ -58,12 +63,13 @@ function analisis(over: Partial<Analysis> = {}): Analysis {
     mode: 'analyze',
     status: 'done',
     createdAt: new Date(),
-    summary: PUBLICOS.resumen,
+    overview: PUBLICOS.descripcion,
+    summary: SECRETOS.resumenEjecutivo,
     score: 65,
     favorability: {
       verdict: 'desfavorable',
       forWhom: PUBLICOS.favoreceA,
-      rationale: PUBLICOS.porque,
+      rationale: SECRETOS.veredictoPorque,
     },
     parties: ['Arrendador S.A.S.', 'Juan Pérez'],
     country: 'CO',
@@ -95,6 +101,27 @@ describe('el muro de pago', () => {
     }
   });
 
+  it('distingue la descripcion del resumen ejecutivo', () => {
+    // Los dos cuentan de que va el contrato, y por eso es facil confundirlos.
+    // La diferencia es que el resumen ejecutivo ademas DIAGNOSTICA --"el valor
+    // del canon esta en blanco, lo que genera incertidumbre"-- y eso es lo que
+    // se cobra. Si alguien los intercambia, esta prueba lo dice.
+    const previa = buildSingleAnalysisPreview({ analysis: analisis(), risks: [] });
+
+    expect(previa.overview).toBe(PUBLICOS.descripcion);
+    expect(JSON.stringify(previa)).not.toContain(SECRETOS.resumenEjecutivo);
+  });
+
+  it('el veredicto viaja sin su motivo', () => {
+    // El motivo llegaba a nombrar las clausulas por su numero. Se copia campo
+    // por campo justamente para que no venga de acompanante.
+    const previa = buildSingleAnalysisPreview({ analysis: analisis(), risks: [] });
+
+    expect(previa.favorability?.verdict).toBe('desfavorable');
+    expect(previa.favorability).not.toHaveProperty('rationale');
+    expect(JSON.stringify(previa)).not.toContain(SECRETOS.veredictoPorque);
+  });
+
   it('un campo nuevo en el analisis no se cuela solo', () => {
     // La vista previa se construye campo por campo, no copiando y
     // borrando. Si manana alguien anade "playbook" al analisis, no sale
@@ -121,17 +148,16 @@ describe('el muro de pago', () => {
 });
 
 describe('lo que si se ve sin pagar', () => {
-  it('muestra el resumen, el veredicto y de que lado esta', () => {
+  it('muestra la descripcion, el veredicto y de que lado esta', () => {
     const previa = buildSingleAnalysisPreview({ analysis: analisis(), risks: [] });
 
-    expect(previa.summary).toBe(PUBLICOS.resumen);
+    expect(previa.overview).toBe(PUBLICOS.descripcion);
     expect(previa.favorability?.verdict).toBe('desfavorable');
     expect(previa.favorability?.forWhom).toBe(PUBLICOS.favoreceA);
-    expect(previa.favorability?.rationale).toBe(PUBLICOS.porque);
     expect(previa.score).toBe(65);
   });
 
-  it('muestra de cada riesgo el nivel, el titulo y la cita del contrato', () => {
+  it('muestra de cada riesgo el nivel y la cita, pero NO el titulo', () => {
     const previa = buildSingleAnalysisPreview({
       analysis: analisis(),
       risks: [riesgo()],
@@ -139,7 +165,8 @@ describe('lo que si se ve sin pagar', () => {
     const r = previa.risks[0]!;
 
     expect(r.level).toBe('high');
-    expect(r.title).toBe(PUBLICOS.tituloRiesgo);
+    // El titulo no esta como campo vacio ni como bloqueado: no esta.
+    expect(r).not.toHaveProperty('title');
     // La cita es lo que demuestra que leimos SU contrato; sin ella la
     // vista previa no prueba nada y el difuminado tampoco.
     expect(r.excerpt).toBe(PUBLICOS.citaRiesgo);
@@ -215,12 +242,13 @@ describe('analisis incompletos o viejos', () => {
     expect(previa.risks).toEqual([]);
   });
 
-  it('aguanta un analisis sin resumen', () => {
+  it('aguanta un analisis sin descripcion', () => {
     const previa = buildSingleAnalysisPreview({
-      analysis: analisis({ summary: undefined }),
+      analysis: analisis({ overview: undefined }),
       risks: [],
     });
-    expect(previa.summary).toBe('');
+    // Vacio y no el resumen ejecutivo: ante la duda se enseña menos.
+    expect(previa.overview).toBe('');
   });
 
   it('aguanta un riesgo sin cita', () => {
