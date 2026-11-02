@@ -175,6 +175,39 @@ const PATRONES_A_QUITAR: RegExp[] = [
   /[ \t]*<meta\s+name="twitter:card"[^>]*\/>\s*\n?/i,
 ];
 
+/**
+ * El nombre del sitio encima del resultado de Google.
+ *
+ * Hoy los resultados de Clausum salen con "clausumlegal.com" donde la
+ * competencia sale con su nombre. Google solo escribe el nombre si
+ * encuentra datos estructurados `WebSite` con `name`, y los exige en la
+ * PORTADA: un `WebSite` anidado dentro de otro nodo --que es lo unico que
+ * habia, dentro de `isPartOf` en webPageSchema-- o puesto en una pagina
+ * interior, no cuenta. La portada no tenia ninguno.
+ *
+ * Va en el HTML estatico y no en schema.ts, donde vive todo lo demas,
+ * porque este modulo corre en Node y no puede importar schema.ts: ese lee
+ * SITE_URL de `import.meta.env`. Aqui no hace falta --`name` y `url` es
+ * todo lo que Google pide, y la url ya la tenemos-- y de paso el nombre
+ * deja de depender de que el rastreador ejecute JavaScript.
+ *
+ * Es el UNICO nodo que se escribe aqui. Si algun dia schema.ts emite un
+ * `WebSite` propio, hay que quitar este: Google pide que haya uno solo.
+ */
+export function bloqueWebSite(siteUrl: string): string {
+  const datos = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    alternateName: `${SITE_NAME} Legal`,
+    url: `${sinBarraFinal(siteUrl)}/`,
+  };
+  // El "<" escapado: un valor que llevara "</script>" cerraria la etiqueta
+  // antes de tiempo y el resto del JSON se pintaria como texto.
+  const json = JSON.stringify(datos).replace(/</g, '\\u003c');
+  return `    <script type="application/ld+json">${json}</script>`;
+}
+
 /** Mete en el <head> de la plantilla la cabecera que corresponde a una ruta. */
 export function construirHtmlDeRuta(
   plantilla: string,
@@ -212,7 +245,12 @@ export function construirHtmlDeRuta(
     meta('twitter:title', ogTitle),
     meta('twitter:description', ogDescription),
     meta('twitter:image', ogImage),
-  ].join('\n');
+  ];
+
+  // Solo la portada: Google exige el nodo ahi y pide que sea uno solo.
+  if (pagina.path === '/') {
+    cabecera.push(bloqueWebSite(url));
+  }
 
   let html = plantilla;
   for (const patron of PATRONES_A_QUITAR) {
@@ -225,7 +263,7 @@ export function construirHtmlDeRuta(
     throw new Error('La plantilla HTML no tiene </head>; no se donde inyectar.');
   }
 
-  return html.replace(/<\/head>/i, () => `${cabecera}\n  </head>`);
+  return html.replace(/<\/head>/i, () => `${cabecera.join('\n')}\n  </head>`);
 }
 
 /** Ruta del archivo que sirve cada URL: "/pricing" → "pricing.html". */

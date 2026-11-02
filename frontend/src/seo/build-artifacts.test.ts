@@ -6,10 +6,11 @@ import {
   construirHtmlDeRuta,
   construirRobotsTxt,
   construirSitemapXml,
+  bloqueWebSite,
   paginasPublicas,
 } from '@/seo/build-artifacts';
 import { SEO_PAGES, SITEMAP_PATHS } from '@/seo/pages';
-import { DOMINIO_PUBLICO } from '@/seo/constants';
+import { DOMINIO_PUBLICO, SITE_NAME } from '@/seo/constants';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Estos artefactos se generan al compilar y nadie los mira antes de que
@@ -327,5 +328,79 @@ describe('icono del sitio', () => {
   it('no deja dos veces el mismo icono', () => {
     const html = construirHtmlDeRuta(PLANTILLA, SEO_PAGES.home, DOMINIO_PUBLICO);
     expect(html.split('/favicon.ico').length - 1).toBe(1);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+// El nombre del sitio en Google.
+//
+// Sin datos estructurados `WebSite` en la PORTADA, Google escribe el
+// dominio pelado --"clausumlegal.com"-- donde la competencia escribe su
+// nombre. Es lo que pasaba: el unico `WebSite` del proyecto estaba
+// anidado dentro de `isPartOf` en webPageSchema, y Google no lo cuenta.
+//
+// Se rompe de dos formas calladas: que el nodo deje de salir, o que salga
+// DOS veces --Google pide uno solo y con dos elige el que quiera--.
+// ─────────────────────────────────────────────────────────────────────────
+describe('nombre del sitio (WebSite)', () => {
+  const nodosLdJson = (html: string) =>
+    [...html.matchAll(
+      /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g
+    )].map((m) => JSON.parse(m[1].replace(/\\u003c/g, '<')) as Record<string, unknown>);
+
+  it('la portada lleva un WebSite con el nombre', () => {
+    const html = construirHtmlDeRuta(PLANTILLA, SEO_PAGES.home, DOMINIO_PUBLICO);
+    const sitios = nodosLdJson(html).filter((n) => n['@type'] === 'WebSite');
+
+    expect(sitios).toHaveLength(1);
+    expect(sitios[0].name).toBe(SITE_NAME);
+  });
+
+  it('la url del nodo es exactamente la canonical de la portada', () => {
+    // Si no coinciden, Google no asocia el nombre con este sitio.
+    const html = construirHtmlDeRuta(PLANTILLA, SEO_PAGES.home, DOMINIO_PUBLICO);
+    const sitio = nodosLdJson(html).find((n) => n['@type'] === 'WebSite');
+    const canonical = /<link rel="canonical" href="([^"]+)"/.exec(html);
+
+    expect(sitio?.url).toBe(canonical?.[1]);
+    expect(sitio?.url).toBe(DOMINIO_PUBLICO + '/');
+  });
+
+  it('NINGUNA pagina interior lo lleva', () => {
+    for (const pagina of paginasPublicas()) {
+      if (pagina.path === '/') continue;
+      const html = construirHtmlDeRuta(PLANTILLA, pagina, DOMINIO_PUBLICO);
+      expect(html, pagina.path).not.toContain('"WebSite"');
+    }
+  });
+
+  /** El JSON de dentro de la etiqueta, o '' si la etiqueta no cuadra. */
+  const contenido = (bloque: string): string => {
+    const m = /ld\+json">([\s\S]*?)<\/script>/.exec(bloque);
+    return m ? m[1] : '';
+  };
+
+  it('el JSON que produce es valido y parseable', () => {
+    const dentro = contenido(bloqueWebSite(DOMINIO_PUBLICO));
+    expect(dentro).not.toBe('');
+    expect(() => JSON.parse(dentro)).not.toThrow();
+  });
+
+  it('escapa "<" para que nada pueda cerrar la etiqueta antes de tiempo', () => {
+    // Con una url hostil: sin escapar, el "</script>" de dentro cerraria la
+    // etiqueta y el resto del JSON acabaria pintado como texto en la pagina.
+    const dentro = contenido(bloqueWebSite('https://x.test/</script><b>'));
+
+    expect(dentro).not.toContain('<');
+    expect(dentro).toContain('\\u003c');
+    // Y despues de escapar sigue siendo JSON: el escape es del "<", no un
+    // destrozo del documento.
+    expect(() => JSON.parse(dentro)).not.toThrow();
+  });
+
+  it('no le importa la barra final del dominio', () => {
+    const a = bloqueWebSite(DOMINIO_PUBLICO);
+    const b = bloqueWebSite(DOMINIO_PUBLICO + '/');
+    expect(a).toBe(b);
   });
 });
